@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 720" font-family="Arial, sans-serif">
+  <rect width="1600" height="720" fill="#F8FAFF"/>
+
+  <!-- Main building outline -->
+  <rect x="20" y="20" width="1560" height="680" rx="4" fill="#EDF5FD" stroke="#94A3B8" stroke-width="2"/>
+
+  <!-- Left wing: Kursrom -->
+  <polygon points="20,80 220,20 220,340 20,340" fill="#DBEAFE" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="100" y="180" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">57</text>
+  <text x="100" y="198" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">Kursrom</text>
+  <text x="100" y="216" text-anchor="middle" font-size="12" fill="#64748B">79.9 m²</text>
+
+  <!-- Sosial sone -->
+  <polygon points="20,340 220,340 220,560 80,580 20,560" fill="#D1FAE5" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="110" y="450" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">8</text>
+  <text x="110" y="468" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">Sosial sone</text>
+  <text x="110" y="486" text-anchor="middle" font-size="12" fill="#64748B">91.6 m²</text>
+
+  <!-- Ventesone -->
+  <rect x="20" y="560" width="200" height="140" fill="#DBEAFE" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="120" y="620" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">1</text>
+  <text x="120" y="638" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">Ventesone</text>
+  <text x="120" y="656" text-anchor="middle" font-size="12" fill="#64748B">36.7 m²</text>
+
+  <!-- Samtalerom forsterket -->
+  <rect x="220" y="480" width="130" height="120" fill="#C7F2DA" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="285" y="530" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">4</text>
+  <text x="285" y="548" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">Samtalerom</text>
+  <text x="285" y="563" text-anchor="middle" font-size="11" fill="#334155">forsterket</text>
+  <text x="285" y="578" text-anchor="middle" font-size="12" fill="#64748B">10.2 m²</text>
+
+  <!-- Vrimle kurs -->
+  <rect x="220" y="20" width="160" height="180" fill="#FEF9C3" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="300" y="90" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">58</text>
+  <text x="300" y="108" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">Vrimle kurs</text>
+  <text x="300" y="126" text-anchor="middle" font-size="12" fill="#64748B">21.6 m²</text>
+
+  <!-- Trapp left -->
+  <rect x="380" y="20" width="100" height="180" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="430" y="90" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">52</text>
+  <text x="430" y="108" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">Trapp</text>
+  <text x="430" y="126" text-anchor="middle" font-size="12" fill="#64748B">15.6 m²</text>
+  <line x1="390" y1="40" x2="390" y2="185" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="390" y1="50" x2="470" y2="50" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="390" y1="70" x2="470" y2="70" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="390" y1="90" x2="470" y2="90" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="390" y1="110" x2="470" y2="110" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="390" y1="130" x2="470" y2="130" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="390" y1="150" x2="470" y2="150" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="390" y1="170" x2="470" y2="170" stroke="#94A3B8" stroke-width="1"/>
+
+  <!-- Main Corridor -->
+  <rect x="220" y="340" width="820" height="140" fill="#FEF3C7" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="630" y="415" text-anchor="middle" font-size="16" font-weight="700" fill="#334155" letter-spacing="3">MAIN CORRIDOR</text>
+
+  <!-- Fellesareal -->
+  <rect x="380" y="200" width="180" height="140" fill="#E0F2FE" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="470" y="255" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">45</text>
+  <text x="470" y="273" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">Fellesareal</text>
+  <text x="470" y="291" text-anchor="middle" font-size="12" fill="#64748B">56.2 m²</text>
+
+  <!-- HCWC -->
+  <rect x="380" y="480" width="80" height="100" fill="#DCFCE7" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="420" y="520" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">62</text>
+  <text x="420" y="535" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">HCWC</text>
+  <text x="420" y="550" text-anchor="middle" font-size="11" fill="#64748B">5.2 m²</text>
+
+  <!-- Jobbsenter -->
+  <rect x="220" y="600" width="240" height="100" fill="#FEF9C3" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="340" y="645" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">7</text>
+  <text x="340" y="663" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">Jobbsenter</text>
+  <text x="340" y="681" text-anchor="middle" font-size="12" fill="#64748B">27.6 m²</text>
+
+  <!-- Annen leietager -->
+  <rect x="560" y="200" width="280" height="140" fill="#DBEAFE" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="700" y="255" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">23</text>
+  <text x="700" y="273" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">Annen leietager</text>
+  <text x="700" y="291" text-anchor="middle" font-size="12" fill="#64748B">64.5 m²</text>
+
+  <!-- Trapp right -->
+  <rect x="840" y="200" width="100" height="140" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="890" y="258" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">30</text>
+  <text x="890" y="276" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">Trapp</text>
+  <text x="890" y="294" text-anchor="middle" font-size="12" fill="#64748B">19.6 m²</text>
+  <line x1="850" y1="215" x2="850" y2="325" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="850" y1="230" x2="935" y2="230" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="850" y1="250" x2="935" y2="250" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="850" y1="270" x2="935" y2="270" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="850" y1="290" x2="935" y2="290" stroke="#94A3B8" stroke-width="1"/>
+  <line x1="850" y1="310" x2="935" y2="310" stroke="#94A3B8" stroke-width="1"/>
+
+  <!-- Inner rooms cluster -->
+  <rect x="560" y="390" width="80" height="80" fill="#FEF3C7" stroke="#94A3B8" stroke-width="2"/>
+  <rect x="640" y="390" width="80" height="80" fill="#FEF3C7" stroke="#94A3B8" stroke-width="2"/>
+  <rect x="720" y="390" width="80" height="80" fill="#FEF3C7" stroke="#94A3B8" stroke-width="2"/>
+  <rect x="560" y="470" width="80" height="60" fill="#D1FAE5" stroke="#94A3B8" stroke-width="2"/>
+  <rect x="640" y="470" width="80" height="60" fill="#D1FAE5" stroke="#94A3B8" stroke-width="2"/>
+
+  <!-- Kontorlandskap -->
+  <rect x="460" y="480" width="440" height="220" fill="#DBEAFE" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="680" y="575" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">46</text>
+  <text x="680" y="593" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">Kontorlandskap</text>
+  <text x="680" y="611" text-anchor="middle" font-size="13" fill="#64748B">188.2 m²</text>
+
+  <!-- Row of office rooms top section -->
+  <rect x="560" y="20" width="380" height="180" fill="#FEF9C3" stroke="#94A3B8" stroke-width="2.5"/>
+  <line x1="590" y1="20" x2="590" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="620" y1="20" x2="620" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="650" y1="20" x2="650" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="680" y1="20" x2="680" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="710" y1="20" x2="710" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="740" y1="20" x2="740" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="770" y1="20" x2="770" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="800" y1="20" x2="800" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="830" y1="20" x2="830" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="860" y1="20" x2="860" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <line x1="890" y1="20" x2="890" y2="200" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="750" y="60" text-anchor="middle" font-size="11" fill="#64748B" font-weight="600">Cellekontor row</text>
+  <text x="750" y="78" text-anchor="middle" font-size="11" fill="#64748B">Sirkulasjonsareal</text>
+
+  <!-- Right wing divider line -->
+  <line x1="1040" y1="20" x2="1040" y2="720" stroke="#94A3B8" stroke-width="3"/>
+
+  <!-- Right section: Cellekontor column -->
+  <rect x="1060" y="20" width="200" height="100" fill="#E0F2FE" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="1160" y="55" text-anchor="middle" font-size="11" fill="#64748B">Sirkulasjonsareal</text>
+  <text x="1160" y="73" text-anchor="middle" font-size="12" font-weight="600" fill="#334155">35.4 m²</text>
+
+  <rect x="1060" y="120" width="200" height="80" fill="#E0F2FE" stroke="#94A3B8" stroke-width="2"/>
+  <text x="1160" y="152" text-anchor="middle" font-size="11" fill="#334155">77 Cellekontor</text>
+  <text x="1160" y="167" text-anchor="middle" font-size="11" fill="#64748B">10.9 m²</text>
+
+  <rect x="1060" y="200" width="200" height="80" fill="#E0F2FE" stroke="#94A3B8" stroke-width="2"/>
+  <text x="1160" y="232" text-anchor="middle" font-size="11" fill="#334155">79 Cellekontor</text>
+  <text x="1160" y="247" text-anchor="middle" font-size="11" fill="#64748B">10.9 m²</text>
+
+  <rect x="1060" y="280" width="200" height="80" fill="#E0F2FE" stroke="#94A3B8" stroke-width="2"/>
+  <text x="1160" y="312" text-anchor="middle" font-size="11" fill="#334155">76 Cellekontor</text>
+  <text x="1160" y="327" text-anchor="middle" font-size="11" fill="#64748B">10.9 m²</text>
+
+  <rect x="1060" y="360" width="200" height="80" fill="#E0F2FE" stroke="#94A3B8" stroke-width="2"/>
+  <text x="1160" y="392" text-anchor="middle" font-size="11" fill="#334155">75 Cellekontor</text>
+  <text x="1160" y="407" text-anchor="middle" font-size="11" fill="#64748B">10.7 m²</text>
+
+  <rect x="1060" y="440" width="200" height="80" fill="#E0F2FE" stroke="#94A3B8" stroke-width="2"/>
+  <text x="1160" y="472" text-anchor="middle" font-size="11" fill="#334155">74 Cellekontor</text>
+  <text x="1160" y="487" text-anchor="middle" font-size="11" fill="#64748B">11.0 m²</text>
+
+  <!-- Right bottom small room -->
+  <rect x="1060" y="520" width="120" height="100" fill="#DCFCE7" stroke="#94A3B8" stroke-width="2"/>
+  <text x="1120" y="565" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">Room</text>
+  <text x="1120" y="582" text-anchor="middle" font-size="11" fill="#64748B">24.0 m²</text>
+
+  <!-- Right large room: Sosial sone -->
+  <rect x="1060" y="520" width="500" height="200" fill="#DBEAFE" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="1310" y="605" text-anchor="middle" font-size="13" font-weight="600" fill="#334155">82</text>
+  <text x="1310" y="623" text-anchor="middle" font-size="15" font-weight="700" fill="#334155">Sosial sone</text>
+  <text x="1310" y="641" text-anchor="middle" font-size="13" fill="#64748B">129.9 m²</text>
+
+  <!-- Scale indicator -->
+  <line x1="30" y1="695" x2="130" y2="695" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="30" y1="690" x2="30" y2="700" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="130" y1="690" x2="130" y2="700" stroke="#94A3B8" stroke-width="2"/>
+  <text x="80" y="712" text-anchor="middle" font-size="11" fill="#64748B">10 m</text>
+
+  <!-- North indicator -->
+  <circle cx="1560" cy="670" r="18" fill="#F8FAFF" stroke="#94A3B8" stroke-width="1.5"/>
+  <path d="M1560,655 L1565,675 L1560,671 L1555,675 Z" fill="#334155"/>
+  <text x="1560" y="688" text-anchor="middle" font-size="9" fill="#64748B">N</text>
+</svg>
