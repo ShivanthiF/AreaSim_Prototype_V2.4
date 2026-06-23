@@ -15,7 +15,7 @@ export type CountingStepId =
   | "room-counting";
 
 const COUNT_COLLECT_STEPS: { id: CountingStepId; label: string }[] = [
-  { id: "floor-plan", label: "Open floor plan" },
+  { id: "floor-plan", label: "Map rooms and zones" },
   { id: "org-setup", label: "Organisation setup" },
   { id: "room-setup", label: "Room setup" },
   { id: "session-details", label: "Prepare session" },

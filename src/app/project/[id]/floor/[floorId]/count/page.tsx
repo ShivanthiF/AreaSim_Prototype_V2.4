@@ -286,7 +286,6 @@ export default function FloorCountPage() {
   const rooms = floor?.rooms || [];
 
   const [countingPhase, setCountingPhase] = useState<CountingPhase>("setup");
-  const [showInstructionsModal, setShowInstructionsModal] = useState(false);
   const [showVerifyConfirmModal, setShowVerifyConfirmModal] = useState(false);
   const [startModalDismissed, setStartModalDismissed] = useState(true);
   const [editRoomSettings, setEditRoomSettings] = useState(false);
@@ -398,14 +397,6 @@ export default function FloorCountPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Show instructions modal only when arriving via #show-instructions hash
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash === "#show-instructions") {
-      setShowInstructionsModal(true);
-      window.history.replaceState(null, "", window.location.pathname);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Timer
   useEffect(() => {
@@ -619,8 +610,16 @@ export default function FloorCountPage() {
     else setConfirmBulk("category");
   };
   const handleVerifyMainCheck = () => {
-    if (allVerified) setVerifiedRooms(new Set());
-    else setConfirmBulk("verify");
+    if (allVerified) {
+      setVerifiedRooms(new Set());
+    } else {
+      const allHaveCategory = rooms.length > 0 && rooms.every((r) => roomCategories[r.id]);
+      if (!allHaveCategory) {
+        setShowCategoryRequiredModal(true);
+      } else {
+        setConfirmBulk("verify");
+      }
+    }
   };
   const confirmBulkAction = () => {
     if (confirmBulk === "category") setSelectedRoomIds(new Set(rooms.map((r) => r.id)));
@@ -1064,187 +1063,6 @@ export default function FloorCountPage() {
             </div>
           </div>
         </main>
-
-        {/* ── Instructions Modal ─────────────────────────────────────────────────── */}
-        <AnimatePresence>
-          {showInstructionsModal && (
-            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                transition={{ duration: 0.28, ease: [0.34, 1.56, 0.64, 1] }}
-                className="bg-white rounded-2xl border border-[#E2E8F0] shadow-2xl overflow-hidden w-full max-w-[1180px]"
-              >
-                {/* Modal header */}
-                <div className="flex items-start justify-between px-7 pt-7 pb-5 border-b border-[#F1F5F9]">
-                  <div>
-                    <h2 className="text-xl font-extrabold text-text leading-tight" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
-                      How to use the room counting tool
-                    </h2>
-                    <p className="text-sm text-text-muted mt-1 leading-relaxed">
-                      Follow these steps to get accurate, consistent room data.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setShowInstructionsModal(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F1F5F9] text-text-muted hover:text-text transition-colors shrink-0 ml-4"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-
-                {/* Cards row */}
-                <div className="px-6 py-6">
-                  <div className="flex items-stretch gap-0">
-                    {[
-                      {
-                        num: "01",
-                        color: "#139485",
-                        badgeBg: "rgba(19,148,133,0.12)",
-                        icon: (
-                          <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
-                            <path d="M15 38 C15 30 21 26 21 17 C21 13 18 10 15 10" stroke="#139485" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                            <circle cx="15" cy="10" r="3.5" stroke="#139485" strokeWidth="2.5" fill="none" />
-                            <circle cx="31" cy="38" r="3.5" fill="#139485" />
-                            <path d="M21 17 C21 26 27 30 27 38" stroke="#139485" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                          </svg>
-                        ),
-                        title: "Plan your route",
-                        description: "Walk the floor room-by-room in a logical order.",
-                        tip: "Keep the floor plan open while counting.",
-                      },
-                      {
-                        num: "02",
-                        color: "#3A6FB5",
-                        badgeBg: "rgba(58,111,181,0.12)",
-                        icon: (
-                          <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
-                            <circle cx="23" cy="23" r="14" stroke="#3A6FB5" strokeWidth="2.5" />
-                            <path d="M23 14 L23 23 L29 29" stroke="#3A6FB5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        ),
-                        title: "Count at the right time",
-                        description: "Each round lasts 2 hours. There are 5 rounds per day (08:00–18:00).",
-                        tip: "Only active sessions can be counted.",
-                      },
-                      {
-                        num: "03",
-                        color: "#E8820A",
-                        badgeBg: "rgba(232,130,10,0.12)",
-                        icon: (
-                          <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
-                            <rect x="11" y="10" width="24" height="15" rx="4" stroke="#E8820A" strokeWidth="2.5" fill="none" />
-                            <path d="M11 25 L11 37" stroke="#E8820A" strokeWidth="2.5" strokeLinecap="round" />
-                            <path d="M35 25 L35 37" stroke="#E8820A" strokeWidth="2.5" strokeLinecap="round" />
-                            <path d="M8 29 L38 29" stroke="#E8820A" strokeWidth="2.5" strokeLinecap="round" />
-                          </svg>
-                        ),
-                        title: "Enter occupied seats",
-                        description: "Count only occupied seats for each room and save your count.",
-                        tip: "Save and continue to the next room.",
-                      },
-                      {
-                        num: "04",
-                        color: "#7C3AED",
-                        badgeBg: "rgba(124,58,237,0.12)",
-                        icon: (
-                          <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
-                            <path d="M9 13 C9 11.3 10.3 10 12 10 L34 10 C35.7 10 37 11.3 37 13 L37 27 C37 28.7 35.7 30 34 30 L26 30 L19 37 L19 30 L12 30 C10.3 30 9 28.7 9 27 Z" stroke="#7C3AED" strokeWidth="2.5" fill="none" strokeLinejoin="round" />
-                            <circle cx="18" cy="20" r="2.2" fill="#7C3AED" />
-                            <circle cx="23" cy="20" r="2.2" fill="#7C3AED" />
-                            <circle cx="28" cy="20" r="2.2" fill="#7C3AED" />
-                          </svg>
-                        ),
-                        title: "Add notes if needed",
-                        description: "Use notes to flag anything unusual, like blocked areas or special setups.",
-                        tip: "Notes help ensure accurate analysis.",
-                      },
-                      {
-                        num: "05",
-                        color: "#0F9B6E",
-                        badgeBg: "rgba(15,155,110,0.12)",
-                        icon: (
-                          <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
-                            <circle cx="23" cy="23" r="14" stroke="#0F9B6E" strokeWidth="2.5" />
-                            <path d="M15 23 L20 28 L31 17" stroke="#0F9B6E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        ),
-                        title: "Finish the session",
-                        description: "Verify all rooms before submitting. View the full history in the dashboard.",
-                        tip: "You can always review or lock your session.",
-                      },
-                    ].map((step, i, arr) => (
-                      <div key={step.title} className="flex items-stretch flex-1 min-w-0">
-                        {/* Card */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.07 }}
-                          className="flex-1 min-w-0 bg-[#F9F6EF] rounded-2xl border border-[#E5EAF0] shadow-sm flex flex-col items-center text-center overflow-hidden h-full"
-                        >
-                          {/* Colored top stripe */}
-                          <div className="w-full h-[3px] shrink-0" style={{ background: step.color }} />
-
-                          {/* Number badge */}
-                          <div className="mt-5 mb-3">
-                            <div
-                              className="w-10 h-10 rounded-full flex items-center justify-center"
-                              style={{ background: step.badgeBg }}
-                            >
-                              <span className="text-sm font-extrabold" style={{ color: step.color, fontFamily: "var(--font-manrope)" }}>
-                                {step.num}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Icon */}
-                          <div className="mb-3 flex items-center justify-center">{step.icon}</div>
-
-                          {/* Title + description */}
-                          <div className="px-4 mb-4 flex-1">
-                            <h3 className="text-sm font-extrabold text-text mb-2" style={{ fontFamily: "var(--font-manrope)" }}>
-                              {step.title}
-                            </h3>
-                            <p className="text-[11.5px] text-text-muted leading-relaxed">{step.description}</p>
-                          </div>
-
-                          {/* Tip info box — pinned to bottom */}
-                          <div className="mx-3 mb-5 rounded-xl bg-[#F5F7FA] border border-[#E5EAF0] px-3 py-2.5 flex items-start gap-2 text-left w-[calc(100%-24px)]">
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0 mt-px">
-                              <circle cx="7" cy="7" r="6" stroke="#B0BAC6" strokeWidth="1.2" />
-                              <path d="M7 6.5v3.5" stroke="#94A3B8" strokeWidth="1.3" strokeLinecap="round" />
-                              <circle cx="7" cy="4.5" r="0.75" fill="#94A3B8" />
-                            </svg>
-                            <p className="text-[10.5px] text-text-muted leading-relaxed">{step.tip}</p>
-                          </div>
-                        </motion.div>
-
-                        {/* Arrow circle between cards */}
-                        {i < arr.length - 1 && (
-                          <div className="self-center flex items-center justify-center w-8 h-8 rounded-full bg-white border border-[#E5EAF0] shadow-sm shrink-0 mx-2">
-                            <ArrowRight size={13} style={{ color: "#9CA3AF" }} />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <div className="px-7 py-5 border-t border-[#F1F5F9] flex justify-center">
-                  <Button
-                    size="lg"
-                    className="px-10 rounded-full shadow-md shadow-primary/20 font-bold"
-                    onClick={() => setShowInstructionsModal(false)}
-                  >
-                    Got it! Start room counting
-                  </Button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
 
         {/* ── Verify Confirm Modal ────────────────────────────────────────────────── */}
         <AnimatePresence>

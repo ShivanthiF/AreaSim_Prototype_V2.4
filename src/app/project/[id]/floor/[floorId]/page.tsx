@@ -222,7 +222,7 @@ export default function FloorPage() {
             size="sm"
             icon={<Building2 size={14} />}
             onClick={() => setShowOrgModal(true)}
-            className="h-9 py-2 px-4 shadow-md"
+            className="h-9 py-2 px-4 shadow-md !bg-white"
           >
             Configure organization setup
           </Button>
