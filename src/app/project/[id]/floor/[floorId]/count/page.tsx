@@ -81,7 +81,7 @@ function getNextRound() {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Category = "meeting" | "focus" | "social" | "empty";
-type CountingPhase = "setup" | "ready" | "session";
+type CountingPhase = "setup" | "ready" | "session" | "counting";
 type RoomStatus = "pending" | "ongoing" | "counted";
 
 const FLOOR_CATEGORIES: { id: Category; label: string; desc: string; color: string; badge: string; text: string }[] = [
@@ -320,7 +320,6 @@ export default function FloorCountPage() {
     return getFormattedDate(d);
   });
 
-  const [activeSection, setActiveSection] = useState<"left" | "right">("left");
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
 
   const [sessionCounts, setSessionCounts] = useState<Record<string, number>>({});
@@ -403,6 +402,15 @@ export default function FloorCountPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Navigate to counting phase when arriving from hash
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#room-counting") {
+      setCountingPhase("counting");
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   // Timer
   useEffect(() => {
@@ -436,7 +444,7 @@ export default function FloorCountPage() {
     if (meta?.status === "ongoing" && meta.lockedBy !== "You") return;
 
     setSelectedRoomId(roomId);
-    setActiveSection("right");
+    setCountingPhase("counting");
 
     // Mark room as ongoing by current user
     setRoomMeta((prev) => ({
@@ -470,7 +478,7 @@ export default function FloorCountPage() {
         setSessionCounts((prev) => ({ ...prev, [nextRoomId]: 0 }));
       }
     } else {
-      setActiveSection("left");
+      setCountingPhase("session");
       setShowNextFloorModal(true);
     }
   };
@@ -660,6 +668,7 @@ export default function FloorCountPage() {
     if (id === "room-setup") { setEditRoomSettings(false); setCountingPhase("setup"); return; }
     if (id === "session-details") { setCountingPhase("ready"); return; }
     if (id === "active-session") { setCountingPhase("session"); return; }
+    if (id === "room-counting") { setCountingPhase("counting"); return; }
     router.push(countingStepHref(projectId, floorId, id));
   };
 
@@ -1304,7 +1313,7 @@ export default function FloorCountPage() {
             <Button
               variant="secondary"
               size="sm"
-              disabled={activeSection === "right"}
+              disabled={countingPhase === "counting"}
               className="h-9 px-5"
               icon={<ClipboardList size={14} />}
               onClick={() => router.push(`/project/${projectId}/floor/${floorId}/history`)}
@@ -1352,7 +1361,7 @@ export default function FloorCountPage() {
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
       <CountingStepper
-        activeStep={countingPhase === "session" ? "active-session" : "session-details"}
+        activeStep={countingPhase === "counting" ? "room-counting" : countingPhase === "session" ? "active-session" : "session-details"}
         onStepClick={handleStepClick}
       />
 
@@ -1364,15 +1373,15 @@ export default function FloorCountPage() {
           transition={{ type: "spring", stiffness: 300, damping: 35 }}
           className={cn(
             "flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden",
-            activeSection === "left" ? "flex-1 min-w-0" : "w-64 shrink-0"
+            countingPhase !== "counting" ? "flex-1 min-w-0" : "w-64 shrink-0"
           )}
         >
-          {activeSection === "right" ? (
+          {countingPhase === "counting" ? (
             <div className="flex flex-col h-full w-full overflow-hidden">
               {/* Sidebar header — back + progress */}
               <div className="px-4 py-4 border-b border-[#F1F5F9] shrink-0">
                 <button
-                  onClick={() => setActiveSection("left")}
+                  onClick={() => setCountingPhase("session")}
                   className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-light transition-colors mb-3"
                 >
                   <ArrowLeft size={14} /> Back to rooms
@@ -1450,7 +1459,7 @@ export default function FloorCountPage() {
                     size="sm"
                     className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
                     icon={<Play size={14} />}
-                    onClick={() => { if (!selectedRoomId && rooms[0]) setSelectedRoomId(rooms[0].id); setActiveSection("right"); }}
+                    onClick={() => { if (!selectedRoomId && rooms[0]) setSelectedRoomId(rooms[0].id); setCountingPhase("counting"); }}
                   >
                     Start room counting
                   </Button>
@@ -1735,7 +1744,7 @@ export default function FloorCountPage() {
         {/* ── Collapsed right strip — switch to room counting (shown in session details) ── */}
         {/* ── Right panel (counter) ───────────────────────────────────────────── */}
         <AnimatePresence>
-          {activeSection === "right" && (
+          {countingPhase === "counting" && (
             <motion.div
               layout
               initial={{ x: 400, opacity: 0 }}
@@ -2190,7 +2199,7 @@ export default function FloorCountPage() {
                     onClick={() => {
                       setShowNextFloorModal(false);
                       setIsRecording(false);
-                      setActiveSection("left");
+                      setCountingPhase("session");
                     }}
                   >
                     Stop counting
@@ -2209,7 +2218,7 @@ export default function FloorCountPage() {
                           setSessionCounts((prev) => ({ ...prev, [firstRoom.id]: 0 }));
                           setRoomMeta((prev) => ({ ...prev, [firstRoom.id]: { status: "ongoing", lockedBy: "You" } }));
                         }
-                        setActiveSection("right");
+                        setCountingPhase("counting");
                       }
                       setShowNextFloorModal(false);
                     }}
