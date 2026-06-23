@@ -2,13 +2,15 @@
 
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal, Gem, Play, ClipboardCheck } from "lucide-react";
+import { SlidersHorizontal, Gem, Play, ClipboardCheck, Building2 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { Button } from "@/components/ui/Button";
 import { WorkplaceJourneyBar } from "@/components/ui/WorkplaceJourneyBar";
+import { CountingStepper, countingStepHref } from "@/components/ui/CountingStepper";
+import { OrgSetupModal } from "@/components/canvas/OrgSetupModal";
 import { DetailPanel } from "@/components/canvas/DetailPanel";
 // import { ScoreWidget } from "@/components/canvas/ScoreWidget"; // commented out — may be needed in future
 import { SurveyModal } from "@/components/canvas/SurveyModal";
@@ -36,6 +38,28 @@ export default function FloorPage() {
   } = useCanvasStore();
 
   const [_floorDropdownOpen, _setFloorDropdownOpen] = useState(false);
+
+  // Organisation-setup step (2nd counting sub-step). Opening the modal marks
+  // "Open floor plan" done and moves the stepper to "Organisation setup".
+  const [showOrgModal, setShowOrgModal] = useState(false);
+  const goToCounting = () =>
+    router.push(`/project/${projectId}/floor/${floorId}/count#show-instructions`);
+  const handleOrgComplete = () => { setShowOrgModal(false); goToCounting(); };
+
+  // Open the org-setup modal when navigated here via the stepper (#org-setup hash)
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#org-setup") {
+      setShowOrgModal(true);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
+
+  // Counting-stepper navigation — lets the user move back/forth between steps
+  const handleStepClick = (id: Parameters<typeof countingStepHref>[2]) => {
+    if (id === "org-setup") { setShowOrgModal(true); return; }
+    if (id === "floor-plan") { setShowOrgModal(false); return; }
+    router.push(countingStepHref(projectId, floorId, id));
+  };
 
   // Guide state — only shown when arriving from Step6Done ("Great! You're all set" page via #show-guide hash)
   const [showGuide, setShowGuide] = useState(false);
@@ -139,7 +163,7 @@ export default function FloorPage() {
             variant="primary"
             size="sm"
             icon={<Play size={13} />}
-            onClick={() => router.push(`/project/${projectId}/floor/${floorId}/count#show-instructions`)}
+            onClick={() => setShowOrgModal(true)}
             className="h-9 py-2 px-4"
           >
             <span className="hidden sm:inline">Start room counting</span>
@@ -169,6 +193,10 @@ export default function FloorPage() {
 
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
+      <CountingStepper
+        activeStep={showOrgModal ? "org-setup" : "floor-plan"}
+        onStepClick={handleStepClick}
+      />
 
       {/* ── Main Area ── */}
       <div className="flex-1 overflow-hidden relative">
@@ -185,6 +213,19 @@ export default function FloorPage() {
           {/* <div className="absolute top-3 left-3 z-30">
             <ScoreWidget />
           </div> */}
+        </div>
+
+        {/* Configure organization setup — floating CTA on the canvas */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Building2 size={14} />}
+            onClick={() => setShowOrgModal(true)}
+            className="h-9 py-2 px-4 shadow-md"
+          >
+            Configure organization setup
+          </Button>
         </div>
 
         {/* Detail panel — absolute overlay, right-aligned, 1/3 screen width */}
@@ -206,6 +247,11 @@ export default function FloorPage() {
       {/* Modals */}
       <SurveyModal />
       <CompletionModal />
+      <OrgSetupModal
+        open={showOrgModal}
+        onClose={() => setShowOrgModal(false)}
+        onComplete={handleOrgComplete}
+      />
     </div>
   );
 }

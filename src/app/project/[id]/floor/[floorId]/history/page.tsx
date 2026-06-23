@@ -32,6 +32,7 @@ import {
 import { useCanvasStore } from "@/store/canvas";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
 import { WorkplaceJourneyBar } from "@/components/ui/WorkplaceJourneyBar";
+import { CountingStepper, countingStepHref } from "@/components/ui/CountingStepper";
 import { mockProject } from "@/lib/mockData";
 import { cn, formatNumber } from "@/lib/utils";
 
@@ -212,6 +213,10 @@ export default function RoomHistoryPage() {
 
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
+      <CountingStepper
+        activeStep="room-counting"
+        onStepClick={(id) => router.push(countingStepHref(projectId, floorId, id))}
+      />
 
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-[1400px] mx-auto space-y-6">

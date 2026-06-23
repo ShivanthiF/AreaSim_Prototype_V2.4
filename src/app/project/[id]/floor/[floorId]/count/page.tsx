@@ -6,8 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Play,
-  ChevronRight,
-  ChevronLeft,
   ChevronDown,
   ArrowRight,
   Check,
@@ -30,14 +28,24 @@ import {
   Coffee,
   Box,
   CheckCircle2,
+  BarChart3,
+  Search,
+  Info,
+  Heart,
+  TrendingUp,
+  Footprints,
+  Armchair,
+  NotebookPen,
+  ListChecks,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Chip } from "@/components/ui/Chip";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
 import { WorkplaceJourneyBar } from "@/components/ui/WorkplaceJourneyBar";
+import { CountingStepper, countingStepHref, type CountingStepId } from "@/components/ui/CountingStepper";
 import { useCanvasStore } from "@/store/canvas";
-import { mockProject, mockCountHistory } from "@/lib/mockData";
+import { mockProject } from "@/lib/mockData";
 import { cn, formatNumber } from "@/lib/utils";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -152,6 +160,118 @@ function RoundBanner({ isRecording, roundInfo }: { isRecording: boolean; roundIn
   );
 }
 
+// ─── Prepare-session intro (Concept 2 from the counting prototype) ──────────────
+const WHY_ITEMS = [
+  { Icon: Users, label: "Empower people", color: "#139485" },
+  { Icon: Layers, label: "Optimise space", color: "#C47A2C" },
+  { Icon: Heart, label: "Better experience", color: "#6351AC" },
+  { Icon: TrendingUp, label: "Smarter decisions", color: "#3B82F6" },
+];
+
+const PRE_COUNTING_CHECKLIST = [
+  { id: "plan", label: "Floor plan open on my device" },
+  { id: "route", label: "I will walk rooms in a logical order" },
+  { id: "round", label: "I understand each round is ~2 hours" },
+  { id: "seats", label: "I count occupied seats only" },
+  { id: "notes", label: "I will note anything unusual" },
+];
+
+const QUICK_STEPS = [
+  { Icon: Footprints, label: "Walk room by room", color: "#139485" },
+  { Icon: Clock, label: "2-hour rounds", color: "#3B82F6" },
+  { Icon: Armchair, label: "Occupied seats only", color: "#C47A2C" },
+  { Icon: NotebookPen, label: "Add observations", color: "#6351AC" },
+];
+
+const SESSION_UNLOCKS = [
+  { label: "Utilisation", color: "#139485" },
+  { label: "Peak patterns", color: "#6351AC" },
+  { label: "Spatial fit", color: "#C47A2C" },
+  { label: "Collaboration", color: "#3B82F6" },
+];
+
+/** Concept 2 intro shown on the "Prepare session" step (no concept picker, no rooms table). */
+function PrepareSessionIntro() {
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [masterAck, setMasterAck] = useState(false);
+  const toggle = (id: string) => setChecked((p) => ({ ...p, [id]: !p[id] }));
+  const doneCount = PRE_COUNTING_CHECKLIST.filter((i) => checked[i.id]).length;
+
+  return (
+    <div className="space-y-4">
+      {/* Why you're doing this */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border border-border bg-surface-2 px-4 py-3">
+        <span className="text-[10px] font-extrabold tracking-[0.07em] text-text-muted">
+          Why you&apos;re doing this
+        </span>
+        {WHY_ITEMS.map(({ Icon, label, color }) => (
+          <span key={label} className="inline-flex items-center gap-2 text-xs font-semibold text-text font-body">
+            <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ background: `${color}1a`, color }}>
+              <Icon size={13} />
+            </span>
+            {label}
+          </span>
+        ))}
+      </div>
+
+      {/* Pre-counting checklist */}
+      <div className="rounded-2xl border border-border bg-white p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <ListChecks size={15} className="text-primary" />
+          <span className="text-[11px] font-bold tracking-[0.06em] text-text-muted font-body">
+            Pre-counting checklist · {doneCount}/{PRE_COUNTING_CHECKLIST.length}
+          </span>
+        </div>
+        <div className="flex flex-col gap-2.5 mb-3">
+          {PRE_COUNTING_CHECKLIST.map((item) => (
+            <button key={item.id} type="button" onClick={() => toggle(item.id)} className="flex items-center gap-2.5 text-left">
+              <span className={`w-[18px] h-[18px] rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${checked[item.id] ? "bg-primary border-primary" : "border-[#C0D0DC] bg-white"}`}>
+                {checked[item.id] && <Check size={10} className="text-white" strokeWidth={3} />}
+              </span>
+              <span className={`text-sm font-body ${checked[item.id] ? "text-text-muted" : "text-text"}`}>{item.label}</span>
+            </button>
+          ))}
+        </div>
+        <button type="button" onClick={() => setMasterAck((v) => !v)} className="flex items-center gap-2.5 w-full rounded-xl bg-surface-2 px-3 py-2.5 text-left">
+          <span className={`w-[18px] h-[18px] rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${masterAck ? "bg-primary border-primary" : "border-[#C0D0DC] bg-white"}`}>
+            {masterAck && <Check size={10} className="text-white" strokeWidth={3} />}
+          </span>
+          <span className="text-sm font-semibold text-text font-body">I&apos;ve read the guidance and I&apos;m ready to count</span>
+        </button>
+      </div>
+
+      {/* Visual hero */}
+      <div className="rounded-2xl border border-border bg-white p-5">
+        <div className="flex items-start justify-between gap-3 flex-wrap mb-4">
+          <div>
+            <Chip tone="info">Ground Floor counting</Chip>
+            <h3 className="text-base text-text mt-2 leading-snug max-w-xl" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+              Count what you see. We turn it into workplace evidence.
+            </h3>
+            <p className="text-xs text-text-muted font-body mt-1">Ground Floor · Round 4 of 5 today</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {SESSION_UNLOCKS.map((u) => (
+              <span key={u.label} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-white text-[11px] font-semibold text-text-muted font-body">
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: u.color }} />
+                {u.label}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {QUICK_STEPS.map(({ Icon, label, color }) => (
+            <div key={label} className="rounded-xl border p-3 text-center" style={{ background: `${color}14`, borderColor: `${color}33` }}>
+              <div className="flex justify-center mb-1.5" style={{ color }}><Icon size={20} /></div>
+              <div className="text-[11px] font-bold text-text leading-tight font-body">{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function FloorCountPage() {
   const params = useParams();
@@ -170,6 +290,8 @@ export default function FloorCountPage() {
   const [showVerifyConfirmModal, setShowVerifyConfirmModal] = useState(false);
   const [startModalDismissed, setStartModalDismissed] = useState(true);
   const [editRoomSettings, setEditRoomSettings] = useState(false);
+  // Shown when the user tries to verify a room (or continue) before setting a category
+  const [showCategoryRequiredModal, setShowCategoryRequiredModal] = useState(false);
   // Per-room category selected during setup
   const [roomCategories, setRoomCategories] = useState<Record<string, string>>({});
   const [verifiedRooms, setVerifiedRooms] = useState<Set<string>>(new Set());
@@ -464,14 +586,6 @@ export default function FloorCountPage() {
     });
   };
 
-  const toggleSelectAll = () => {
-    if (selectedRoomIds.size === rooms.length) {
-      setSelectedRoomIds(new Set());
-    } else {
-      setSelectedRoomIds(new Set(rooms.map((r) => r.id)));
-    }
-  };
-
   const applyBulkCategory = () => {
     if (!bulkCategory) return;
     selectedRoomIds.forEach((id) => {
@@ -480,6 +594,39 @@ export default function FloorCountPage() {
     });
     setSelectedRoomIds(new Set());
     setBulkCategory("");
+  };
+
+  // ── Verify selection helpers ───────────────────────────────────────────────────
+  const toggleRoomVerified = (id: string) => {
+    // A room can only be verified once it has a category
+    if (!verifiedRooms.has(id) && !roomCategories[id]) { setShowCategoryRequiredModal(true); return; }
+    setVerifiedRooms((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id); else n.add(id);
+      return n;
+    });
+    // Once verified, clear this row's selection checkmark (same logic as category)
+    setSelectedRoomIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
+  };
+
+  // Main (header) checkboxes confirm before applying to every room
+  const [confirmBulk, setConfirmBulk] = useState<null | "category" | "verify">(null);
+  const allSelected = rooms.length > 0 && selectedRoomIds.size === rooms.length;
+  const allVerified = rooms.length > 0 && rooms.every((r) => verifiedRooms.has(r.id));
+
+  const handleCategoryMainCheck = () => {
+    if (allSelected) setSelectedRoomIds(new Set());
+    else setConfirmBulk("category");
+  };
+  const handleVerifyMainCheck = () => {
+    if (allVerified) setVerifiedRooms(new Set());
+    else setConfirmBulk("verify");
+  };
+  const confirmBulkAction = () => {
+    if (confirmBulk === "category") setSelectedRoomIds(new Set(rooms.map((r) => r.id)));
+    // Only rooms that already have a category can be verified
+    else if (confirmBulk === "verify") setVerifiedRooms(new Set(rooms.filter((r) => roomCategories[r.id]).map((r) => r.id)));
+    setConfirmBulk(null);
   };
 
   // (bulk category is now shown as an inline card above the table, not a modal)
@@ -510,6 +657,14 @@ export default function FloorCountPage() {
   };
 
   const _allRoomsSetup = rooms.every((r) => roomCategories[r.id] && verifiedRooms.has(r.id));
+
+  // Counting-stepper navigation — in-page phase switches stay on this page,
+  // other steps route to their canonical destination.
+  const handleStepClick = (id: CountingStepId) => {
+    if (id === "room-setup") { setEditRoomSettings(false); setCountingPhase("setup"); return; }
+    if (id === "session-details") { setCountingPhase("ready"); return; }
+    router.push(countingStepHref(projectId, floorId, id));
+  };
 
   if (countingPhase === "setup") {
     return (
@@ -543,45 +698,90 @@ export default function FloorCountPage() {
                 <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <div className="ml-auto">
-              <Button
-                size="sm"
-                className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold"
-                icon={<CheckCircle2 size={14} />}
-                onClick={() => setShowVerifyConfirmModal(true)}
-              >
-                Verify and continue
-              </Button>
-            </div>
           </div>
         </header>
 
         {/* ── Workplace Journey Bar ── */}
         <WorkplaceJourneyBar activeStep="1-2" />
+        <CountingStepper activeStep="room-setup" onStepClick={handleStepClick} />
 
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-[1600px] mx-auto w-full">
             <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6 sm:p-8 space-y-6">
               {/* Title */}
-              <div className="border-b border-[#F1F5F9] pt-6 sm:pt-8 pb-5 -mt-6 sm:-mt-8 -mx-6 sm:-mx-8 px-6 sm:px-8 flex flex-col gap-3">
-                <div className="flex items-center gap-1.5 text-xs font-body">
-                  <span className="text-text-muted">Room counting tool</span>
-                  <span className="text-text-muted">/</span>
-                  <span className="font-semibold text-text">
+              <div className="border-b border-[#F1F5F9] pt-6 sm:pt-8 pb-5 -mt-6 sm:-mt-8 -mx-6 sm:-mx-8 px-6 sm:px-8 flex items-end justify-between gap-3">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-1.5 text-xs font-body">
+                    <span className="text-text-muted">Room counting tool</span>
+                    <span className="text-text-muted">/</span>
+                    <span className="font-semibold text-text">
+                      {editRoomSettings ? "Edit room setup" : "Room setup"}
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
                     {editRoomSettings ? "Edit room setup" : "Room setup"}
-                  </span>
+                  </h2>
                 </div>
-                <h2 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
-                  {editRoomSettings ? "Edit room setup" : "Room setup"}
-                </h2>
+                <Button
+                  size="sm"
+                  className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
+                  icon={<CheckCircle2 size={14} />}
+                  onClick={() => {
+                    if (allVerified) handleSetupConfirm();
+                    else if (rooms.some((r) => !roomCategories[r.id])) setShowCategoryRequiredModal(true);
+                    else setShowVerifyConfirmModal(true);
+                  }}
+                >
+                  Continue to next
+                </Button>
               </div>
 
-              {/* Description helper text */}
-              <p className="text-sm text-text-muted">
-                {editRoomSettings
-                  ? "Update the room categories, areas, and capacities as needed."
-                  : "Set the category and verify the number of seats for each room. This is a one-time setup."}
-              </p>
+              {/* ── Setup guidance ── */}
+              <div className="space-y-3">
+                {/* Outcome cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { color: "#139485", Icon: BarChart3, title: "Utilisation %", body: "Count ÷ seats" },
+                    { color: "#6351AC", Icon: Search, title: "Analysis", body: "Over/under use" },
+                    { color: "#E05D8B", Icon: ClipboardList, title: "Report", body: "Room programme" },
+                  ].map(({ color, Icon, title, body }) => (
+                    <div
+                      key={title}
+                      className="rounded-2xl border p-4 text-center"
+                      style={{ background: `${color}14`, borderColor: `${color}33` }}
+                    >
+                      <div className="flex justify-center mb-1.5" style={{ color }}>
+                        <Icon size={22} />
+                      </div>
+                      <p className="text-sm font-bold" style={{ color, fontFamily: "var(--font-manrope)" }}>
+                        {title}
+                      </p>
+                      <p className="text-xs text-text-muted font-body mt-0.5">{body}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Help info bar */}
+                <div className="flex items-start gap-2.5 rounded-2xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm font-body text-text-muted">
+                  <Info size={16} className="shrink-0 text-text-muted mt-0.5" />
+                  <span>
+                    <strong className="font-semibold text-text">Why Are Room Category and Capacity Important?</strong>{" "}
+                    The objective of setting the room capacity is to gather information about the available number of seats
+                    across the office so that we can monitor the use of meeting room capacity in order to optimise the meeting
+                    room setup based on findings.
+                  </span>
+                </div>
+
+                {/* Category hint */}
+                <div className="flex items-start gap-2.5 rounded-2xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm font-body text-text-muted">
+                  <Info size={16} className="shrink-0 text-text-muted mt-0.5" />
+                  <span>
+                    <strong className="font-semibold text-text">Not sure about room category?</strong> Pick the closest match.
+                    You can edit it at any time. Consistency across counters matters more than perfection. Once you set the
+                    room category and capacity, verify rooms.
+                  </span>
+                </div>
+              </div>
 
               {/* ── Inline bulk category card — shown when rooms are selected ── */}
               <AnimatePresence>
@@ -651,7 +851,7 @@ export default function FloorCountPage() {
                         className="flex flex-col items-start gap-1.5 p-3 rounded-xl border border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC] transition-all min-w-[90px] shrink-0"
                       >
                         <Plus size={16} className="text-text-muted" />
-                        <p className="text-[10px] font-bold text-text-muted">Add new</p>
+                        <p className="text-xs font-bold text-text leading-none">Add new</p>
                       </button>
                     </div>
                     {/* Action buttons */}
@@ -689,27 +889,45 @@ export default function FloorCountPage() {
                   </div>
                 </div>
 
-                <Table>
+                <Table className="table-fixed">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-11">
-                        <button
-                          onClick={toggleSelectAll}
-                          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${selectedRoomIds.size === rooms.length && rooms.length > 0
-                            ? "bg-primary border-primary"
-                            : selectedRoomIds.size > 0
-                              ? "bg-primary/30 border-primary"
-                              : "border-[#C0D0DC] bg-white"
-                            }`}
-                          title="Select all rooms"
-                        >
-                          {selectedRoomIds.size > 0 && <Check size={11} className="text-white" strokeWidth={3} />}
-                        </button>
+                      <TableHead className="w-1/4">Room name</TableHead>
+                      <TableHead className="w-1/4">
+                        <div className="flex items-center gap-2.5">
+                          <button
+                            onClick={handleCategoryMainCheck}
+                            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${allSelected
+                              ? "bg-primary border-primary"
+                              : selectedRoomIds.size > 0
+                                ? "bg-primary/30 border-primary"
+                                : "border-[#C0D0DC] bg-white"
+                              }`}
+                            title="Select all rooms"
+                          >
+                            {selectedRoomIds.size > 0 && <Check size={11} className="text-white" strokeWidth={3} />}
+                          </button>
+                          Room category
+                        </div>
                       </TableHead>
-                      <TableHead>Room</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead className="text-center">Seats</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
+                      <TableHead className="w-1/4 text-center">Seat capacity</TableHead>
+                      <TableHead className="w-1/4">
+                        <div className="flex items-center gap-2.5">
+                          <button
+                            onClick={handleVerifyMainCheck}
+                            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${allVerified
+                              ? "bg-primary border-primary"
+                              : verifiedRooms.size > 0
+                                ? "bg-primary/30 border-primary"
+                                : "border-[#C0D0DC] bg-white"
+                              }`}
+                            title="Mark all rooms as verified"
+                          >
+                            {verifiedRooms.size > 0 && <Check size={11} className="text-white" strokeWidth={3} />}
+                          </button>
+                          Verify details
+                        </div>
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -720,50 +938,51 @@ export default function FloorCountPage() {
                       const isChecked = selectedRoomIds.has(room.id);
                       return (
                         <TableRow key={room.id} className={isChecked ? "bg-primary/5 hover:bg-primary/5" : undefined}>
-                          {/* Checkbox */}
-                          <TableCell>
-                            <button
-                              onClick={() => toggleRoomSelect(room.id)}
-                              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isChecked ? "bg-primary border-primary" : "border-[#C0D0DC] bg-white hover:border-primary"
-                                }`}
-                            >
-                              {isChecked && <Check size={11} className="text-white" strokeWidth={3} />}
-                            </button>
-                          </TableCell>
-
-                          {/* Room info */}
+                          {/* Room name */}
                           <TableCell>
                             <p className="text-sm text-text font-body">{room.name}</p>
                             <p className="text-xs text-text-muted font-body">{formatNumber(room.sqm || 25)} m²</p>
                           </TableCell>
 
-                          {/* Category dropdown */}
+                          {/* Room category — select checkbox + dropdown */}
                           <TableCell>
-                            <div className="relative">
-                              <select
-                                value={cat || ""}
-                                onChange={(e) => {
-                                  if (e.target.value === "add-new") {
-                                    setAddCategoryRoomId(room.id);
-                                    setNewCategoryInput("");
-                                    setShowAddCategoryModal(true);
-                                  } else {
-                                    setRoomCategories((prev) => ({ ...prev, [room.id]: e.target.value }));
-                                    setVerifiedRooms((prev) => { const n = new Set(prev); n.delete(room.id); return n; });
-                                  }
-                                }}
-                                className="appearance-none w-full rounded-xl border border-[#E2E8F0] bg-white pl-3 pr-8 py-2 text-xs font-semibold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                            <div className="flex items-center gap-2.5">
+                              <button
+                                onClick={() => toggleRoomSelect(room.id)}
+                                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isChecked ? "bg-primary border-primary" : "border-[#C0D0DC] bg-white hover:border-primary"
+                                  }`}
+                                title="Select to set category"
                               >
-                                <option value="" disabled>Select category...</option>
-                                {FLOOR_CATEGORIES.map((fc) => (
-                                  <option key={fc.id} value={fc.id}>{fc.label}</option>
-                                ))}
-                                {customCategories.map((cc) => (
-                                  <option key={cc} value={cc}>{cc}</option>
-                                ))}
-                                <option value="add-new">+ Add new category</option>
-                              </select>
-                              <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+                                {isChecked && <Check size={11} className="text-white" strokeWidth={3} />}
+                              </button>
+                              <div className="relative w-[160px]">
+                                <select
+                                  value={cat || ""}
+                                  onChange={(e) => {
+                                    if (e.target.value === "add-new") {
+                                      setAddCategoryRoomId(room.id);
+                                      setNewCategoryInput("");
+                                      setShowAddCategoryModal(true);
+                                    } else {
+                                      setRoomCategories((prev) => ({ ...prev, [room.id]: e.target.value }));
+                                      setVerifiedRooms((prev) => { const n = new Set(prev); n.delete(room.id); return n; });
+                                      // Once a category is chosen, clear this row's selection checkmark
+                                      setSelectedRoomIds((prev) => { const n = new Set(prev); n.delete(room.id); return n; });
+                                    }
+                                  }}
+                                  className="appearance-none w-full rounded-xl border border-[#E2E8F0] bg-white pl-3 pr-8 py-2 text-xs font-semibold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                                >
+                                  <option value="" disabled>Select category...</option>
+                                  {FLOOR_CATEGORIES.map((fc) => (
+                                    <option key={fc.id} value={fc.id}>{fc.label}</option>
+                                  ))}
+                                  {customCategories.map((cc) => (
+                                    <option key={cc} value={cc}>{cc}</option>
+                                  ))}
+                                  <option value="add-new">+ Add new category</option>
+                                </select>
+                                <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+                              </div>
                             </div>
                           </TableCell>
 
@@ -806,19 +1025,29 @@ export default function FloorCountPage() {
 
                           {/* Verify / Verified */}
                           <TableCell>
-                            <div className="flex justify-center">
+                            <div className="flex items-center gap-2.5">
+                              <button
+                                onClick={() => toggleRoomVerified(room.id)}
+                                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isVerified ? "bg-primary border-primary" : "border-[#C0D0DC] bg-white hover:border-primary"}`}
+                                title="Mark as verified"
+                              >
+                                {isVerified && <Check size={11} className="text-white" strokeWidth={3} />}
+                              </button>
                               {isVerified ? (
                                 <button
                                   onClick={() => setVerifiedRooms((prev) => { const n = new Set(prev); n.delete(room.id); return n; })}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-semibold hover:bg-emerald-100 transition-all"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-semibold hover:bg-primary/15 transition-all"
                                 >
                                   <Check size={11} strokeWidth={3} /> Verified
                                 </button>
                               ) : (
                                 <button
-                                  disabled={!cat}
-                                  onClick={() => setVerifiedRooms((prev) => new Set([...prev, room.id]))}
-                                  className="px-3 py-1.5 rounded-full text-xs font-semibold border border-primary text-primary hover:bg-primary/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                  onClick={() => {
+                                    if (!cat) { setShowCategoryRequiredModal(true); return; }
+                                    setVerifiedRooms((prev) => new Set([...prev, room.id]));
+                                    setSelectedRoomIds((prev) => { const n = new Set(prev); n.delete(room.id); return n; });
+                                  }}
+                                  className="px-3 py-1.5 rounded-full text-xs font-semibold border border-primary text-primary hover:bg-primary/5 transition-all"
                                 >
                                   Verify
                                 </button>
@@ -1043,7 +1272,7 @@ export default function FloorCountPage() {
                       Verify and continue?
                     </h4>
                     <p className="text-sm text-text-muted leading-relaxed">
-                      This will verify all the rooms in this sectioned floor. Are you sure you want to verify and continue?
+                      You need to verify all rooms before you can move to the next step. Are you sure you want to verify and continue?
                     </p>
                   </div>
                   <div className="flex gap-3 pt-1">
@@ -1060,6 +1289,93 @@ export default function FloorCountPage() {
                       }}
                     >
                       Verify and continue
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Category required modal (verify attempted before setting a category) ─── */}
+        <AnimatePresence>
+          {showCategoryRequiredModal && (
+            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.22 }}
+                className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden w-full max-w-md relative"
+              >
+                <button
+                  onClick={() => setShowCategoryRequiredModal(false)}
+                  className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-text transition-colors z-10"
+                >
+                  <X size={16} />
+                </button>
+                <div className="p-8 text-center space-y-5">
+                  <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto">
+                    <Info size={22} className="text-accent" />
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-xl font-800 text-text" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+                      Set category and capacity first
+                    </h4>
+                    <p className="text-sm text-text-muted leading-relaxed">
+                      You need to set the room category and capacity before you can verify.
+                    </p>
+                  </div>
+                  <div className="flex justify-center pt-1">
+                    <Button size="md" className="px-8" onClick={() => setShowCategoryRequiredModal(false)}>
+                      Got it
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Bulk action confirm modal (select all / verify all) ─────────────────── */}
+        <AnimatePresence>
+          {confirmBulk && (
+            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.22 }}
+                className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden w-full max-w-md relative"
+              >
+                <button
+                  onClick={() => setConfirmBulk(null)}
+                  className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-text transition-colors z-10"
+                >
+                  <X size={16} />
+                </button>
+                <div className="p-8 text-center space-y-5">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
+                    {confirmBulk === "verify"
+                      ? <CheckCircle2 size={22} className="text-primary" />
+                      : <Layers size={22} className="text-primary" />}
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-xl text-text" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+                      {confirmBulk === "verify" ? "Mark all rooms as verified?" : "Select all rooms?"}
+                    </h4>
+                    <p className="text-sm text-text-muted leading-relaxed">
+                      {confirmBulk === "verify"
+                        ? "This will mark every room on this floor as verified. Are you sure you want to mark all the rooms as verified?"
+                        : "This will select every room so you can set a category for all of them at once. Are you sure you want to select all the rooms?"}
+                    </p>
+                  </div>
+                  <div className="flex gap-3 pt-1">
+                    <Button variant="secondary" size="md" className="flex-1" onClick={() => setConfirmBulk(null)}>
+                      Cancel
+                    </Button>
+                    <Button size="md" className="flex-1" onClick={confirmBulkAction}>
+                      {confirmBulk === "verify" ? "Yes, verify all" : "Yes, select all"}
                     </Button>
                   </div>
                 </div>
@@ -1211,16 +1527,7 @@ export default function FloorCountPage() {
                     <div className="w-2.5 h-2.5 rounded-sm bg-white" />
                   </button>
                 </motion.div>
-              ) : (
-                <Button
-                  size="sm"
-                  onClick={handleStartSession}
-                  className="gap-2 h-9 px-5"
-                  icon={<Play size={14} />}
-                >
-                  Start counting session
-                </Button>
-              )}
+              ) : null}
             </AnimatePresence>
           </div>
         </div>
@@ -1228,6 +1535,10 @@ export default function FloorCountPage() {
 
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
+      <CountingStepper
+        activeStep={countingPhase === "session" ? "active-session" : "session-details"}
+        onStepClick={handleStepClick}
+      />
 
       <main className="flex-1 overflow-hidden flex relative p-6 gap-6 max-w-[1600px] mx-auto w-full">
 
@@ -1237,36 +1548,91 @@ export default function FloorCountPage() {
           transition={{ type: "spring", stiffness: 300, damping: 35 }}
           className={cn(
             "flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden",
-            activeSection === "left" ? "flex-1 min-w-0" : "w-14 shrink-0 items-center"
+            activeSection === "left" ? "flex-1 min-w-0" : "w-64 shrink-0"
           )}
         >
           {activeSection === "right" ? (
-            <div className="flex flex-col items-center h-full pt-6 bg-white w-full">
-              <button
-                onClick={() => setActiveSection("left")}
-                className="p-2.5 rounded-xl bg-surface-2 border border-border text-text-muted hover:text-primary transition-all"
-                title="Go to session details"
-              >
-                <ChevronRight size={20} />
-              </button>
+            <div className="flex flex-col h-full w-full overflow-hidden">
+              {/* Sidebar header — back + progress */}
+              <div className="px-4 py-4 border-b border-[#F1F5F9] shrink-0">
+                <button
+                  onClick={() => setActiveSection("left")}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-light transition-colors mb-3"
+                >
+                  <ArrowLeft size={14} /> Back to rooms
+                </button>
+                {(() => {
+                  const done = rooms.filter((r) => (roomMeta[r.id]?.status === "counted") || sessionCounts[r.id] !== undefined).length;
+                  const pct = rooms.length ? Math.round((done / rooms.length) * 100) : 0;
+                  return (
+                    <div className="rounded-xl bg-surface-2 border border-border p-3">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] font-semibold text-text-muted font-body">Round {done}/{rooms.length}</span>
+                        <span className="text-xs font-bold text-primary font-body">{pct}%</span>
+                      </div>
+                      <div className="h-1.5 bg-white rounded-full overflow-hidden border border-border">
+                        <div className="h-full bg-[#bfa483] rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+              {/* Room list */}
+              <div className="flex-1 overflow-y-auto p-3 space-y-1">
+                <p className="text-[10px] font-bold tracking-[0.06em] text-text-muted font-body px-1 mb-1">Rooms on this floor</p>
+                {rooms.map((r) => {
+                  const active = r.id === selectedRoomId;
+                  const status = roomMeta[r.id]?.status ?? "pending";
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => handleStartCounting(r.id)}
+                      className={cn(
+                        "w-full text-left rounded-xl px-3 py-2 border transition-all",
+                        active ? "bg-primary/5 border-primary/30" : "border-transparent hover:bg-surface-2"
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={cn("text-sm font-body truncate", active ? "font-bold text-primary" : "text-text")}>{r.name}</span>
+                        {status === "counted" ? (
+                          <Check size={13} className="text-primary shrink-0" strokeWidth={3} />
+                        ) : status === "ongoing" ? (
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                        ) : null}
+                      </div>
+                      <div className="text-[11px] text-text-muted font-body">{formatNumber(r.sqm || 25)} m² · {roomSeats[r.id] || 0} seats</div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           ) : (
             <>
-              {/* Panel header */}
-              <div className="px-6 py-5 border-b border-[#F1F5F9] flex items-start justify-between gap-3">
+              {/* Panel header — matches the Room setup title section */}
+              <div className="border-b border-[#F1F5F9] pt-6 sm:pt-8 pb-5 px-6 sm:px-8 flex items-end justify-between gap-3">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-1.5 text-xs font-body">
                     <span className="text-text-muted">Room counting tool</span>
                     <span className="text-text-muted">/</span>
-                    <span className="font-semibold text-text">Session details</span>
+                    <span className="font-semibold text-text">{countingPhase === "ready" ? "Prepare session" : "Pick rooms to count"}</span>
                   </div>
-                  <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)" }}>
-                    Session details
+                  <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+                    {countingPhase === "ready" ? "Prepare session" : "Pick rooms to count"}
                   </h3>
                 </div>
-                {isRecording && (
+                {countingPhase === "ready" ? (
                   <Button
-                    size="md"
+                    size="sm"
+                    className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
+                    icon={<Play size={14} />}
+                    onClick={handleStartSession}
+                  >
+                    Start counting session
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
                     icon={<Play size={14} />}
                     onClick={() => { if (!selectedRoomId && rooms[0]) setSelectedRoomId(rooms[0].id); setActiveSection("right"); }}
                   >
@@ -1276,6 +1642,9 @@ export default function FloorCountPage() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {/* Prepare session — Concept 2 intro (only in the ready phase) */}
+                {countingPhase === "ready" && <PrepareSessionIntro />}
+
                 {/* Banner + dates + round indicator — one row */}
                 <div className="flex items-center gap-4 flex-wrap">
                   <div className="flex-1 min-w-[220px]">
@@ -1339,7 +1708,7 @@ export default function FloorCountPage() {
                   </div>
                 </div>
 
-                {/* ── Room table ─────────────────────────────────────────────── */}
+                {/* ── Room table ── */}
                 <Table>
                   <TableHeader>
                     <TableRow className="text-[11px] font-bold text-text">
@@ -1548,18 +1917,6 @@ export default function FloorCountPage() {
         </motion.div>
 
         {/* ── Collapsed right strip — switch to room counting (shown in session details) ── */}
-        {activeSection === "left" && (
-          <div className="flex flex-col items-center h-full pt-6 bg-white rounded-2xl border border-[#E2E8F0] shadow-sm w-14 shrink-0">
-            <button
-              onClick={() => { if (!selectedRoomId && rooms[0]) setSelectedRoomId(rooms[0].id); setActiveSection("right"); }}
-              className="p-2.5 rounded-xl bg-surface-2 border border-border text-text-muted hover:text-primary transition-all"
-              title="Go to room counting"
-            >
-              <ChevronLeft size={20} />
-            </button>
-          </div>
-        )}
-
         {/* ── Right panel (counter) ───────────────────────────────────────────── */}
         <AnimatePresence>
           {activeSection === "right" && (
@@ -1706,55 +2063,7 @@ export default function FloorCountPage() {
 
                 </div>
 
-                {/* Room history */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4
-                      className="text-sm font-bold text-text"
-                      style={{ fontFamily: "var(--font-manrope)" }}
-                    >
-                      Counting history
-                    </h4>
-                    <button
-                      className="text-xs font-semibold text-primary"
-                      onClick={() => router.push(`/project/${projectId}/floor/${floorId}/history`)}
-                    >
-                      View all
-                    </button>
-                  </div>
-
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Time</TableHead>
-                          <TableHead>Round</TableHead>
-                          <TableHead>No. of seats</TableHead>
-                          <TableHead>Count</TableHead>
-                          <TableHead className="text-right">By</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {(selectedRoom?.countHistory.length
-                          ? selectedRoom.countHistory
-                          : mockCountHistory
-                        )
-                          .slice(0, 5)
-                          .map((entry, i) => (
-                            <TableRow key={i}>
-                              <TableCell className="text-text whitespace-nowrap">{entry.date}</TableCell>
-                              <TableCell className="whitespace-nowrap">{entry.time}</TableCell>
-                              <TableCell className="whitespace-nowrap">Round {i + 1}</TableCell>
-                              <TableCell className="tabular-nums">{roomSeats[selectedRoomId!] || 0}</TableCell>
-                              <TableCell className="text-text tabular-nums">{formatNumber(entry.count)}</TableCell>
-                              <TableCell className="text-right whitespace-nowrap">{entry.by}</TableCell>
-                            </TableRow>
-                          ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
+                {/* Counting history is available via the "Counting history" button in the header */}
               </div>
             </motion.div>
           )}
