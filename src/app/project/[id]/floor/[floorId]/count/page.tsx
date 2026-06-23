@@ -37,6 +37,7 @@ import {
   Armchair,
   NotebookPen,
   ListChecks,
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -188,6 +189,13 @@ const SESSION_UNLOCKS = [
   { label: "Peak patterns", color: "#6351AC" },
   { label: "Spatial fit", color: "#C47A2C" },
   { label: "Collaboration", color: "#3B82F6" },
+];
+
+// Observation suggestion prompts shown in the Enter headcount step
+const OBSERVATION_PROMPTS = [
+  "Is this meeting physical, hybrid (Teams/video), or a solo call?",
+  "Are participants co-located or distributed across floors/sites?",
+  "Is the room size appropriate for the group using it?",
 ];
 
 /** Concept 2 intro shown on the "Prepare session" step (no concept picker, no rooms table). */
@@ -1313,7 +1321,6 @@ export default function FloorCountPage() {
             <Button
               variant="secondary"
               size="sm"
-              disabled={countingPhase === "counting"}
               className="h-9 px-5"
               icon={<ClipboardList size={14} />}
               onClick={() => router.push(`/project/${projectId}/floor/${floorId}/history`)}
@@ -1367,71 +1374,13 @@ export default function FloorCountPage() {
 
       <main className="flex-1 overflow-hidden flex relative p-6 gap-6 max-w-[1600px] mx-auto w-full">
 
-        {/* ── Left panel ─────────────────────────────────────────────────────── */}
+        {/* ── Prepare session / Pick rooms to count — left panel ── */}
+        {countingPhase !== "counting" && (
         <motion.div
           layout
           transition={{ type: "spring", stiffness: 300, damping: 35 }}
-          className={cn(
-            "flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden",
-            countingPhase !== "counting" ? "flex-1 min-w-0" : "w-64 shrink-0"
-          )}
+          className="flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden flex-1 min-w-0"
         >
-          {countingPhase === "counting" ? (
-            <div className="flex flex-col h-full w-full overflow-hidden">
-              {/* Sidebar header — back + progress */}
-              <div className="px-4 py-4 border-b border-[#F1F5F9] shrink-0">
-                <button
-                  onClick={() => setCountingPhase("session")}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-light transition-colors mb-3"
-                >
-                  <ArrowLeft size={14} /> Back to rooms
-                </button>
-                {(() => {
-                  const done = rooms.filter((r) => (roomMeta[r.id]?.status === "counted") || sessionCounts[r.id] !== undefined).length;
-                  const pct = rooms.length ? Math.round((done / rooms.length) * 100) : 0;
-                  return (
-                    <div className="rounded-xl bg-surface-2 border border-border p-3">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] font-semibold text-text-muted font-body">Round {done}/{rooms.length}</span>
-                        <span className="text-xs font-bold text-primary font-body">{pct}%</span>
-                      </div>
-                      <div className="h-1.5 bg-white rounded-full overflow-hidden border border-border">
-                        <div className="h-full bg-[#bfa483] rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-              {/* Room list */}
-              <div className="flex-1 overflow-y-auto p-3 space-y-1">
-                <p className="text-[10px] font-bold tracking-[0.06em] text-text-muted font-body px-1 mb-1">Rooms on this floor</p>
-                {rooms.map((r) => {
-                  const active = r.id === selectedRoomId;
-                  const status = roomMeta[r.id]?.status ?? "pending";
-                  return (
-                    <button
-                      key={r.id}
-                      onClick={() => handleStartCounting(r.id)}
-                      className={cn(
-                        "w-full text-left rounded-xl px-3 py-2 border transition-all",
-                        active ? "bg-primary/5 border-primary/30" : "border-transparent hover:bg-surface-2"
-                      )}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className={cn("text-sm font-body truncate", active ? "font-bold text-primary" : "text-text")}>{r.name}</span>
-                        {status === "counted" ? (
-                          <Check size={13} className="text-primary shrink-0" strokeWidth={3} />
-                        ) : status === "ongoing" ? (
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                        ) : null}
-                      </div>
-                      <div className="text-[11px] text-text-muted font-body">{formatNumber(r.sqm || 25)} m² · {roomSeats[r.id] || 0} seats</div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
             <>
               {/* Panel header — matches the Room setup title section */}
               <div className="border-b border-[#F1F5F9] pt-6 sm:pt-8 pb-5 px-6 sm:px-8 flex items-end justify-between gap-3">
@@ -1532,6 +1481,29 @@ export default function FloorCountPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* ── Motivator strip — shown while picking rooms to count ── */}
+                {countingPhase === "session" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {[
+                      { color: "#139485", Icon: Activity, title: "Each count adds a data point", body: "Round 4 of 5 today. You're 60% through today's picture." },
+                      { color: "#6351AC", Icon: Users, title: "Locked rooms are being counted", body: "Conference Room A and Open Office are live, so there is no double-counting." },
+                      { color: "#C47A2C", Icon: BarChart3, title: "Your data feeds the dashboard", body: "Utilisation rates update live as you save each room count." },
+                    ].map(({ color, Icon, title, body }) => (
+                      <div
+                        key={title}
+                        className="rounded-2xl border p-4 flex gap-3"
+                        style={{ background: `${color}14`, borderColor: `${color}33` }}
+                      >
+                        <div className="shrink-0 mt-0.5" style={{ color }}><Icon size={16} /></div>
+                        <div>
+                          <p className="text-xs font-bold mb-1" style={{ color, fontFamily: "var(--font-manrope)" }}>{title}</p>
+                          <p className="text-xs text-text-muted font-body leading-relaxed">{body}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* ── Room table ── */}
                 <Table>
@@ -1738,157 +1710,225 @@ export default function FloorCountPage() {
                 </Table>
               </div>
             </>
-          )}
         </motion.div>
+        )}
 
-        {/* ── Collapsed right strip — switch to room counting (shown in session details) ── */}
-        {/* ── Right panel (counter) ───────────────────────────────────────────── */}
+        {/* ── Enter headcount — room list sidebar + counter in one card ── */}
         <AnimatePresence>
           {countingPhase === "counting" && (
             <motion.div
               layout
-              initial={{ x: 400, opacity: 0 }}
-              animate={{ x: 0, opacity: 1, flex: 1 }}
-              exit={{ x: 400, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 35 }}
-              className="flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0, flex: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex-1 flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden"
             >
-              {/* Panel header */}
-              <div className="px-6 py-5 border-b border-[#F1F5F9] flex flex-col gap-3 shrink-0">
+              {/* Header — Enter headcount */}
+              <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-[#F1F5F9] flex flex-col gap-3 shrink-0">
                 <div className="flex items-center gap-1.5 text-xs font-body">
                   <span className="text-text-muted">Room counting tool</span>
                   <span className="text-text-muted">/</span>
-                  <span className="font-semibold text-text">Room counting</span>
+                  <span className="font-semibold text-text">Enter headcount</span>
                 </div>
-                <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)" }}>
-                  Room counting
+                <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+                  Enter headcount
                 </h3>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                {/* Comments — collapsible */}
-                <div className={cn("rounded-2xl border border-[#E2E8F0] overflow-hidden font-body", commentsExpanded ? "bg-white" : "bg-[#FFFCF8]")}>
-                  <button
-                    onClick={() => setCommentsExpanded((v) => !v)}
-                    className="w-full flex items-start gap-3 px-5 py-4 text-left transition-colors hover:bg-[#fafafa]"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-text font-body">Comments</p>
-                      <p className="text-xs text-text-muted font-body mt-0.5">
-                        Use this space to add comments for each room you visit, then submit them all at once.
-                      </p>
-                      {!commentsExpanded && roomComment.trim() && (
-                        <p className="text-xs text-text-muted/80 italic font-body mt-1 truncate">
-                          &ldquo;{roomComment}&rdquo;
-                        </p>
-                      )}
-                    </div>
-                    <ChevronDown size={18} className={cn("text-text-muted transition-transform shrink-0 mt-0.5", commentsExpanded && "rotate-180")} />
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {commentsExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="border-t border-[#F1F5F9] p-5 space-y-3">
-                          <textarea
-                            value={roomComment}
-                            onChange={(e) => setRoomComment(e.target.value)}
-                            placeholder="Describe any observations, issues, or notes"
-                            rows={3}
-                            className="w-full rounded-xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm text-[#222B27] font-body placeholder:text-text-muted focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] transition-all resize-none"
-                          />
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="secondary"
-                              size="md"
-                              className="px-7"
-                              onClick={() => { setRoomComment(""); setCommentsExpanded(false); }}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              size="md"
-                              className="px-7"
-                              disabled={!roomComment.trim()}
-                              onClick={() => {
-                                if (roomComment.trim()) {
-                                  setRoomComments((prev) => ({
-                                    ...prev,
-                                    [selectedRoomId ?? "floor"]: roomComment.trim(),
-                                  }));
-                                }
-                              }}
-                            >
-                              Save
-                            </Button>
+              {/* Body — room list sidebar + counter */}
+              <div className="flex-1 flex min-h-0">
+                {/* Sidebar */}
+                <div className="w-64 shrink-0 border-r border-[#F1F5F9] flex flex-col overflow-hidden">
+                  <div className="px-4 py-4 border-b border-[#F1F5F9] shrink-0">
+                    <button
+                      onClick={() => setCountingPhase("session")}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-light transition-colors mb-3"
+                    >
+                      <ArrowLeft size={14} /> Back to rooms
+                    </button>
+                    {(() => {
+                      const done = rooms.filter((r) => (roomMeta[r.id]?.status === "counted") || sessionCounts[r.id] !== undefined).length;
+                      const pct = rooms.length ? Math.round((done / rooms.length) * 100) : 0;
+                      return (
+                        <div className="rounded-xl bg-surface-2 border border-border p-3">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[11px] font-semibold text-text-muted font-body">Round {done}/{rooms.length}</span>
+                            <span className="text-xs font-bold text-primary font-body">{pct}%</span>
+                          </div>
+                          <div className="h-1.5 bg-white rounded-full overflow-hidden border border-border">
+                            <div className="h-full bg-[#bfa483] rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                      );
+                    })()}
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-3 space-y-1">
+                    <p className="text-[10px] font-bold tracking-[0.06em] text-text-muted font-body px-1 mb-1">Rooms on this floor</p>
+                    {rooms.map((r) => {
+                      const active = r.id === selectedRoomId;
+                      const status = roomMeta[r.id]?.status ?? "pending";
+                      return (
+                        <button
+                          key={r.id}
+                          onClick={() => handleStartCounting(r.id)}
+                          className={cn(
+                            "w-full text-left rounded-xl px-3 py-2 border transition-all",
+                            active ? "bg-primary/5 border-primary/30" : "border-transparent hover:bg-surface-2"
+                          )}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className={cn("text-sm font-body truncate", active ? "font-bold text-primary" : "text-text")}>{r.name}</span>
+                            {status === "counted" ? (
+                              <Check size={13} className="text-primary shrink-0" strokeWidth={3} />
+                            ) : status === "ongoing" ? (
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                            ) : null}
+                          </div>
+                          <div className="text-[11px] text-text-muted font-body">{formatNumber(r.sqm || 25)} m² · {roomSeats[r.id] || 0} seats</div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <div className="text-center space-y-3">
-                  {/* Room name + zone — one line, separated by a dash */}
-                  <h3
-                    className="text-lg font-extrabold text-text leading-none"
-                    style={{ fontFamily: "var(--font-manrope)" }}
-                  >
-                    {selectedRoom?.name}
-                    <span className="font-normal text-text-muted"> – {selectedZone ? selectedZone.name : "Unzoned room"} – {floor?.name}</span>
-                  </h3>
-                  <p
-                    className="text-sm font-bold text-primary"
-                    style={{ fontFamily: "var(--font-manrope)" }}
-                  >
-                    {roundLabel} · Day 1 of 14 · Room {rooms.findIndex((r) => r.id === selectedRoomId) + 1} of {rooms.length}
-                  </p>
-                  <div className="space-y-4">
-                    <p className="text-[11px] font-bold text-text-muted tracking-widest">
-                      Current occupancy count
+                {/* Counter */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                  {/* Observations — collapsible (suggestions + notes) */}
+                  <div className={cn("rounded-2xl border border-[#E2E8F0] overflow-hidden font-body", commentsExpanded ? "bg-white" : "bg-[#FFFCF8]")}>
+                    <button
+                      onClick={() => setCommentsExpanded((v) => !v)}
+                      className="w-full flex items-start gap-3 px-5 py-4 text-left transition-colors hover:bg-[#fafafa]"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-text font-body">Observations</p>
+                        <p className="text-xs text-text-muted font-body mt-0.5">
+                          Note how the space is being used, then submit your observations.
+                        </p>
+                        {!commentsExpanded && roomComment.trim() && (
+                          <p className="text-xs text-text-muted/80 italic font-body mt-1 truncate">
+                            &ldquo;{roomComment}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                      <ChevronDown size={18} className={cn("text-text-muted transition-transform shrink-0 mt-0.5", commentsExpanded && "rotate-180")} />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {commentsExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border-t border-[#F1F5F9] p-5 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-bold tracking-[0.06em] text-primary font-body">Suggestions</span>
+                              <button
+                                onClick={() => setShowQuestionsModal(true)}
+                                title="What to observe"
+                                className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold hover:bg-primary/15 transition-colors"
+                              >
+                                ?
+                              </button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {OBSERVATION_PROMPTS.map((p) => (
+                                <span key={p} className="px-3 py-1.5 rounded-full bg-surface-2 border border-border text-xs text-text-muted font-body">{p}</span>
+                              ))}
+                            </div>
+                            <textarea
+                              value={roomComment}
+                              onChange={(e) => setRoomComment(e.target.value)}
+                              placeholder="What did you notice here?"
+                              rows={3}
+                              className="w-full rounded-xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm text-[#222B27] font-body placeholder:text-text-muted focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] transition-all resize-none"
+                            />
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="secondary"
+                                size="md"
+                                className="px-7"
+                                onClick={() => { setRoomComment(""); setCommentsExpanded(false); }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                size="md"
+                                className="px-7"
+                                disabled={!roomComment.trim()}
+                                onClick={() => {
+                                  if (roomComment.trim()) {
+                                    setRoomComments((prev) => ({
+                                      ...prev,
+                                      [selectedRoomId ?? "floor"]: roomComment.trim(),
+                                    }));
+                                  }
+                                }}
+                              >
+                                Save
+                              </Button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="text-center space-y-3">
+                    {/* Room name + zone — one line, separated by a dash */}
+                    <h3
+                      className="text-lg font-extrabold text-text leading-none"
+                      style={{ fontFamily: "var(--font-manrope)" }}
+                    >
+                      {selectedRoom?.name}
+                      <span className="font-normal text-text-muted"> – {selectedZone ? selectedZone.name : "Unzoned room"} – {floor?.name}</span>
+                    </h3>
+                    <p
+                      className="text-sm font-bold text-primary"
+                      style={{ fontFamily: "var(--font-manrope)" }}
+                    >
+                      {roundLabel} · Day 1 of 14 · Room {rooms.findIndex((r) => r.id === selectedRoomId) + 1} of {rooms.length}
                     </p>
-                    <div className="flex items-center justify-center gap-10">
-                      <button
-                        onClick={() => adjustCount(-1)}
-                        className="w-20 h-20 rounded-2xl border-2 border-[#E2E8F0] flex items-center justify-center text-text-muted hover:border-primary hover:text-primary transition-all"
+                    <div className="space-y-4">
+                      <p className="text-[11px] font-bold text-text-muted tracking-widest">
+                        Current occupancy count
+                      </p>
+                      <div className="flex items-center justify-center gap-10">
+                        <button
+                          onClick={() => adjustCount(-1)}
+                          className="w-20 h-20 rounded-2xl border-2 border-[#E2E8F0] flex items-center justify-center text-text-muted hover:border-primary hover:text-primary transition-all"
+                        >
+                          <Minus size={28} strokeWidth={3} />
+                        </button>
+                        <span
+                          className="text-8xl font-900 text-text tabular-nums"
+                          style={{ fontFamily: "var(--font-manrope)", fontWeight: 900 }}
+                        >
+                          {formatNumber(sessionCounts[selectedRoomId!] || 0)}
+                        </span>
+                        <button
+                          onClick={() => adjustCount(1)}
+                          className="w-20 h-20 rounded-2xl border-2 border-primary bg-primary/5 flex items-center justify-center text-primary hover:bg-primary/10 transition-all"
+                        >
+                          <Plus size={28} strokeWidth={3} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex justify-center">
+                      <Button
+                        size="lg"
+                        className="w-auto px-10 h-12 text-base font-bold shadow-xl shadow-primary/20 gap-2"
+                        onClick={handleRecordCount}
+                        icon={!isLastRoom ? <ArrowRight size={18} /> : undefined}
+                        iconPosition="right"
                       >
-                        <Minus size={28} strokeWidth={3} />
-                      </button>
-                      <span
-                        className="text-8xl font-900 text-text tabular-nums"
-                        style={{ fontFamily: "var(--font-manrope)", fontWeight: 900 }}
-                      >
-                        {formatNumber(sessionCounts[selectedRoomId!] || 0)}
-                      </span>
-                      <button
-                        onClick={() => adjustCount(1)}
-                        className="w-20 h-20 rounded-2xl border-2 border-primary bg-primary/5 flex items-center justify-center text-primary hover:bg-primary/10 transition-all"
-                      >
-                        <Plus size={28} strokeWidth={3} />
-                      </button>
+                        {isLastRoom ? "Done" : "Save count & continue"}
+                      </Button>
                     </div>
                   </div>
-                  {/* Action button — above comments */}
-                  <div className="flex justify-center">
-                    <Button
-                      size="lg"
-                      className="w-auto px-10 h-12 text-base font-bold shadow-xl shadow-primary/20 gap-2"
-                      onClick={handleRecordCount}
-                      icon={!isLastRoom ? <ArrowRight size={18} /> : undefined}
-                      iconPosition="right"
-                    >
-                      {isLastRoom ? "Done" : "Save count & continue"}
-                    </Button>
-                  </div>
-
                 </div>
-
-                {/* Counting history is available via the "Counting history" button in the header */}
               </div>
             </motion.div>
           )}

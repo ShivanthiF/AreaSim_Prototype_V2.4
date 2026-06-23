@@ -53,13 +53,15 @@ interface CountingStepperProps {
   activeStep: CountingStepId;
   /** Optional — when provided, steps become clickable and call this with the step id. */
   onStepClick?: (id: CountingStepId) => void;
+  /** When true, no step is active and all steps render disabled (used for side views like history). */
+  disabled?: boolean;
 }
 
-export function CountingStepper({ activeStep, onStepClick }: CountingStepperProps) {
-  const activeIdx = COUNT_COLLECT_STEPS.findIndex((s) => s.id === activeStep);
+export function CountingStepper({ activeStep, onStepClick, disabled = false }: CountingStepperProps) {
+  const activeIdx = disabled ? -1 : COUNT_COLLECT_STEPS.findIndex((s) => s.id === activeStep);
 
   return (
-    <div className="w-full shrink-0 border-b border-border bg-surface-2 px-5 py-2">
+    <div className={`w-full shrink-0 border-b border-border bg-surface-2 px-5 py-2 ${disabled ? "opacity-60" : ""}`}>
       {/* Section label + progress */}
       <div className="flex flex-wrap items-center gap-2 mb-2">
         <span
@@ -68,17 +70,19 @@ export function CountingStepper({ activeStep, onStepClick }: CountingStepperProp
         >
           Count + Collect
         </span>
-        <span className="text-[11px] text-text-muted font-body">
-          {activeIdx + 1} of {COUNT_COLLECT_STEPS.length}
-        </span>
+        {!disabled && (
+          <span className="text-[11px] text-text-muted font-body">
+            {activeIdx + 1} of {COUNT_COLLECT_STEPS.length}
+          </span>
+        )}
       </div>
 
       {/* Step pills */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
         {COUNT_COLLECT_STEPS.map((step, i) => {
-          const isActive = step.id === activeStep;
-          const isDone = i < activeIdx;
-          const interactive = Boolean(onStepClick);
+          const isActive = !disabled && step.id === activeStep;
+          const isDone = !disabled && i < activeIdx;
+          const interactive = Boolean(onStepClick) && !disabled;
           const pillStyle = {
             padding: "6px 10px",
             background: isActive ? "#F0EEFF" : "#fff",

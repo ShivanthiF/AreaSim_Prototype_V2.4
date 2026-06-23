@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, Layers, Check, User, CheckCircle2 } from "lucide-react";
 import { WorkplaceJourneyBar } from "@/components/ui/WorkplaceJourneyBar";
-import { CountingStepper, countingStepHref } from "@/components/ui/CountingStepper";
+import { CountingStepper } from "@/components/ui/CountingStepper";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
@@ -107,10 +107,7 @@ export default function SessionOverviewPage() {
 
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
-      <CountingStepper
-        activeStep="active-session"
-        onStepClick={(id) => router.push(countingStepHref(projectId, firstFloorId ?? "", id))}
-      />
+      <CountingStepper activeStep="active-session" disabled />
 
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-[1600px] mx-auto w-full space-y-6">
