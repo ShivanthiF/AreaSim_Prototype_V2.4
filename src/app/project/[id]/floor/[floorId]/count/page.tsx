@@ -287,7 +287,6 @@ export default function FloorCountPage() {
 
   const [countingPhase, setCountingPhase] = useState<CountingPhase>("setup");
   const [showVerifyConfirmModal, setShowVerifyConfirmModal] = useState(false);
-  const [startModalDismissed, setStartModalDismissed] = useState(true);
   const [editRoomSettings, setEditRoomSettings] = useState(false);
   // Shown when the user tries to verify a room (or continue) before setting a category
   const [showCategoryRequiredModal, setShowCategoryRequiredModal] = useState(false);
@@ -313,7 +312,6 @@ export default function FloorCountPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [timer, setTimer] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const startPromptTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [startDate, setStartDate] = useState(getFormattedDate(new Date()));
   const [endDate, setEndDate] = useState(() => {
@@ -391,7 +389,15 @@ export default function FloorCountPage() {
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash === "#session-details") {
       setCountingPhase("ready");
-      setStartModalDismissed(true);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Navigate to session phase when arriving from hash
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#active-session") {
+      setCountingPhase("session");
       window.history.replaceState(null, "", window.location.pathname);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -407,9 +413,6 @@ export default function FloorCountPage() {
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [isRecording]);
-
-  // Clear the delayed start-session prompt timeout on unmount
-  useEffect(() => () => { if (startPromptTimeoutRef.current) clearTimeout(startPromptTimeoutRef.current); }, []);
 
   const selectedRoom = rooms.find((r) => r.id === selectedRoomId);
   const selectedZone = (floor?.zones || []).find((z) => z.id === selectedRoom?.zoneId);
@@ -646,12 +649,6 @@ export default function FloorCountPage() {
     if (editRoomSettings) {
       // Returning from "Edit room setup" — don't prompt to start the session
       setEditRoomSettings(false);
-      setStartModalDismissed(true);
-    } else {
-      // First-time setup via "Verify and continue" — prompt to start the session
-      // after a short delay so the user first sees the session details.
-      if (startPromptTimeoutRef.current) clearTimeout(startPromptTimeoutRef.current);
-      startPromptTimeoutRef.current = setTimeout(() => setStartModalDismissed(false), 3000);
     }
   };
 
@@ -662,6 +659,7 @@ export default function FloorCountPage() {
   const handleStepClick = (id: CountingStepId) => {
     if (id === "room-setup") { setEditRoomSettings(false); setCountingPhase("setup"); return; }
     if (id === "session-details") { setCountingPhase("ready"); return; }
+    if (id === "active-session") { setCountingPhase("session"); return; }
     router.push(countingStepHref(projectId, floorId, id));
   };
 
@@ -1955,51 +1953,7 @@ export default function FloorCountPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Start session modal (shown when phase="ready") ─────────────────────── */}
-      <AnimatePresence>
-        {countingPhase === "ready" && !startModalDismissed && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-md w-full relative"
-            >
-              <button
-                onClick={() => setStartModalDismissed(true)}
-                className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-text transition-colors z-10"
-              >
-                <X size={16} />
-              </button>
-              <div className="p-8 text-center space-y-5">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
-                  <Play size={20} fill="currentColor" className="text-primary" />
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-xl font-800 text-text" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
-                    Start counting session?
-                  </h4>
-                  <p className="text-sm text-text-muted leading-relaxed">
-                    Rooms are set up for <span className="font-bold text-text">{floor?.name || "this floor"}</span>. Start the session to begin recording occupancy counts.
-                  </p>
-                </div>
-                <div className="flex gap-3 pt-1">
-                  <Button variant="secondary" size="md" className="flex-1" onClick={() => setStartModalDismissed(true)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    size="md"
-                    className="flex-1"
-                    onClick={() => { setStartModalDismissed(true); handleStartSession(); }}
-                  >
-                    Start
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+
 
       {/* ── Stop confirmation modal ────────────────────────────────────────────── */}
       <AnimatePresence>

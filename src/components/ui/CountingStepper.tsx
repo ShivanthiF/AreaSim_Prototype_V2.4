@@ -43,7 +43,7 @@ export function countingStepHref(
     case "session-details":
       return `/project/${projectId}/floor/${floorId}/count#session-details`;
     case "active-session":
-      return `/project/${projectId}/session-overview`;
+      return `/project/${projectId}/floor/${floorId}/count#active-session`;
     case "room-counting":
       return `/project/${projectId}/floor/${floorId}/history`;
   }
