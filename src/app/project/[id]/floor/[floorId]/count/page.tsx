@@ -35,7 +35,6 @@ import {
   Footprints,
   Armchair,
   NotebookPen,
-  ListChecks,
   Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -44,8 +43,8 @@ import { Chip } from "@/components/ui/Chip";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
 import { WorkplaceJourneyBar } from "@/components/ui/WorkplaceJourneyBar";
 import { CountingStepper, countingStepHref, type CountingStepId } from "@/components/ui/CountingStepper";
+import { CountingTopNav } from "@/components/layout/CountingTopNav";
 import { useCanvasStore } from "@/store/canvas";
-import { mockProject } from "@/lib/mockData";
 import { cn, formatNumber } from "@/lib/utils";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -258,12 +257,9 @@ function PrepareSessionIntro() {
 
       {/* Pre-counting checklist */}
       <div className="rounded-2xl border border-border bg-white p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <ListChecks size={15} className="text-primary" />
-          <span className="text-[11px] font-bold tracking-[0.06em] text-text-muted font-body">
-            Pre-counting checklist · {doneCount}/{PRE_COUNTING_CHECKLIST.length}
-          </span>
-        </div>
+        <h3 className="text-base text-text leading-snug mb-3" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+          Pre-counting checklist · {doneCount}/{PRE_COUNTING_CHECKLIST.length}
+        </h3>
         <div className="flex flex-col gap-2.5 mb-3">
           {PRE_COUNTING_CHECKLIST.map((item) => (
             <button key={item.id} type="button" onClick={() => toggle(item.id)} className="flex items-center gap-2.5 text-left">
@@ -392,7 +388,6 @@ export default function FloorCountPage() {
   const [showSaveCommentsModal, setShowSaveCommentsModal] = useState(false);
   const [commentPendingAction, setCommentPendingAction] = useState<"done" | "exit" | null>(null);
 
-  const [selectedProject] = useState(mockProject.name);
   const [selectedFloorName, setSelectedFloorName] = useState(floor?.name || "Ground Floor");
   const [showNextFloorModal, setShowNextFloorModal] = useState(false);
   const [nextFloorSelection, setNextFloorSelection] = useState("1st Floor");
@@ -560,19 +555,6 @@ export default function FloorCountPage() {
 
   const isLastRoom = rooms.findIndex((r) => r.id === selectedRoomId) === rooms.length - 1;
 
-  const handleBackToCanvas = () => {
-    if (roomComment.trim()) {
-      setCommentPendingAction("exit");
-      setShowSaveCommentsModal(true);
-      return;
-    }
-    if (isRecording) {
-      setPendingNav(`/project/${projectId}/floor/${floorId}`);
-      setShowStopModal(true);
-    } else {
-      router.push(`/project/${projectId}/floor/${floorId}`);
-    }
-  };
 
   const handleSaveComments = (save: boolean) => {
     if (save && selectedRoomId && roomComment.trim()) {
@@ -719,37 +701,11 @@ export default function FloorCountPage() {
   if (countingPhase === "setup") {
     return (
       <div className="h-screen flex flex-col font-body overflow-hidden" style={{ background: "#FBF6EE" }}>
-        <header className="px-3 py-2 shrink-0 bg-white">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleBackToCanvas}
-              className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-light transition-colors"
-            >
-              <ArrowLeft size={14} /> Back to canvas
-            </button>
-            <div className="w-px h-6 bg-[#E2E8F0]" />
-            {/* Project name */}
-            <span className="text-sm font-semibold text-text font-body truncate max-w-[180px]">
-              {mockProject.name}
-            </span>
-            <div className="w-px h-6 bg-[#E2E8F0]" />
-            {/* Floor selector — matches canvas navbar style */}
-            <div className="relative min-w-[148px]">
-              <select
-                value={activeFloorId}
-                onChange={(e) => setActiveFloorId(e.target.value)}
-                className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
-              >
-                {floors.map((f) => (
-                  <option key={f.id} value={f.id}>{f.name}</option>
-                ))}
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </header>
+        <CountingTopNav
+          floorValue={activeFloorId}
+          floorOptions={floors.map((f) => ({ value: f.id, label: f.name }))}
+          onFloorChange={setActiveFloorId}
+        />
 
         {/* ── Workplace Journey Bar ── */}
         <WorkplaceJourneyBar activeStep="1-2" />
@@ -1301,61 +1257,15 @@ export default function FloorCountPage() {
     <div className="h-screen bg-bg flex flex-col font-body overflow-hidden">
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
-      <header className="bg-white px-3 py-2 shrink-0">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleBackToCanvas}
-              className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-light transition-colors"
-            >
-              <ArrowLeft size={14} /> Back to canvas
-            </button>
-            <div className="w-px h-6 bg-[#E2E8F0]" />
-            <span className="hidden sm:block text-sm font-semibold text-text font-body truncate max-w-[200px]">
-              {selectedProject}
-            </span>
-            <div className="w-px h-6 bg-[#E2E8F0] hidden sm:block" />
-            <div className="relative min-w-[148px]">
-              <select
-                value={selectedFloorName}
-                onChange={(e) => setSelectedFloorName(e.target.value)}
-                className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
-              >
-                <option>Ground Floor</option>
-                <option>1st Floor</option>
-                <option>2nd Floor</option>
-              </select>
-              <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <AnimatePresence mode="wait">
-              {isRecording ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm"
-                >
-                  <span
-                    className="text-lg font-bold text-primary tabular-nums"
-                    style={{ fontFamily: "var(--font-manrope)" }}
-                  >
-                    {formatTime(timer)}
-                  </span>
-                  <button
-                    onClick={() => setShowStopModal(true)}
-                    className="w-6 h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
-                  >
-                    <div className="w-2.5 h-2.5 rounded-sm bg-white" />
-                  </button>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </div>
-        </div>
-      </header>
+      <CountingTopNav
+        floorValue={selectedFloorName}
+        floorOptions={[
+          { value: "Ground Floor", label: "Ground Floor" },
+          { value: "1st Floor", label: "1st Floor" },
+          { value: "2nd Floor", label: "2nd Floor" },
+        ]}
+        onFloorChange={setSelectedFloorName}
+      />
 
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
@@ -1397,14 +1307,29 @@ export default function FloorCountPage() {
                     Pick rooms to count
                   </h3>
                 </div>
-                <Button
-                  size="sm"
-                  className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
-                  icon={<Play size={14} />}
-                  onClick={() => { if (!selectedRoomId && rooms[0]) setSelectedRoomId(rooms[0].id); setCountingPhase("counting"); }}
-                >
-                  Start room counting
-                </Button>
+                <div className="flex items-center gap-3 shrink-0">
+                  {isRecording && (
+                    <div className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm">
+                      <span className="text-lg font-bold text-primary tabular-nums" style={{ fontFamily: "var(--font-manrope)" }}>
+                        {formatTime(timer)}
+                      </span>
+                      <button
+                        onClick={() => setShowStopModal(true)}
+                        className="w-6 h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
+                      >
+                        <div className="w-2.5 h-2.5 rounded-sm bg-white" />
+                      </button>
+                    </div>
+                  )}
+                  <Button
+                    size="sm"
+                    className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
+                    icon={<Play size={14} />}
+                    onClick={() => { if (!selectedRoomId && rooms[0]) setSelectedRoomId(rooms[0].id); setCountingPhase("counting"); }}
+                  >
+                    Start room counting
+                  </Button>
+                </div>
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -1714,15 +1639,30 @@ export default function FloorCountPage() {
               className="flex-1 flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden"
             >
               {/* Header — Enter headcount */}
-              <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-[#F1F5F9] flex flex-col gap-3 shrink-0">
-                <div className="flex items-center gap-1.5 text-xs font-body">
-                  <span className="text-text-muted">Room counting tool</span>
-                  <span className="text-text-muted">/</span>
-                  <span className="font-semibold text-text">Enter headcount</span>
+              <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-[#F1F5F9] flex items-end justify-between gap-3 shrink-0">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-1.5 text-xs font-body">
+                    <span className="text-text-muted">Room counting tool</span>
+                    <span className="text-text-muted">/</span>
+                    <span className="font-semibold text-text">Enter headcount</span>
+                  </div>
+                  <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+                    Enter headcount
+                  </h3>
                 </div>
-                <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
-                  Enter headcount
-                </h3>
+                {isRecording && (
+                  <div className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm shrink-0">
+                    <span className="text-lg font-bold text-primary tabular-nums" style={{ fontFamily: "var(--font-manrope)" }}>
+                      {formatTime(timer)}
+                    </span>
+                    <button
+                      onClick={() => setShowStopModal(true)}
+                      className="w-6 h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
+                    >
+                      <div className="w-2.5 h-2.5 rounded-sm bg-white" />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Body — room list sidebar + counter */}
@@ -1925,22 +1865,35 @@ export default function FloorCountPage() {
               transition={{ duration: 0.22 }}
               className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl w-full max-w-3xl max-h-[88vh] flex flex-col overflow-hidden relative"
             >
-              <button
-                onClick={() => { handleStartSession(); setShowPrepareModal(false); }}
-                className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-text transition-colors z-10"
-              >
-                <X size={16} />
-              </button>
-              <div className="flex-1 overflow-y-auto p-6 pt-12">
+              <div className="px-6 sm:px-8 pt-6 pb-5 border-b border-[#F1F5F9] flex items-center justify-between gap-3 shrink-0">
+                <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+                  Prepare for counting rooms session
+                </h3>
+                <button
+                  onClick={() => { setShowPrepareModal(false); setCountingPhase("setup"); }}
+                  className="p-1.5 text-text-muted hover:text-text transition-colors z-10 shrink-0"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6">
                 <PrepareSessionIntro />
               </div>
-              <div className="border-t border-[#F1F5F9] px-6 py-4 flex justify-end shrink-0">
+              <div className="border-t border-[#F1F5F9] px-6 py-4 flex gap-3 shrink-0">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  className="flex-1"
+                  onClick={() => { setShowPrepareModal(false); setCountingPhase("setup"); }}
+                >
+                  Cancel
+                </Button>
                 <Button
                   size="md"
-                  icon={<Play size={14} />}
+                  className="flex-1"
                   onClick={() => { handleStartSession(); setShowPrepareModal(false); }}
                 >
-                  Start counting session
+                  Start room counting session
                 </Button>
               </div>
             </motion.div>
