@@ -773,7 +773,7 @@ export default function FloorCountPage() {
                   <select
                     value={activeFloorId}
                     onChange={(e) => setActiveFloorId(e.target.value)}
-                    className="appearance-none w-full rounded-xl border border-[#969696] bg-white px-4 py-2.5 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+                    className="appearance-none w-full h-9 rounded-xl border border-[#969696] bg-white px-4 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
                   >
                     {floors.map((f) => (
                       <option key={f.id} value={f.id}>{f.name}</option>
@@ -1372,7 +1372,7 @@ export default function FloorCountPage() {
                       <select
                         value={selectedFloorName}
                         onChange={(e) => setSelectedFloorName(e.target.value)}
-                        className="appearance-none w-full rounded-xl border border-[#969696] bg-white px-4 py-2.5 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+                        className="appearance-none w-full h-9 rounded-xl border border-[#969696] bg-white px-4 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
                       >
                         {["Ground Floor", "1st Floor", "2nd Floor"].map((f) => (
                           <option key={f} value={f}>{f}</option>
@@ -1732,7 +1732,7 @@ export default function FloorCountPage() {
                   <select
                     value={activeFloorId}
                     onChange={(e) => setActiveFloorId(e.target.value)}
-                    className="appearance-none w-full rounded-xl border border-[#969696] bg-white px-4 py-2.5 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+                    className="appearance-none w-full h-9 rounded-xl border border-[#969696] bg-white px-4 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
                   >
                     {floors.map((f) => (
                       <option key={f.id} value={f.id}>{f.name}</option>
