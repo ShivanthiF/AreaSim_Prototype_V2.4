@@ -102,7 +102,7 @@ export function Step6Done() {
           size="lg"
           icon={<ArrowRight size={18} />}
           iconPosition="right"
-          onClick={() => router.push("/project/proj-1/floor/floor-1#show-guide")}
+          onClick={() => router.push("/project/proj-1/floor/floor-1#org-setup-then-guide")}
         >
           Continue
         </Button>

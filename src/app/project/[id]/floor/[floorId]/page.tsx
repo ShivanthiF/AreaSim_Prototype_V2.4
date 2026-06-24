@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal, Gem, Play, ClipboardCheck, Building2 } from "lucide-react";
+import { SlidersHorizontal, Gem, Play } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Logo } from "@/components/ui/Logo";
@@ -34,7 +34,7 @@ export default function FloorPage() {
   const {
     floors, setActiveFloor,
     setDetailPanel, detailPanelOpen,
-    setCompletionModal, setSurveyModal,
+    setCompletionModal,
   } = useCanvasStore();
 
   const [_floorDropdownOpen, _setFloorDropdownOpen] = useState(false);
@@ -42,13 +42,33 @@ export default function FloorPage() {
   // Organisation-setup step (2nd counting sub-step). Opening the modal marks
   // "Open floor plan" done and moves the stepper to "Organisation setup".
   const [showOrgModal, setShowOrgModal] = useState(false);
+  // When the org-setup modal is part of the onboarding flow, finishing it should
+  // continue to the "Map rooms and zones" step (canvas guide) rather than counting.
+  const [orgThenGuide, setOrgThenGuide] = useState(false);
   const goToCounting = () =>
     router.push(`/project/${projectId}/floor/${floorId}/count#show-instructions`);
-  const handleOrgComplete = () => { setShowOrgModal(false); goToCounting(); };
+  // Called when the org-setup modal closes (X / Skip / Continue).
+  const finishOrgSetup = (goCount: boolean) => {
+    setShowOrgModal(false);
+    if (orgThenGuide) {
+      setOrgThenGuide(false);
+      setGuideStep(0);
+      setShowGuide(true);
+    } else if (goCount) {
+      goToCounting();
+    }
+  };
+  const handleOrgComplete = () => finishOrgSetup(true);
 
-  // Open the org-setup modal when navigated here via the stepper (#org-setup hash)
+  // Open the org-setup modal when navigated here via the stepper (#org-setup hash),
+  // or via onboarding (#org-setup-then-guide → org setup first, then the canvas guide).
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash === "#org-setup") {
+    if (typeof window === "undefined") return;
+    if (window.location.hash === "#org-setup-then-guide") {
+      setShowOrgModal(true);
+      setOrgThenGuide(true);
+      window.history.replaceState(null, "", window.location.pathname);
+    } else if (window.location.hash === "#org-setup") {
       setShowOrgModal(true);
       window.history.replaceState(null, "", window.location.pathname);
     }
@@ -84,11 +104,11 @@ export default function FloorPage() {
   }, [showGuide, guideStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGuideNext = () => {
-    if (guideStep >= GUIDE_TOTAL - 1) { setShowGuide(false); setGuideStep(0); }
+    if (guideStep >= GUIDE_TOTAL - 1) { setShowGuide(false); setGuideStep(0); setDetailPanel(true); }
     else setGuideStep(s => s + 1);
   };
   const handleGuideBack = () => setGuideStep(s => Math.max(0, s - 1));
-  const handleGuideClose = () => { setShowGuide(false); setGuideStep(0); };
+  const handleGuideClose = () => { setShowGuide(false); setGuideStep(0); setDetailPanel(true); };
   const handleOpenGuide = () => { setGuideStep(0); setShowGuide(true); };
 
   const activeFloor = floors.find((f) => f.id === floorId) ?? floors[0];
@@ -136,41 +156,6 @@ export default function FloorPage() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          {/* Conduct survey — secondary */}
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<ClipboardCheck size={14} />}
-            onClick={() => setSurveyModal(true)}
-            className="h-9 py-2 px-4"
-          >
-            <span className="hidden sm:inline">Conduct survey</span>
-          </Button>
-
-          {/* Rooms list — secondary */}
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<SlidersHorizontal size={14} />}
-            onClick={() => setDetailPanel(!detailPanelOpen)}
-            className="h-9 py-2 px-4"
-          >
-            <span className="hidden sm:inline">Rooms list</span>
-          </Button>
-
-          {/* Start room counting — primary */}
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Play size={13} />}
-            onClick={() => setShowOrgModal(true)}
-            className="h-9 py-2 px-4"
-          >
-            <span className="hidden sm:inline">Start room counting</span>
-          </Button>
-
-
-
           {allCounted && (
             <Button
               variant="primary"
@@ -196,6 +181,28 @@ export default function FloorPage() {
       <CountingStepper
         activeStep={showOrgModal ? "org-setup" : "floor-plan"}
         onStepClick={handleStepClick}
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<SlidersHorizontal size={14} />}
+              onClick={() => setDetailPanel(!detailPanelOpen)}
+              className="h-8 px-4"
+            >
+              <span className="hidden sm:inline">Room list</span>
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<Play size={13} />}
+              onClick={goToCounting}
+              className="h-8 px-4"
+            >
+              <span className="hidden sm:inline">Start room counting</span>
+            </Button>
+          </>
+        }
       />
 
       {/* ── Main Area ── */}
@@ -213,19 +220,6 @@ export default function FloorPage() {
           {/* <div className="absolute top-3 left-3 z-30">
             <ScoreWidget />
           </div> */}
-        </div>
-
-        {/* Configure organization setup — floating CTA on the canvas */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30">
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<Building2 size={14} />}
-            onClick={() => setShowOrgModal(true)}
-            className="h-9 py-2 px-4 shadow-md !bg-white"
-          >
-            Configure organization setup
-          </Button>
         </div>
 
         {/* Detail panel — absolute overlay, right-aligned, 1/3 screen width */}
@@ -249,7 +243,7 @@ export default function FloorPage() {
       <CompletionModal />
       <OrgSetupModal
         open={showOrgModal}
-        onClose={() => setShowOrgModal(false)}
+        onClose={() => finishOrgSetup(false)}
         onComplete={handleOrgComplete}
       />
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Check } from "lucide-react";
 
 // ─── Count + Collect sub-steps (sits directly under the WorkplaceJourneyBar) ───
@@ -15,10 +16,9 @@ export type CountingStepId =
   | "room-counting";
 
 const COUNT_COLLECT_STEPS: { id: CountingStepId; label: string }[] = [
-  { id: "floor-plan", label: "Map rooms and zones" },
   { id: "org-setup", label: "Organisation setup" },
+  { id: "floor-plan", label: "Map rooms and zones" },
   { id: "room-setup", label: "Room setup" },
-  { id: "session-details", label: "Prepare session" },
   { id: "active-session", label: "Pick rooms to count" },
   { id: "room-counting", label: "Enter headcount" },
 ];
@@ -51,13 +51,15 @@ export function countingStepHref(
 
 interface CountingStepperProps {
   activeStep: CountingStepId;
-  /** Optional — when provided, steps become clickable and call this with the step id. */
+  /** Optional — when provided, completed/current steps become clickable (upcoming steps stay disabled). */
   onStepClick?: (id: CountingStepId) => void;
   /** When true, no step is active and all steps render disabled (used for side views like history). */
   disabled?: boolean;
+  /** Optional action buttons rendered in the right corner of the bar. */
+  actions?: ReactNode;
 }
 
-export function CountingStepper({ activeStep, onStepClick, disabled = false }: CountingStepperProps) {
+export function CountingStepper({ activeStep, onStepClick, disabled = false, actions }: CountingStepperProps) {
   const activeIdx = disabled ? -1 : COUNT_COLLECT_STEPS.findIndex((s) => s.id === activeStep);
 
   return (
@@ -77,12 +79,15 @@ export function CountingStepper({ activeStep, onStepClick, disabled = false }: C
         )}
       </div>
 
-      {/* Step pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+      {/* Step pills + actions */}
+      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 flex-1 min-w-0">
         {COUNT_COLLECT_STEPS.map((step, i) => {
           const isActive = !disabled && step.id === activeStep;
           const isDone = !disabled && i < activeIdx;
-          const interactive = Boolean(onStepClick) && !disabled;
+          const isFuture = !disabled && i > activeIdx;
+          // Upcoming steps are disabled; only completed/current steps are clickable
+          const interactive = Boolean(onStepClick) && !disabled && i <= activeIdx;
           const pillStyle = {
             padding: "6px 10px",
             background: isActive ? "#F0EEFF" : "#fff",
@@ -117,7 +122,7 @@ export function CountingStepper({ activeStep, onStepClick, disabled = false }: C
           const pillClass =
             "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full font-body";
           return (
-            <div key={step.id} className="flex shrink-0 items-center">
+            <div key={step.id} className={`flex shrink-0 items-center ${isFuture ? "opacity-50" : ""}`}>
               {i > 0 && (
                 <div
                   className="mr-1.5 h-px w-3.5"
@@ -142,6 +147,8 @@ export function CountingStepper({ activeStep, onStepClick, disabled = false }: C
             </div>
           );
         })}
+      </div>
+        {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
       </div>
     </div>
   );
