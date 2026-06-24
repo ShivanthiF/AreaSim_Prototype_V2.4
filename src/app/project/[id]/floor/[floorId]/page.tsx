@@ -196,7 +196,7 @@ export default function FloorPage() {
               variant="primary"
               size="sm"
               icon={<Play size={13} />}
-              onClick={() => setShowOrgModal(true)}
+              onClick={goToCounting}
               className="h-8 px-4"
             >
               <span className="hidden sm:inline">Start room counting</span>

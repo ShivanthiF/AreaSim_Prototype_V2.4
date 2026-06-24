@@ -13,7 +13,6 @@ import {
   Minus,
   X,
   ClipboardList,
-  LayoutGrid,
   Clock,
   HelpCircle,
   MessageSquare,
@@ -241,18 +240,20 @@ function PrepareSessionIntro() {
   return (
     <div className="space-y-4">
       {/* Why you're doing this */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border border-border bg-surface-2 px-4 py-3">
+      <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface-2 px-4 py-3">
         <span className="text-[10px] font-extrabold tracking-[0.07em] text-text-muted">
           Why you&apos;re doing this
         </span>
-        {WHY_ITEMS.map(({ Icon, label, color }) => (
-          <span key={label} className="inline-flex items-center gap-2 text-xs font-semibold text-text font-body">
-            <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ background: `${color}1a`, color }}>
-              <Icon size={13} />
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          {WHY_ITEMS.map(({ Icon, label, color }) => (
+            <span key={label} className="inline-flex items-center gap-2 text-xs font-semibold text-text font-body">
+              <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ background: `${color}1a`, color }}>
+                <Icon size={13} />
+              </span>
+              {label}
             </span>
-            {label}
-          </span>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Pre-counting checklist */}
@@ -273,7 +274,7 @@ function PrepareSessionIntro() {
             </button>
           ))}
         </div>
-        <button type="button" onClick={() => setMasterAck((v) => !v)} className="flex items-center gap-2.5 w-full rounded-xl bg-surface-2 px-3 py-2.5 text-left">
+        <button type="button" onClick={() => setMasterAck((v) => !v)} className="flex items-center gap-2.5 w-full text-left">
           <span className={`w-[18px] h-[18px] rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${masterAck ? "bg-primary border-primary" : "border-[#C0D0DC] bg-white"}`}>
             {masterAck && <Check size={10} className="text-white" strokeWidth={3} />}
           </span>
@@ -285,8 +286,7 @@ function PrepareSessionIntro() {
       <div className="rounded-2xl border border-border bg-white p-5">
         <div className="flex items-start justify-between gap-3 flex-wrap mb-4">
           <div>
-            <Chip tone="info">Ground Floor counting</Chip>
-            <h3 className="text-base text-text mt-2 leading-snug max-w-xl" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+            <h3 className="text-base text-text leading-snug max-w-xl" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
               Count what you see. We turn it into workplace evidence.
             </h3>
             <p className="text-xs text-text-muted font-body mt-1">Ground Floor · Round 4 of 5 today</p>
@@ -1331,46 +1331,6 @@ export default function FloorCountPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Pencil size={13} />}
-              className="h-9 px-5 gap-2"
-              onClick={() => { setEditRoomSettings(true); setCountingPhase("setup"); }}
-            >
-              Edit room setup
-            </Button>
-
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-9 px-5 gap-2"
-              onClick={() => setShowQuestionsModal(true)}
-              icon={<HelpCircle size={14} />}
-            >
-              Got questions?
-            </Button>
-
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-9 px-5"
-              icon={<ClipboardList size={14} />}
-              onClick={() => router.push(`/project/${projectId}/floor/${floorId}/history`)}
-            >
-              Counting history
-            </Button>
-
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-9 px-5"
-              icon={<LayoutGrid size={14} />}
-              onClick={() => router.push(`/project/${projectId}/session-overview`)}
-            >
-              All floors
-            </Button>
-
             <AnimatePresence mode="wait">
               {isRecording ? (
                 <motion.div
@@ -1403,6 +1363,17 @@ export default function FloorCountPage() {
       <CountingStepper
         activeStep={countingPhase === "counting" ? "room-counting" : "active-session"}
         onStepClick={handleStepClick}
+        actions={
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-9 px-5 gap-2"
+            onClick={() => setShowQuestionsModal(true)}
+            icon={<HelpCircle size={14} />}
+          >
+            Got questions?
+          </Button>
+        }
       />
 
       <main className="flex-1 overflow-hidden flex relative p-6 gap-6 max-w-[1600px] mx-auto w-full">
@@ -1978,30 +1949,25 @@ export default function FloorCountPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 16 }}
               transition={{ duration: 0.22 }}
-              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl w-full max-w-3xl max-h-[88vh] flex flex-col overflow-hidden"
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl w-full max-w-3xl max-h-[88vh] flex flex-col overflow-hidden relative"
             >
-              <div className="px-6 sm:px-8 pt-6 pb-5 border-b border-[#F1F5F9] flex items-end justify-between gap-3 shrink-0">
-                <div>
-                  <div className="flex items-center gap-1.5 text-xs font-body mb-2">
-                    <span className="text-text-muted">Room counting tool</span>
-                    <span className="text-text-muted">/</span>
-                    <span className="font-semibold text-text">Prepare session</span>
-                  </div>
-                  <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
-                    Prepare session
-                  </h3>
-                </div>
+              <button
+                onClick={() => { handleStartSession(); setShowPrepareModal(false); }}
+                className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-text transition-colors z-10"
+              >
+                <X size={16} />
+              </button>
+              <div className="flex-1 overflow-y-auto p-6 pt-12">
+                <PrepareSessionIntro />
+              </div>
+              <div className="border-t border-[#F1F5F9] px-6 py-4 flex justify-end shrink-0">
                 <Button
-                  size="sm"
-                  className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
+                  size="md"
                   icon={<Play size={14} />}
                   onClick={() => { handleStartSession(); setShowPrepareModal(false); }}
                 >
                   Start counting session
                 </Button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-6">
-                <PrepareSessionIntro />
               </div>
             </motion.div>
           </div>
