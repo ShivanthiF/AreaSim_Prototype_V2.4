@@ -203,37 +203,6 @@ function _ScoreWidgetIllustration() {
   );
 }
 
-function SurveyIllustration() {
-  return (
-    <svg viewBox="0 0 280 108" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <motion.g animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 0.5 }}
-        style={{ transformOrigin: "140px 20px" }}>
-        <rect x="84" y="10" width="112" height="20" rx="10" fill="#8E84CC" />
-        <text x="140" y="23" textAnchor="middle" fontSize="8" fill="white" fontWeight="700">Conduct Survey</text>
-      </motion.g>
-      <rect x="22" y="38" width="236" height="62" rx="5" fill="white" stroke="#E5EAF0" strokeWidth="1.2" />
-      <rect x="32" y="46" width="120" height="6" rx="3" fill="#E5EAF0" />
-      {[0, 1, 2].map((i) => (
-        <motion.g key={i}
-          initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 + i * 0.4, duration: 0.3, repeat: Infinity, repeatDelay: 2.5 }}>
-          <motion.rect x="32" y={58 + i * 13} width="10" height="10" rx="2"
-            fill={i === 1 ? "#58B39E" : "white"} stroke={i === 1 ? "#58B39E" : "#C8D8E4"} strokeWidth="1.2"
-            animate={i === 1 ? { scale: [1, 1.1, 1] } : {}}
-            transition={{ delay: 1.2, duration: 0.6, repeat: Infinity, repeatDelay: 2.0 }} />
-          {i === 1 && (
-            <path d="M35 64 L37 67 L41 62" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          )}
-          <rect x="48" y={62 + i * 13} width={80 - i * 14} height="5" rx="2.5" fill="#F0F4F8" />
-        </motion.g>
-      ))}
-      <motion.rect x="200" y="82" width="48" height="14" rx="7" fill="#D1A45F"
-        animate={{ opacity: [0.7, 1, 0.7] }} transition={{ delay: 1.8, duration: 1.2, repeat: Infinity }} />
-      <text x="224" y="91" textAnchor="middle" fontSize="6.5" fill="white" fontWeight="700">Send →</text>
-    </svg>
-  );
-}
-
 // ─── Step data ────────────────────────────────────────────────────────────────
 
 type PositionType =
@@ -284,17 +253,10 @@ const STEPS: StepDef[] = [
   },
   {
     title: "Start room counting",
-    description: "You can get the capacity of each room at different times of day using the Start room counting button in the top navbar.",
+    description: "You can get the capacity of each room at different times of day using the Start room counting button in the counting stepper.",
     position: "below-header",
     arrowRightPx: 60,
     Illustration: CountingIllustration,
-  },
-  {
-    title: "Conduct a Survey",
-    description: "Send out a survey to gather your employees' opinions on their workspace experience.",
-    position: "below-header",
-    arrowRightPx: 130,
-    Illustration: SurveyIllustration,
   },
   // {
   //   title: "Track Your Progress",
@@ -516,23 +478,18 @@ export function GuideOverlay({ step, onNext, onBack, onClose }: GuideOverlayProp
   if (position === "inside-panel-group") {
     return (
       <>
-        <div className="fixed z-50 pointer-events-auto" style={{ left: "calc(66.667% + 8px)", top: "310px" }}>
+        <div className="fixed z-50 pointer-events-auto" style={{ left: "calc(66.667% + 8px)", top: "370px" }}>
           <AnimatePresence mode="wait">{card}</AnimatePresence>
         </div>
       </>
     );
   }
 
-  // Steps 5 & 6 — below header, up arrow pointing to navbar buttons
-  // Step 5: Start room counting (rightmost), Step 6: Conduct survey (leftmost of the three)
+  // Step 5 — right side of counting stepper, up arrow pointing to Start room counting button
   if (isBelowHeader) {
-    // arrowRightPx doubles as card position hint:
-    // step 5 = Count Room Capacity (Start room counting button, rightmost)
-    // step 6 = Conduct a Survey (Conduct survey button)
-    const cardRight = step === 4 ? "140px" : "380px";
     return (
       <>
-        <div className="fixed z-50 pointer-events-auto" style={{ top: "62px", right: cardRight }}>
+        <div className="fixed z-50 pointer-events-auto" style={{ top: "155px", right: "12px" }}>
           <AnimatePresence mode="wait">{card}</AnimatePresence>
         </div>
       </>

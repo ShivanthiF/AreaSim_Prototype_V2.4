@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
-import { Chip } from "@/components/ui/Chip";
 
 // Org-setup data (ported from the counting prototype)
 const ORG_MODELS = [
@@ -49,7 +47,6 @@ export function OrgSetupModal({ open, onClose, onComplete }: OrgSetupModalProps)
     <Modal open={open} onClose={onClose} size="md">
       {/* ── Header ── */}
       <div className="mb-5 pr-8">
-        <Chip tone="info">Before you start counting</Chip>
         <h2
           className="mt-3 text-xl text-text leading-tight"
           style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}
@@ -109,11 +106,9 @@ export function OrgSetupModal({ open, onClose, onComplete }: OrgSetupModalProps)
           size="md"
           className="w-full"
           disabled={!model}
-          icon={<ChevronRight size={16} />}
-          iconPosition="right"
           onClick={() => onComplete({ model, transition })}
         >
-          Continue to counting
+          Continue
         </Button>
       </div>
     </Modal>
