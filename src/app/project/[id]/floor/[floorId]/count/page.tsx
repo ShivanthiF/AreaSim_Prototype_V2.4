@@ -689,6 +689,9 @@ export default function FloorCountPage() {
 
   const _allRoomsSetup = rooms.every((r) => roomCategories[r.id] && verifiedRooms.has(r.id));
 
+  const currentFloorIndex = floors.findIndex((f) => f.id === activeFloorId);
+  const nextFloor = floors[currentFloorIndex + 1] ?? null;
+
   // Counting-stepper navigation — in-page phase switches stay on this page,
   // other steps route to their canonical destination.
   const handleStepClick = (id: CountingStepId) => {
@@ -729,18 +732,29 @@ export default function FloorCountPage() {
                     {editRoomSettings ? "Edit room setup" : "Room setup"}
                   </h2>
                 </div>
-                <Button
-                  size="sm"
-                  className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
-                  icon={<CheckCircle2 size={14} />}
-                  onClick={() => {
-                    if (allVerified) handleSetupConfirm();
-                    else if (rooms.some((r) => !roomCategories[r.id])) setShowCategoryRequiredModal(true);
-                    else setShowVerifyConfirmModal(true);
-                  }}
-                >
-                  Continue to next
-                </Button>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-9 px-5 shrink-0"
+                    disabled={!nextFloor}
+                    onClick={() => { if (nextFloor) setActiveFloorId(nextFloor.id); }}
+                  >
+                    Setup rooms in next floor
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
+                    icon={<CheckCircle2 size={14} />}
+                    onClick={() => {
+                      if (allVerified) handleSetupConfirm();
+                      else if (rooms.some((r) => !roomCategories[r.id])) setShowCategoryRequiredModal(true);
+                      else setShowVerifyConfirmModal(true);
+                    }}
+                  >
+                    Continue to counting
+                  </Button>
+                </div>
               </div>
 
               {/* Floor selector */}
