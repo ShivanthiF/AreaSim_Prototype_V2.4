@@ -737,6 +737,15 @@ export default function FloorCountPage() {
                     variant="secondary"
                     size="sm"
                     className="h-9 px-5 shrink-0"
+                    icon={<HelpCircle size={14} />}
+                    onClick={() => setShowQuestionsModal(true)}
+                  >
+                    Got questions?
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-9 px-5 shrink-0"
                     disabled={!nextFloor}
                     onClick={() => { if (nextFloor) setActiveFloorId(nextFloor.id); }}
                   >
@@ -1298,17 +1307,6 @@ export default function FloorCountPage() {
       <CountingStepper
         activeStep={countingPhase === "counting" ? "room-counting" : "active-session"}
         onStepClick={handleStepClick}
-        actions={
-          <Button
-            variant="secondary"
-            size="sm"
-            className="h-9 px-5 gap-2"
-            onClick={() => setShowQuestionsModal(true)}
-            icon={<HelpCircle size={14} />}
-          >
-            Got questions?
-          </Button>
-        }
       />
 
       <main className="flex-1 overflow-hidden flex relative p-6 gap-6 max-w-[1600px] mx-auto w-full">
@@ -1334,6 +1332,15 @@ export default function FloorCountPage() {
                   </h3>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-9 px-5 shrink-0"
+                    icon={<HelpCircle size={14} />}
+                    onClick={() => setShowQuestionsModal(true)}
+                  >
+                    Got questions?
+                  </Button>
                   {isRecording && (
                     <div className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm">
                       <span className="text-lg font-bold text-primary tabular-nums" style={{ fontFamily: "var(--font-manrope)" }}>
@@ -1694,19 +1701,30 @@ export default function FloorCountPage() {
                     Enter headcount
                   </h3>
                 </div>
-                {isRecording && (
-                  <div className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm shrink-0">
-                    <span className="text-lg font-bold text-primary tabular-nums" style={{ fontFamily: "var(--font-manrope)" }}>
-                      {formatTime(timer)}
-                    </span>
-                    <button
-                      onClick={() => setShowStopModal(true)}
-                      className="w-6 h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
-                    >
-                      <div className="w-2.5 h-2.5 rounded-sm bg-white" />
-                    </button>
-                  </div>
-                )}
+                <div className="flex items-center gap-3 shrink-0">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-9 px-5 shrink-0"
+                    icon={<HelpCircle size={14} />}
+                    onClick={() => setShowQuestionsModal(true)}
+                  >
+                    Got questions?
+                  </Button>
+                  {isRecording && (
+                    <div className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm">
+                      <span className="text-lg font-bold text-primary tabular-nums" style={{ fontFamily: "var(--font-manrope)" }}>
+                        {formatTime(timer)}
+                      </span>
+                      <button
+                        onClick={() => setShowStopModal(true)}
+                        className="w-6 h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
+                      >
+                        <div className="w-2.5 h-2.5 rounded-sm bg-white" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Floor selector — below header */}
