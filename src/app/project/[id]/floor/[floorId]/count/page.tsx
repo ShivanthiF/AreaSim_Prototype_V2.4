@@ -198,6 +198,39 @@ const OBSERVATION_PROMPTS = [
   "Is the room size appropriate for the group using it?",
 ];
 
+/** Collapsible info bar used for the Room setup guidance notes. */
+function InfoAccordion({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-2xl border border-[#E2E8F0] bg-surface-2 overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-[#FFFDFA]"
+      >
+        <Info size={16} className="shrink-0 text-text-muted" />
+        <span className="flex-1 text-sm font-semibold text-text font-body">{title}</span>
+        <ChevronDown size={16} className={cn("text-text-muted transition-transform shrink-0", open && "rotate-180")} />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-3 pl-[42px] text-sm text-text-muted font-body leading-relaxed">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 /** Concept 2 intro shown on the "Prepare session" step (no concept picker, no rooms table). */
 function PrepareSessionIntro() {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
@@ -298,6 +331,8 @@ export default function FloorCountPage() {
   const [editRoomSettings, setEditRoomSettings] = useState(false);
   // Shown when the user tries to verify a room (or continue) before setting a category
   const [showCategoryRequiredModal, setShowCategoryRequiredModal] = useState(false);
+  // Prepare-session content now shown as a modal on the "Pick rooms to count" step
+  const [showPrepareModal, setShowPrepareModal] = useState(false);
   // Per-room category selected during setup
   const [roomCategories, setRoomCategories] = useState<Record<string, string>>({});
   const [verifiedRooms, setVerifiedRooms] = useState<Set<string>>(new Set());
@@ -392,10 +427,10 @@ export default function FloorCountPage() {
   const activeRound = getActiveRound();
   const roundLabel = activeRound ? `${activeRound.label} of 5 today` : "No active round";
 
-  // Navigate to session-details phase when arriving from history page
+  // Navigate to the Pick rooms to count phase when arriving via the legacy hash
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash === "#session-details") {
-      setCountingPhase("ready");
+      setCountingPhase("session");
       window.history.replaceState(null, "", window.location.pathname);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -661,11 +696,14 @@ export default function FloorCountPage() {
 
   // ── Setup screen confirm ──────────────────────────────────────────────────────
   const handleSetupConfirm = () => {
-    setCountingPhase("ready");
+    setCountingPhase("session");
     if (editRoomSettings) {
-      // Returning from "Edit room setup" — don't prompt to start the session
+      // Returning from "Edit room setup" — go straight back, no prepare-session modal
       setEditRoomSettings(false);
+      return;
     }
+    // Moving from Room setup → Pick rooms to count: show the prepare-session modal
+    setShowPrepareModal(true);
   };
 
   const _allRoomsSetup = rooms.every((r) => roomCategories[r.id] && verifiedRooms.has(r.id));
@@ -674,7 +712,6 @@ export default function FloorCountPage() {
   // other steps route to their canonical destination.
   const handleStepClick = (id: CountingStepId) => {
     if (id === "room-setup") { setEditRoomSettings(false); setCountingPhase("setup"); return; }
-    if (id === "session-details") { setCountingPhase("ready"); return; }
     if (id === "active-session") { setCountingPhase("session"); return; }
     if (id === "room-counting") { setCountingPhase("counting"); return; }
     router.push(countingStepHref(projectId, floorId, id));
@@ -761,40 +798,36 @@ export default function FloorCountPage() {
                   ].map(({ color, Icon, title, body }) => (
                     <div
                       key={title}
-                      className="rounded-2xl border p-4 text-center"
+                      className="rounded-2xl border p-4 flex items-center gap-3"
                       style={{ background: `${color}14`, borderColor: `${color}33` }}
                     >
-                      <div className="flex justify-center mb-1.5" style={{ color }}>
-                        <Icon size={22} />
+                      <div
+                        className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shrink-0"
+                        style={{ border: `1px solid ${color}33`, color }}
+                      >
+                        <Icon size={20} />
                       </div>
-                      <p className="text-sm font-bold" style={{ color, fontFamily: "var(--font-manrope)" }}>
-                        {title}
-                      </p>
-                      <p className="text-xs text-text-muted font-body mt-0.5">{body}</p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold" style={{ color, fontFamily: "var(--font-manrope)" }}>
+                          {title}
+                        </p>
+                        <p className="text-xs text-text-muted font-body mt-0.5">{body}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Help info bar */}
-                <div className="flex items-start gap-2.5 rounded-2xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm font-body text-text-muted">
-                  <Info size={16} className="shrink-0 text-text-muted mt-0.5" />
-                  <span>
-                    <strong className="font-semibold text-text">Why Are Room Category and Capacity Important?</strong>{" "}
-                    The objective of setting the room capacity is to gather information about the available number of seats
-                    across the office so that we can monitor the use of meeting room capacity in order to optimise the meeting
-                    room setup based on findings.
-                  </span>
-                </div>
+                {/* Collapsible info accordions */}
+                <InfoAccordion title="Why Are Room Category and Capacity Important?">
+                  The objective of setting the room capacity is to gather information about the available number of seats
+                  across the office so that we can monitor the use of meeting room capacity in order to optimise the meeting
+                  room setup based on findings.
+                </InfoAccordion>
 
-                {/* Category hint */}
-                <div className="flex items-start gap-2.5 rounded-2xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm font-body text-text-muted">
-                  <Info size={16} className="shrink-0 text-text-muted mt-0.5" />
-                  <span>
-                    <strong className="font-semibold text-text">Not sure about room category?</strong> Pick the closest match.
-                    You can edit it at any time. Consistency across counters matters more than perfection. Once you set the
-                    room category and capacity, verify rooms.
-                  </span>
-                </div>
+                <InfoAccordion title="Not sure about room category?">
+                  Pick the closest match. You can edit it at any time. Consistency across counters matters more than
+                  perfection. Once you set the room category and capacity, verify rooms.
+                </InfoAccordion>
               </div>
 
               {/* ── Inline bulk category card — shown when rooms are selected ── */}
@@ -1368,7 +1401,7 @@ export default function FloorCountPage() {
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
       <CountingStepper
-        activeStep={countingPhase === "counting" ? "room-counting" : countingPhase === "session" ? "active-session" : "session-details"}
+        activeStep={countingPhase === "counting" ? "room-counting" : "active-session"}
         onStepClick={handleStepClick}
       />
 
@@ -1388,37 +1421,23 @@ export default function FloorCountPage() {
                   <div className="flex items-center gap-1.5 text-xs font-body">
                     <span className="text-text-muted">Room counting tool</span>
                     <span className="text-text-muted">/</span>
-                    <span className="font-semibold text-text">{countingPhase === "ready" ? "Prepare session" : "Pick rooms to count"}</span>
+                    <span className="font-semibold text-text">Pick rooms to count</span>
                   </div>
                   <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
-                    {countingPhase === "ready" ? "Prepare session" : "Pick rooms to count"}
+                    Pick rooms to count
                   </h3>
                 </div>
-                {countingPhase === "ready" ? (
-                  <Button
-                    size="sm"
-                    className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
-                    icon={<Play size={14} />}
-                    onClick={handleStartSession}
-                  >
-                    Start counting session
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
-                    icon={<Play size={14} />}
-                    onClick={() => { if (!selectedRoomId && rooms[0]) setSelectedRoomId(rooms[0].id); setCountingPhase("counting"); }}
-                  >
-                    Start room counting
-                  </Button>
-                )}
+                <Button
+                  size="sm"
+                  className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
+                  icon={<Play size={14} />}
+                  onClick={() => { if (!selectedRoomId && rooms[0]) setSelectedRoomId(rooms[0].id); setCountingPhase("counting"); }}
+                >
+                  Start room counting
+                </Button>
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {/* Prepare session — Concept 2 intro (only in the ready phase) */}
-                {countingPhase === "ready" && <PrepareSessionIntro />}
-
                 {/* Banner + dates + round indicator — one row */}
                 <div className="flex items-center gap-4 flex-wrap">
                   <div className="flex-1 min-w-[220px]">
@@ -1823,19 +1842,18 @@ export default function FloorCountPage() {
                           className="overflow-hidden"
                         >
                           <div className="border-t border-[#F1F5F9] p-5 space-y-3">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[11px] font-bold tracking-[0.06em] text-primary font-body">Suggestions</span>
-                              <button
-                                onClick={() => setShowQuestionsModal(true)}
-                                title="What to observe"
-                                className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold hover:bg-primary/15 transition-colors"
-                              >
-                                ?
-                              </button>
-                            </div>
+                            <span className="text-[11px] font-bold tracking-[0.06em] text-primary font-body">Suggestions</span>
                             <div className="flex flex-wrap gap-2">
                               {OBSERVATION_PROMPTS.map((p) => (
-                                <span key={p} className="px-3 py-1.5 rounded-full bg-surface-2 border border-border text-xs text-text-muted font-body">{p}</span>
+                                <button
+                                  key={p}
+                                  type="button"
+                                  onClick={() => setRoomComment((prev) => (prev.trim() ? `${prev.trim()}\n${p}` : p))}
+                                  title="Add to your observations"
+                                  className="px-3 py-1.5 rounded-full bg-surface-2 border border-border text-xs text-text-muted font-body text-left hover:bg-primary/5 hover:border-primary/30 hover:text-text transition-colors"
+                                >
+                                  {p}
+                                </button>
                               ))}
                             </div>
                             <textarea
@@ -1950,6 +1968,45 @@ export default function FloorCountPage() {
         </div>
         <div className="text-[10px] text-text-muted font-body">Areasim workspace intelligence</div>
       </footer>
+
+      {/* ── Prepare session modal (shown on arriving at "Pick rooms to count") ── */}
+      <AnimatePresence>
+        {showPrepareModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 16 }}
+              transition={{ duration: 0.22 }}
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl w-full max-w-3xl max-h-[88vh] flex flex-col overflow-hidden"
+            >
+              <div className="px-6 sm:px-8 pt-6 pb-5 border-b border-[#F1F5F9] flex items-end justify-between gap-3 shrink-0">
+                <div>
+                  <div className="flex items-center gap-1.5 text-xs font-body mb-2">
+                    <span className="text-text-muted">Room counting tool</span>
+                    <span className="text-text-muted">/</span>
+                    <span className="font-semibold text-text">Prepare session</span>
+                  </div>
+                  <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+                    Prepare session
+                  </h3>
+                </div>
+                <Button
+                  size="sm"
+                  className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
+                  icon={<Play size={14} />}
+                  onClick={() => { handleStartSession(); setShowPrepareModal(false); }}
+                >
+                  Start counting session
+                </Button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6">
+                <PrepareSessionIntro />
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ── Save comments modal ─────────────────────────────────────────────────── */}
       <AnimatePresence>
