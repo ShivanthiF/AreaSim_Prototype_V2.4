@@ -1836,27 +1836,57 @@ export default function FloorCountPage() {
 
                     {/* Observations Section */}
                     <div className="border-t border-[#F1F5F9] pt-6 mt-6 w-full max-w-2xl mx-auto space-y-3 text-left">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-bold tracking-[0.06em] text-primary font-body uppercase">Suggestions</span>
+                      <div className="mb-2">
+                        <h4 className="text-[17px] font-bold text-[#222B27]" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>Observations</h4>
+                        <p className="text-[14px] text-[#64748B] font-body mt-0.5">Note how the space is being used, then submit your observations.</p>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {OBSERVATION_PROMPTS.map((p) => (
-                          <button
-                            key={p}
-                            onClick={() => setRoomComment((prev) => prev ? `${prev}\n${p}` : p)}
-                            className="px-3 py-1.5 rounded-full bg-surface-2 border border-border text-xs text-text-muted font-body hover:bg-primary/5 hover:border-primary/30 transition-all text-left"
+                      
+                      <div className="border border-[#E2E8F0] rounded-[20px] p-4 sm:p-5 space-y-4 bg-white shadow-sm">
+                        <div className="flex flex-wrap gap-2">
+                          {OBSERVATION_PROMPTS.map((p) => (
+                            <button
+                              key={p}
+                              onClick={() => setRoomComment((prev) => prev ? `${prev}\n${p}` : p)}
+                              className="px-3 py-1.5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] text-[13px] text-[#64748B] font-body hover:bg-primary/5 hover:border-primary/30 transition-all text-left leading-snug"
+                            >
+                              {p}
+                            </button>
+                          ))}
+                        </div>
+                        <textarea
+                          value={roomComment}
+                          onChange={(e) => setRoomComment(e.target.value)}
+                          placeholder="What did you notice here?"
+                          rows={3}
+                          className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-[14px] text-[#222B27] font-body placeholder:text-[#94A3B8] focus:outline-none focus:border-[#139485] focus:ring-2 focus:ring-[rgba(19,148,133,0.1)] transition-all resize-none"
+                        />
+                        <div className="flex justify-end gap-3 pt-2">
+                          <Button
+                            variant="secondary"
+                            size="md"
+                            className="rounded-full px-6 font-bold shadow-none border-[#CBD5E1] text-[#334155] hover:bg-[#F1F5F9]"
+                            onClick={() => setRoomComment("")}
                           >
-                            {p}
-                          </button>
-                        ))}
+                            Cancel
+                          </Button>
+                          <Button
+                            size="md"
+                            className="rounded-full px-8 font-bold shadow-none bg-[#96D1C4] hover:bg-[#7ABCAE] text-white border-none"
+                            disabled={!roomComment.trim()}
+                            onClick={() => {
+                              if (roomComment.trim()) {
+                                setRoomComments((prev) => ({
+                                  ...prev,
+                                  [selectedRoomId ?? "floor"]: roomComment.trim(),
+                                }));
+                                setRoomComment("");
+                              }
+                            }}
+                          >
+                            Save
+                          </Button>
+                        </div>
                       </div>
-                      <textarea
-                        value={roomComment}
-                        onChange={(e) => setRoomComment(e.target.value)}
-                        placeholder="What did you notice here?"
-                        rows={3}
-                        className="w-full mt-2 rounded-xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm text-[#222B27] font-body placeholder:text-text-muted focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] transition-all resize-none"
-                      />
                     </div>
 
                     <div className="flex justify-center">
