@@ -353,7 +353,6 @@ export default function FloorCountPage() {
 
   // Comment state
   const [roomComment, setRoomComment] = useState("");
-  const [commentsExpanded, setCommentsExpanded] = useState(false);
   const [_roomComments, setRoomComments] = useState<Record<string, string>>({});
   const [showSaveCommentsModal, setShowSaveCommentsModal] = useState(false);
   const [commentPendingAction, setCommentPendingAction] = useState<"done" | "exit" | null>(null);
@@ -1794,88 +1793,6 @@ export default function FloorCountPage() {
 
                 {/* Counter */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                  {/* Observations — collapsible (suggestions + notes) */}
-                  <div className={cn("rounded-2xl border border-[#E2E8F0] overflow-hidden font-body", commentsExpanded ? "bg-white" : "bg-[#FFFCF8]")}>
-                    <button
-                      onClick={() => setCommentsExpanded((v) => !v)}
-                      className="w-full flex items-start gap-3 px-5 py-4 text-left transition-colors hover:bg-[#fafafa]"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-text font-body">Observations</p>
-                        <p className="text-xs text-text-muted font-body mt-0.5">
-                          Note how the space is being used, then submit your observations.
-                        </p>
-                        {!commentsExpanded && roomComment.trim() && (
-                          <p className="text-xs text-text-muted/80 italic font-body mt-1 truncate">
-                            &ldquo;{roomComment}&rdquo;
-                          </p>
-                        )}
-                      </div>
-                      <ChevronDown size={18} className={cn("text-text-muted transition-transform shrink-0 mt-0.5", commentsExpanded && "rotate-180")} />
-                    </button>
-                    <AnimatePresence initial={false}>
-                      {commentsExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="border-t border-[#F1F5F9] p-5 space-y-3">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[11px] font-bold tracking-[0.06em] text-primary font-body">Suggestions</span>
-                              <button
-                                onClick={() => setShowQuestionsModal(true)}
-                                title="What to observe"
-                                className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold hover:bg-primary/15 transition-colors"
-                              >
-                                ?
-                              </button>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {OBSERVATION_PROMPTS.map((p) => (
-                                <span key={p} className="px-3 py-1.5 rounded-full bg-surface-2 border border-border text-xs text-text-muted font-body">{p}</span>
-                              ))}
-                            </div>
-                            <textarea
-                              value={roomComment}
-                              onChange={(e) => setRoomComment(e.target.value)}
-                              placeholder="What did you notice here?"
-                              rows={3}
-                              className="w-full rounded-xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm text-[#222B27] font-body placeholder:text-text-muted focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] transition-all resize-none"
-                            />
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="secondary"
-                                size="md"
-                                className="px-7"
-                                onClick={() => { setRoomComment(""); setCommentsExpanded(false); }}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                size="md"
-                                className="px-7"
-                                disabled={!roomComment.trim()}
-                                onClick={() => {
-                                  if (roomComment.trim()) {
-                                    setRoomComments((prev) => ({
-                                      ...prev,
-                                      [selectedRoomId ?? "floor"]: roomComment.trim(),
-                                    }));
-                                  }
-                                }}
-                              >
-                                Save
-                              </Button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
                   <div className="text-center space-y-3">
                     {/* Room name + zone — one line, separated by a dash */}
                     <h3
@@ -1916,6 +1833,32 @@ export default function FloorCountPage() {
                         </button>
                       </div>
                     </div>
+
+                    {/* Observations Section */}
+                    <div className="border-t border-[#F1F5F9] pt-6 mt-6 w-full max-w-2xl mx-auto space-y-3 text-left">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold tracking-[0.06em] text-primary font-body uppercase">Suggestions</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {OBSERVATION_PROMPTS.map((p) => (
+                          <button
+                            key={p}
+                            onClick={() => setRoomComment((prev) => prev ? `${prev}\n${p}` : p)}
+                            className="px-3 py-1.5 rounded-full bg-surface-2 border border-border text-xs text-text-muted font-body hover:bg-primary/5 hover:border-primary/30 transition-all text-left"
+                          >
+                            {p}
+                          </button>
+                        ))}
+                      </div>
+                      <textarea
+                        value={roomComment}
+                        onChange={(e) => setRoomComment(e.target.value)}
+                        placeholder="What did you notice here?"
+                        rows={3}
+                        className="w-full mt-2 rounded-xl border border-[#E2E8F0] bg-surface-2 px-4 py-3 text-sm text-[#222B27] font-body placeholder:text-text-muted focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] transition-all resize-none"
+                      />
+                    </div>
+
                     <div className="flex justify-center">
                       <Button
                         size="lg"
