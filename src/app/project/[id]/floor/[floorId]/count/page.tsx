@@ -1375,11 +1375,11 @@ export default function FloorCountPage() {
 
         {/* ── Prepare session / Pick rooms to count — left panel ── */}
         {countingPhase !== "counting" && (
-        <motion.div
-          layout
-          transition={{ type: "spring", stiffness: 300, damping: 35 }}
-          className="flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden flex-1 min-w-0"
-        >
+          <motion.div
+            layout
+            transition={{ type: "spring", stiffness: 300, damping: 35 }}
+            className="flex flex-col h-full bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden flex-1 min-w-0"
+          >
             <>
               {/* Panel header — matches the Room setup title section */}
               <div className="border-b border-[#F1F5F9] pt-6 sm:pt-8 pb-5 px-6 sm:px-8 flex items-end justify-between gap-3">
@@ -1709,7 +1709,7 @@ export default function FloorCountPage() {
                 </Table>
               </div>
             </>
-        </motion.div>
+          </motion.div>
         )}
 
         {/* ── Enter headcount — room list sidebar + counter in one card ── */}
@@ -1835,13 +1835,13 @@ export default function FloorCountPage() {
                     </div>
 
                     {/* Observations Section */}
-                    <div className="border-t border-[#F1F5F9] pt-6 mt-6 w-full max-w-2xl mx-auto space-y-3 text-left">
-                      <div className="mb-2">
-                        <h4 className="text-[17px] font-bold text-[#222B27]" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>Observations</h4>
-                        <p className="text-[14px] text-[#64748B] font-body mt-0.5">Note how the space is being used, then submit your observations.</p>
-                      </div>
-                      
+                    <div className="pt-6 mt-6 w-full max-w-2xl mx-auto space-y-3 text-left">
+
                       <div className="border border-[#E2E8F0] rounded-[20px] p-4 sm:p-5 space-y-4 bg-white shadow-sm">
+                        <div className="mb-2">
+                          <h4 className="text-[17px] font-bold text-[#222B27]" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>Observations</h4>
+                          <p className="text-[14px] text-[#64748B] font-body mt-0.5">Note how the space is being used, then submit your observations.</p>
+                        </div>
                         <div className="flex flex-wrap gap-2">
                           {OBSERVATION_PROMPTS.map((p) => (
                             <button
