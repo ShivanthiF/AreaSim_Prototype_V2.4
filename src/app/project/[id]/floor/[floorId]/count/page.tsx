@@ -773,15 +773,13 @@ export default function FloorCountPage() {
                   <select
                     value={activeFloorId}
                     onChange={(e) => setActiveFloorId(e.target.value)}
-                    className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                    className="appearance-none w-full rounded-xl border border-[#969696] bg-white px-4 py-2.5 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
                   >
                     {floors.map((f) => (
                       <option key={f.id} value={f.id}>{f.name}</option>
                     ))}
                   </select>
-                  <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted" />
                 </div>
               </div>
 
@@ -1374,7 +1372,7 @@ export default function FloorCountPage() {
                       <select
                         value={selectedFloorName}
                         onChange={(e) => setSelectedFloorName(e.target.value)}
-                        className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                        className="appearance-none w-full rounded-xl border border-[#969696] bg-white px-4 py-2.5 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
                       >
                         {["Ground Floor", "1st Floor", "2nd Floor"].map((f) => (
                           <option key={f} value={f}>{f}</option>
@@ -1734,15 +1732,13 @@ export default function FloorCountPage() {
                   <select
                     value={activeFloorId}
                     onChange={(e) => setActiveFloorId(e.target.value)}
-                    className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                    className="appearance-none w-full rounded-xl border border-[#969696] bg-white px-4 py-2.5 pr-10 text-sm text-[#222B27] font-body transition-all duration-200 cursor-pointer focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
                   >
                     {floors.map((f) => (
                       <option key={f.id} value={f.id}>{f.name}</option>
                     ))}
                   </select>
-                  <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted" />
                 </div>
               </div>
 
