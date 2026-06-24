@@ -7,13 +7,14 @@ import { UserAvatar } from "@/components/ui/UserAvatar";
 import { mockProject } from "@/lib/mockData";
 
 interface CountingTopNavProps {
-  floorValue: string;
-  floorOptions: { value: string; label: string }[];
-  onFloorChange: (value: string) => void;
+  floorValue?: string;
+  floorOptions?: { value: string; label: string }[];
+  onFloorChange?: (value: string) => void;
+  hideFloorSelector?: boolean;
 }
 
 /** Top navbar shared across all counting-stepper steps — mirrors the canvas page navbar. */
-export function CountingTopNav({ floorValue, floorOptions, onFloorChange }: CountingTopNavProps) {
+export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFloorSelector = false }: CountingTopNavProps) {
   const router = useRouter();
 
   return (
@@ -30,23 +31,27 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange }: Coun
         {mockProject.name}
       </span>
 
-      <span className="hidden sm:block w-1 h-1 rounded-full bg-border" />
+      {!hideFloorSelector && (
+        <>
+          <span className="hidden sm:block w-1 h-1 rounded-full bg-border" />
 
-      {/* Floor selector */}
-      <div className="relative min-w-[148px]">
-        <select
-          value={floorValue}
-          onChange={(e) => onFloorChange(e.target.value)}
-          className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
-        >
-          {floorOptions.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
-        <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
+          {/* Floor selector */}
+          <div className="relative min-w-[148px]">
+            <select
+              value={floorValue}
+              onChange={(e) => onFloorChange?.(e.target.value)}
+              className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+            >
+              {floorOptions?.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </>
+      )}
 
       <div className="ml-auto flex items-center gap-2">
         <LanguageSelector />

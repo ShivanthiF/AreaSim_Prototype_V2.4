@@ -705,6 +705,7 @@ export default function FloorCountPage() {
           floorValue={activeFloorId}
           floorOptions={floors.map((f) => ({ value: f.id, label: f.name }))}
           onFloorChange={setActiveFloorId}
+          hideFloorSelector
         />
 
         {/* ── Workplace Journey Bar ── */}
@@ -740,6 +741,25 @@ export default function FloorCountPage() {
                 >
                   Continue to next
                 </Button>
+              </div>
+
+              {/* Floor selector */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-text font-body">Select floor</span>
+                <div className="relative min-w-[180px]">
+                  <select
+                    value={activeFloorId}
+                    onChange={(e) => setActiveFloorId(e.target.value)}
+                    className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                  >
+                    {floors.map((f) => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </select>
+                  <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
               </div>
 
               {/* ── Setup guidance ── */}
@@ -1257,15 +1277,7 @@ export default function FloorCountPage() {
     <div className="h-screen bg-bg flex flex-col font-body overflow-hidden">
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
-      <CountingTopNav
-        floorValue={selectedFloorName}
-        floorOptions={[
-          { value: "Ground Floor", label: "Ground Floor" },
-          { value: "1st Floor", label: "1st Floor" },
-          { value: "2nd Floor", label: "2nd Floor" },
-        ]}
-        onFloorChange={setSelectedFloorName}
-      />
+      <CountingTopNav hideFloorSelector />
 
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
@@ -1333,34 +1345,52 @@ export default function FloorCountPage() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {/* Banner + dates + round indicator — one row */}
-                <div className="flex items-center gap-4 flex-wrap">
-                  <div className="flex-1 min-w-[220px]">
-                    <RoundBanner isRecording={isRecording} roundInfo={`${roundLabel} · Day 1 of 14`} />
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <label className="text-xs font-semibold text-[#222B27] whitespace-nowrap">Start date</label>
-                    <div style={{ width: "140px" }}>
-                      <Input
-                        type="date"
-                        fieldSize="sm"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                      />
+                {/* Floor + dates row */}
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold text-[#222B27] whitespace-nowrap">Select floor</span>
+                    <div className="relative min-w-[160px]">
+                      <select
+                        value={selectedFloorName}
+                        onChange={(e) => setSelectedFloorName(e.target.value)}
+                        className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                      >
+                        {["Ground Floor", "1st Floor", "2nd Floor"].map((f) => (
+                          <option key={f} value={f}>{f}</option>
+                        ))}
+                      </select>
+                      <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <label className="text-xs font-semibold text-[#222B27] whitespace-nowrap">End date</label>
-                    <div style={{ width: "140px" }}>
-                      <Input
-                        type="date"
-                        fieldSize="sm"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                      />
+                  <div className="flex items-center gap-3 shrink-0 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-semibold text-[#222B27] whitespace-nowrap">Start date</label>
+                      <div style={{ width: "140px" }}>
+                        <Input
+                          type="date"
+                          fieldSize="sm"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-semibold text-[#222B27] whitespace-nowrap">End date</label>
+                      <div style={{ width: "140px" }}>
+                        <Input
+                          type="date"
+                          fieldSize="sm"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
+                {/* Banner — full width */}
+                <RoundBanner isRecording={isRecording} roundInfo={`${roundLabel} · Day 1 of 14`} />
 
                 {/* Summary stats */}
                 <div className="flex bg-surface-2 border border-border rounded-2xl overflow-hidden divide-x divide-border shadow-sm font-body">
@@ -1663,6 +1693,25 @@ export default function FloorCountPage() {
                     </button>
                   </div>
                 )}
+              </div>
+
+              {/* Floor selector — below header */}
+              <div className="px-6 sm:px-8 py-3 border-b border-[#F1F5F9] flex items-center gap-3 shrink-0">
+                <span className="text-sm font-semibold text-text font-body">Select floor</span>
+                <div className="relative min-w-[180px]">
+                  <select
+                    value={activeFloorId}
+                    onChange={(e) => setActiveFloorId(e.target.value)}
+                    className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                  >
+                    {floors.map((f) => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </select>
+                  <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
               </div>
 
               {/* Body — room list sidebar + counter */}
