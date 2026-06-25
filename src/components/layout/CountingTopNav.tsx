@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { HelpCircle } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { Button } from "@/components/ui/Button";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { mockProject } from "@/lib/mockData";
@@ -11,10 +13,11 @@ interface CountingTopNavProps {
   floorOptions?: { value: string; label: string }[];
   onFloorChange?: (value: string) => void;
   hideFloorSelector?: boolean;
+  onGotQuestions?: () => void;
 }
 
 /** Top navbar shared across all counting-stepper steps — mirrors the canvas page navbar. */
-export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFloorSelector = false }: CountingTopNavProps) {
+export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFloorSelector = false, onGotQuestions }: CountingTopNavProps) {
   const router = useRouter();
 
   return (
@@ -54,6 +57,17 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFl
       )}
 
       <div className="ml-auto flex items-center gap-2">
+        {onGotQuestions && (
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-8 px-4 shrink-0"
+            icon={<HelpCircle size={14} />}
+            onClick={onGotQuestions}
+          >
+            Got questions?
+          </Button>
+        )}
         <LanguageSelector />
         <UserAvatar onClick={() => router.push("/settings")} />
       </div>

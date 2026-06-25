@@ -14,7 +14,6 @@ import {
   X,
   ClipboardList,
   Clock,
-  HelpCircle,
   MessageSquare,
   Bell,
   Lock,
@@ -689,8 +688,15 @@ export default function FloorCountPage() {
 
   const _allRoomsSetup = rooms.every((r) => roomCategories[r.id] && verifiedRooms.has(r.id));
 
-  const currentFloorIndex = floors.findIndex((f) => f.id === activeFloorId);
-  const nextFloor = floors[currentFloorIndex + 1] ?? null;
+  const totalFloors = floors.length;
+  const verifiedFloors = floors.filter(f => {
+    const fr = f.rooms ?? [];
+    return fr.length > 0 && fr.every(r => verifiedRooms.has(r.id) && roomCategories[r.id]);
+  }).length;
+  const pendingFloors = totalFloors - verifiedFloors;
+  const currentFloorVerified = rooms.length > 0 && rooms.every(r => verifiedRooms.has(r.id) && roomCategories[r.id]);
+  const verifiedRoomsCount = rooms.filter(r => verifiedRooms.has(r.id) && roomCategories[r.id]).length;
+  const activeFloorName = floors.find(f => f.id === activeFloorId)?.name ?? "This floor";
 
   // Counting-stepper navigation — in-page phase switches stay on this page,
   // other steps route to their canonical destination.
@@ -709,6 +715,7 @@ export default function FloorCountPage() {
           floorOptions={floors.map((f) => ({ value: f.id, label: f.name }))}
           onFloorChange={setActiveFloorId}
           hideFloorSelector
+          onGotQuestions={() => setShowQuestionsModal(true)}
         />
 
         {/* ── Workplace Journey Bar ── */}
@@ -732,38 +739,18 @@ export default function FloorCountPage() {
                     {editRoomSettings ? "Edit room setup" : "Room setup"}
                   </h2>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="h-9 px-5 shrink-0"
-                    icon={<HelpCircle size={14} />}
-                    onClick={() => setShowQuestionsModal(true)}
-                  >
-                    Got questions?
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="h-9 px-5 shrink-0"
-                    disabled={!nextFloor}
-                    onClick={() => { if (nextFloor) setActiveFloorId(nextFloor.id); }}
-                  >
-                    Setup rooms in next floor
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
-                    icon={<CheckCircle2 size={14} />}
-                    onClick={() => {
-                      if (allVerified) handleSetupConfirm();
-                      else if (rooms.some((r) => !roomCategories[r.id])) setShowCategoryRequiredModal(true);
-                      else setShowVerifyConfirmModal(true);
-                    }}
-                  >
-                    Continue to counting
-                  </Button>
-                </div>
+                <Button
+                  size="sm"
+                  className="h-9 px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0"
+                  icon={<CheckCircle2 size={14} />}
+                  onClick={() => {
+                    if (allVerified) handleSetupConfirm();
+                    else if (rooms.some((r) => !roomCategories[r.id])) setShowCategoryRequiredModal(true);
+                    else setShowVerifyConfirmModal(true);
+                  }}
+                >
+                  Continue to counting
+                </Button>
               </div>
 
               {/* Floor selector */}
@@ -814,7 +801,7 @@ export default function FloorCountPage() {
                 </div>
 
                 {/* Collapsible info accordions */}
-                <InfoAccordion title="Why Are Room Category and Capacity Important?">
+                <InfoAccordion title="Why are room category and capacity important?">
                   The objective of setting the room capacity is to gather information about the available number of seats
                   across the office so that we can monitor the use of meeting room capacity in order to optimise the meeting
                   room setup based on findings.
@@ -919,16 +906,29 @@ export default function FloorCountPage() {
 
               {/* Per-room setup */}
               <div className="space-y-3">
-                {/* Progress bar */}
-                <div className="flex items-center gap-3 px-1">
-                  <span className="text-[11px] font-semibold text-text-muted tracking-wider font-body whitespace-nowrap">
-                    {rooms.filter((r) => roomCategories[r.id] && verifiedRooms.has(r.id)).length} of {rooms.length} rooms verified
-                  </span>
-                  <div className="flex-1 h-1.5 bg-surface-2 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#bfa483] rounded-full transition-all duration-300"
-                      style={{ width: `${rooms.length ? (rooms.filter((r) => roomCategories[r.id] && verifiedRooms.has(r.id)).length / rooms.length) * 100 : 0}%` }}
-                    />
+                {/* Room list heading + floor verification status */}
+                <div className="space-y-3">
+                  <h3 className="text-base font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>Room list</h3>
+
+                  {currentFloorVerified && (
+                    <div className="flex items-center gap-2.5 w-full bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                      <Check size={14} className="text-emerald-600 shrink-0" strokeWidth={3} />
+                      <p className="text-xs font-semibold text-emerald-700 font-body">
+                        {activeFloorName} is verified · {verifiedRoomsCount} of {rooms.length} rooms in {activeFloorName.toLowerCase()} are verified
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] font-semibold text-text-muted font-body whitespace-nowrap">
+                      {pendingFloors} of {totalFloors} floors are pending for verification
+                    </span>
+                    <div className="flex-1 h-1.5 bg-surface-2 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#bfa483] rounded-full transition-all duration-300"
+                        style={{ width: `${totalFloors ? (verifiedFloors / totalFloors) * 100 : 0}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1298,7 +1298,7 @@ export default function FloorCountPage() {
     <div className="h-screen bg-bg flex flex-col font-body overflow-hidden">
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
-      <CountingTopNav hideFloorSelector />
+      <CountingTopNav hideFloorSelector onGotQuestions={() => setShowQuestionsModal(true)} />
 
       {/* ── Workplace Journey Bar ── */}
       <WorkplaceJourneyBar activeStep="1-2" />
@@ -1330,15 +1330,6 @@ export default function FloorCountPage() {
                   </h3>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="h-9 px-5 shrink-0"
-                    icon={<HelpCircle size={14} />}
-                    onClick={() => setShowQuestionsModal(true)}
-                  >
-                    Got questions?
-                  </Button>
                   {isRecording && (
                     <div className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm">
                       <span className="text-lg font-bold text-primary tabular-nums" style={{ fontFamily: "var(--font-manrope)" }}>
@@ -1699,30 +1690,19 @@ export default function FloorCountPage() {
                     Enter headcount
                   </h3>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="h-9 px-5 shrink-0"
-                    icon={<HelpCircle size={14} />}
-                    onClick={() => setShowQuestionsModal(true)}
-                  >
-                    Got questions?
-                  </Button>
-                  {isRecording && (
-                    <div className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm">
-                      <span className="text-lg font-bold text-primary tabular-nums" style={{ fontFamily: "var(--font-manrope)" }}>
-                        {formatTime(timer)}
-                      </span>
-                      <button
-                        onClick={() => setShowStopModal(true)}
-                        className="w-6 h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
-                      >
-                        <div className="w-2.5 h-2.5 rounded-sm bg-white" />
-                      </button>
-                    </div>
-                  )}
-                </div>
+                {isRecording && (
+                  <div className="flex items-center gap-3 bg-white border border-primary rounded-full px-4 h-9 shadow-sm shrink-0">
+                    <span className="text-lg font-bold text-primary tabular-nums" style={{ fontFamily: "var(--font-manrope)" }}>
+                      {formatTime(timer)}
+                    </span>
+                    <button
+                      onClick={() => setShowStopModal(true)}
+                      className="w-6 h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
+                    >
+                      <div className="w-2.5 h-2.5 rounded-sm bg-white" />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Floor selector — below header */}
