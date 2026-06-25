@@ -2,9 +2,10 @@
 
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal, Gem, Play } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { SlidersHorizontal, Gem, Play, HelpCircle, MessageSquare, X, ChevronDown } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/Logo";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { Button } from "@/components/ui/Button";
@@ -38,6 +39,18 @@ export default function FloorPage() {
   } = useCanvasStore();
 
   const [_floorDropdownOpen, _setFloorDropdownOpen] = useState(false);
+
+  const [showQuestionsModal, setShowQuestionsModal] = useState(false);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [customQuestion, setCustomQuestion] = useState("");
+
+  const faqItems = [
+    { q: "Why do we do this counting exercise?", a: "To build a fact-based understanding of how we use our office facilities today." },
+    { q: "Can we see data continuously while we count?", a: "Yes." },
+    { q: "Do we need to count all areas including common areas in the building?", a: "Yes, everything needs to be counted." },
+    { q: "Do we need to count all seats, including in the social zones and the canteen?", a: "Yes." },
+    { q: "Can I split the counting in two (i.e. count half of the area at 8:00 and the other half at 09:00)?", a: "No. It is important to count the whole counting route at once and at the same time every day. The reason for this is that we need accurate and consistent information about how we use the facilities in order to be able to optimize our future." },
+  ];
 
   // Organisation-setup step (2nd counting sub-step). Opening the modal marks
   // "Open floor plan" done and moves the stepper to "Organisation setup".
@@ -169,6 +182,16 @@ export default function FloorPage() {
             </Button>
           )}
 
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-8 px-4 shrink-0"
+            icon={<HelpCircle size={14} />}
+            onClick={() => setShowQuestionsModal(true)}
+          >
+            Got questions?
+          </Button>
+
           <LanguageSelector />
 
           {/* User avatar */}
@@ -199,7 +222,7 @@ export default function FloorPage() {
               onClick={goToCounting}
               className="h-8 px-4"
             >
-              <span className="hidden sm:inline">Start room counting</span>
+              <span className="hidden sm:inline">Room setup</span>
             </Button>
           </>
         }
@@ -246,6 +269,86 @@ export default function FloorPage() {
         onClose={() => finishOrgSetup(false)}
         onComplete={handleOrgComplete}
       />
+
+      {/* ── Got questions modal ── */}
+      <AnimatePresence>
+        {showQuestionsModal && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full"
+            >
+              <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <MessageSquare size={18} className="text-primary" />
+                  </div>
+                  <h3 className="font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)" }}>
+                    Got questions?
+                  </h3>
+                </div>
+                <button onClick={() => setShowQuestionsModal(false)} className="text-text-muted hover:text-text transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="space-y-3">
+                  <p className="text-[11px] font-bold text-text-muted tracking-wider">Common Questions</p>
+                  <div className="divide-y divide-[#E2E8F0] rounded-2xl border border-[#E2E8F0] overflow-hidden">
+                    {faqItems.map((item, i) => (
+                      <div key={i} className="bg-[#F8FAFC]">
+                        <button
+                          onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                          className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-white transition-colors"
+                        >
+                          <span className="text-sm font-medium text-text leading-snug">{item.q}</span>
+                          <motion.div animate={{ rotate: expandedFaq === i ? 180 : 0 }} transition={{ duration: 0.2 }} className="shrink-0">
+                            <ChevronDown size={15} className={cn("transition-colors", expandedFaq === i ? "text-primary" : "text-text-muted")} />
+                          </motion.div>
+                        </button>
+                        <AnimatePresence initial={false}>
+                          {expandedFaq === i && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2, ease: "easeInOut" }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-4 pb-4 pt-0">
+                                <p className="text-sm text-text-muted leading-relaxed border-t border-[#E2E8F0] pt-3">{item.a}</p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-[11px] font-bold text-text-muted tracking-wider">Something else?</p>
+                  <textarea
+                    value={customQuestion}
+                    onChange={(e) => setCustomQuestion(e.target.value)}
+                    placeholder="Type your question here..."
+                    className="w-full h-24 rounded-xl border border-[#969696] bg-white text-[#222B27] font-body placeholder:text-[#98A1B2] px-5 py-3 text-sm transition-all duration-200 hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)] focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] resize-none"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button variant="secondary" size="md" className="flex-1" onClick={() => setShowQuestionsModal(false)}>
+                    Cancel
+                  </Button>
+                  <Button size="md" className="flex-1" onClick={() => { alert("Your questions have been sent to our consultants."); setShowQuestionsModal(false); setExpandedFaq(null); setCustomQuestion(""); }}>
+                    Send to consultants
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

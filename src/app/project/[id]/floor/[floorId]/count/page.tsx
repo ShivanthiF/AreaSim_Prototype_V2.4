@@ -22,9 +22,7 @@ import {
   Pencil,
   Save,
   Users,
-  Target,
   Coffee,
-  Box,
   CheckCircle2,
   BarChart3,
   Search,
@@ -35,6 +33,16 @@ import {
   Armchair,
   NotebookPen,
   Activity,
+  LayoutGrid,
+  VolumeX,
+  Briefcase,
+  Shuffle,
+  Globe,
+  Folder,
+  Phone,
+  Settings2,
+  MessageCircle,
+  UtensilsCrossed,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -78,16 +86,38 @@ function getNextRound() {
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Category = "meeting" | "focus" | "social" | "empty";
 type CountingPhase = "setup" | "ready" | "session" | "counting";
 type RoomStatus = "pending" | "ongoing" | "counted";
 
-const FLOOR_CATEGORIES: { id: Category; label: string; desc: string; color: string; badge: string; text: string }[] = [
-  { id: "meeting", label: "Meeting", desc: "Collaborative rooms with shared tables", color: "border-blue-200 bg-blue-50", badge: "bg-blue-100 text-blue-700", text: "text-blue-700" },
-  { id: "focus", label: "Focus", desc: "Quiet individual workspaces", color: "border-violet-200 bg-violet-50", badge: "bg-violet-100 text-violet-700", text: "text-violet-700" },
-  { id: "social", label: "Social", desc: "Casual lounge areas for informal gatherings", color: "border-emerald-200 bg-emerald-50", badge: "bg-emerald-100 text-emerald-700", text: "text-emerald-700" },
-  { id: "empty", label: "Empty", desc: "Vacant or transitional spaces", color: "border-gray-200 bg-gray-50", badge: "bg-gray-100 text-gray-600", text: "text-gray-600" },
+const FLOOR_CATEGORIES: { id: string; label: string; desc: string }[] = [
+  { id: "open-workspace", label: "Open workspace area", desc: "Open plan area for collaborative and team work" },
+  { id: "quiet-zone", label: "Quiet zone", desc: "Individual focus workspaces with no interruptions" },
+  { id: "office", label: "Office", desc: "Private or enclosed office space" },
+  { id: "meeting-room", label: "Meeting room", desc: "Collaborative rooms with shared tables" },
+  { id: "multi-purpose", label: "Multi-purpose room", desc: "Flexible space adaptable to multiple uses" },
+  { id: "work-cafe", label: "Work cafe", desc: "Café-style informal work and social setting" },
+  { id: "external-zone", label: "External zone", desc: "Areas accessible to visitors or external parties" },
+  { id: "project-zone", label: "Project zone", desc: "Dedicated space for focused project teams" },
+  { id: "booth", label: "Booth", desc: "Small enclosed phone or focus booth" },
+  { id: "dropdown-setting", label: "Dropdown setting", desc: "Adjustable and configurable workspace setting" },
+  { id: "social-zone", label: "Social zone", desc: "Casual lounge areas for informal gatherings" },
+  { id: "cafe-area", label: "Cafe area", desc: "Café and dining facilities for the workspace" },
 ];
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  "open-workspace": <LayoutGrid size={20} />,
+  "quiet-zone": <VolumeX size={20} />,
+  "office": <Briefcase size={20} />,
+  "meeting-room": <Users size={20} />,
+  "multi-purpose": <Shuffle size={20} />,
+  "work-cafe": <Coffee size={20} />,
+  "external-zone": <Globe size={20} />,
+  "project-zone": <Folder size={20} />,
+  "booth": <Phone size={20} />,
+  "dropdown-setting": <Settings2 size={20} />,
+  "social-zone": <MessageCircle size={20} />,
+  "cafe-area": <UtensilsCrossed size={20} />,
+};
 
 interface RoomMeta {
   status: RoomStatus;
@@ -749,7 +779,7 @@ export default function FloorCountPage() {
                     else setShowVerifyConfirmModal(true);
                   }}
                 >
-                  Continue to counting
+                  Start counting
                 </Button>
               </div>
 
@@ -846,41 +876,44 @@ export default function FloorCountPage() {
                           id: cc,
                           label: cc,
                           desc: "Custom category",
-                          color: "border-gray-200 bg-gray-50",
-                          badge: "bg-gray-100 text-gray-600",
-                          text: "text-gray-600",
                         })),
                       ].map((fc) => {
-                        const iconMap: Record<string, React.ReactNode> = {
-                          meeting: <Users size={16} />,
-                          focus: <Target size={16} />,
-                          social: <Coffee size={16} />,
-                          empty: <Box size={16} />,
-                        };
-                        const icon = iconMap[fc.id] ?? <Layers size={16} />;
+                        const icon = CATEGORY_ICONS[fc.id] ?? <Layers size={20} />;
                         const isSelected = bulkCategory === fc.id;
                         return (
                           <button
                             key={fc.id}
                             onClick={() => setBulkCategory(fc.id)}
-                            className={`flex flex-col items-start gap-1.5 p-3 rounded-xl border transition-all min-w-[120px] text-left shrink-0 ${isSelected ? "border-primary bg-primary/5 shadow-sm" : "border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC]"
-                              }`}
+                            className={`relative flex flex-col gap-2 p-3 rounded-xl border transition-all min-w-[100px] text-left shrink-0 ${isSelected ? "border-primary bg-primary/5 shadow-sm" : "border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC]"}`}
                           >
-                            <div className={`${isSelected ? "text-primary" : "text-text-muted"}`}>{icon}</div>
-                            <div>
-                              <p className={`text-xs font-bold leading-none mb-0.5 ${isSelected ? "text-primary" : "text-text"}`}>{fc.label}</p>
-                              <p className="text-[10px] text-text-muted leading-tight">{fc.desc}</p>
+                            {/* Top row: icon + checkmark when selected */}
+                            <div className="flex items-start justify-between w-full">
+                              <div className={isSelected ? "text-primary" : "text-text-muted"}>{icon}</div>
+                              {isSelected && <Check size={12} className="text-primary shrink-0" strokeWidth={3} />}
                             </div>
-                            {isSelected && <Check size={10} className="text-primary ml-auto mt-auto" strokeWidth={3} />}
+                            {/* Bottom row: label + info tooltip */}
+                            <div className="flex items-end justify-between w-full gap-1">
+                              <p className={`text-xs font-bold leading-tight ${isSelected ? "text-primary" : "text-text"}`}>{fc.label}</p>
+                              <span
+                                className="relative group/tooltip shrink-0"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Info size={11} className="text-text-muted cursor-pointer hover:text-text transition-colors" />
+                                <div className="absolute bottom-full right-0 mb-1.5 hidden group-hover/tooltip:block z-20 w-40 rounded-xl bg-[#1F2A24] px-3 py-2 text-[10px] text-white font-body leading-relaxed shadow-xl pointer-events-none">
+                                  {fc.desc}
+                                  <div className="absolute top-full right-2 border-4 border-transparent border-t-[#1F2A24]" />
+                                </div>
+                              </span>
+                            </div>
                           </button>
                         );
                       })}
                       {/* Add new category */}
                       <button
                         onClick={() => { setAddCategoryRoomId(null); setNewCategoryInput(""); setShowAddCategoryModal(true); }}
-                        className="flex flex-col items-start gap-1.5 p-3 rounded-xl border border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC] transition-all min-w-[90px] shrink-0"
+                        className="flex flex-col items-start gap-2 p-3 rounded-xl border border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC] transition-all min-w-[90px] shrink-0"
                       >
-                        <Plus size={16} className="text-text-muted" />
+                        <Plus size={20} className="text-text-muted" />
                         <p className="text-xs font-bold text-text leading-none">Add new</p>
                       </button>
                     </div>
@@ -1469,7 +1502,6 @@ export default function FloorCountPage() {
                       <TableHead>No of seats</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Counted by</TableHead>
-                      <TableHead>Counting</TableHead>
                       <TableHead>Edit</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1478,7 +1510,7 @@ export default function FloorCountPage() {
                       const meta = roomMeta[room.id] ?? { status: "pending" as RoomStatus };
                       const isLockedByOther =
                         meta.status === "ongoing" && meta.lockedBy !== "You";
-                      const count = sessionCounts[room.id];
+                      const _count = sessionCounts[room.id];
 
                       return (
                         <TableRow
@@ -1573,51 +1605,6 @@ export default function FloorCountPage() {
                               </div>
                             ) : (
                               <span className="text-sm text-text">—</span>
-                            )}
-                          </TableCell>
-
-                          {/* Counting action */}
-                          <TableCell>
-                            {isLockedByOther ? (
-                              <div className="flex items-center gap-1.5 text-sm text-amber-600">
-                                <Lock size={11} />
-                                Locked by {meta.lockedBy}
-                              </div>
-                            ) : meta.status === "counted" ? (
-                              <div className="flex items-center justify-between px-2">
-                                <span className="text-sm text-text">
-                                  {count ?? 0}
-                                </span>
-                                <button
-                                  onClick={() => handleStartCounting(room.id)}
-                                  className="text-sm text-text-muted hover:text-primary underline underline-offset-4"
-                                >
-                                  Edit
-                                </button>
-                              </div>
-                            ) : count !== undefined ? (
-                              <div className="flex items-center justify-between px-2">
-                                <span className="text-sm text-text">
-                                  {count}
-                                </span>
-                                <button
-                                  onClick={() => handleStartCounting(room.id)}
-                                  className="text-sm text-text-muted hover:text-primary underline underline-offset-4"
-                                >
-                                  Edit
-                                </button>
-                              </div>
-                            ) : (
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                disabled={!isRecording}
-                                onClick={() => handleStartCounting(room.id)}
-                                className="w-auto px-4"
-                                icon={<Play size={13} />}
-                              >
-                                Start counting
-                              </Button>
                             )}
                           </TableCell>
 
