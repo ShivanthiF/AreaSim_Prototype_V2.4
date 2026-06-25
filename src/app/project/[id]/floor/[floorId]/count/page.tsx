@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft,
   Play,
   ChevronDown,
   ArrowRight,
@@ -117,6 +116,23 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   "dropdown-setting": <Settings2 size={20} />,
   "social-zone": <MessageCircle size={20} />,
   "cafe-area": <UtensilsCrossed size={20} />,
+};
+
+const getCategoryLabel = (id?: string): string =>
+  id ? (FLOOR_CATEGORIES.find((fc) => fc.id === id)?.label ?? id) : "";
+
+// Pre-populated mock categories for all rooms across all floors
+const MOCK_ROOM_CATEGORIES: Record<string, string> = {
+  // Ground Floor
+  "r1": "meeting-room", "r2": "meeting-room", "r3": "open-workspace",
+  "r4": "social-zone", "r5": "external-zone", "r6": "quiet-zone",
+  "r7": "booth", "r8": "multi-purpose", "r9": "project-zone",
+  "r10": "office", "r11": "quiet-zone",
+  // 1st Floor
+  "r1-1": "meeting-room", "r1-2": "multi-purpose", "r1-3": "open-workspace",
+  "r1-4": "work-cafe", "r1-5": "office", "r1-6": "project-zone",
+  "r1-7": "cafe-area", "r1-8": "quiet-zone", "r1-9": "quiet-zone",
+  "r1-10": "booth",
 };
 
 interface RoomMeta {
@@ -359,7 +375,7 @@ export default function FloorCountPage() {
   // Prepare-session content now shown as a modal on the "Pick rooms to count" step
   const [showPrepareModal, setShowPrepareModal] = useState(false);
   // Per-room category selected during setup
-  const [roomCategories, setRoomCategories] = useState<Record<string, string>>({});
+  const [roomCategories, setRoomCategories] = useState<Record<string, string>>(MOCK_ROOM_CATEGORIES);
   const [verifiedRooms, setVerifiedRooms] = useState<Set<string>>(new Set());
   const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
@@ -416,6 +432,7 @@ export default function FloorCountPage() {
   const [_roomComments, setRoomComments] = useState<Record<string, string>>({});
   const [showSaveCommentsModal, setShowSaveCommentsModal] = useState(false);
   const [commentPendingAction, setCommentPendingAction] = useState<"done" | "exit" | null>(null);
+  const [showObservationsCompletionModal, setShowObservationsCompletionModal] = useState(false);
 
   const [selectedFloorName, setSelectedFloorName] = useState(floor?.name || "Ground Floor");
   const [showNextFloorModal, setShowNextFloorModal] = useState(false);
@@ -544,8 +561,8 @@ export default function FloorCountPage() {
         setSessionCounts((prev) => ({ ...prev, [nextRoomId]: 0 }));
       }
     } else {
-      setCountingPhase("session");
-      setShowNextFloorModal(true);
+      // All rooms done — show observations completion modal before transitioning
+      setShowObservationsCompletionModal(true);
     }
   };
 
@@ -1017,7 +1034,7 @@ export default function FloorCountPage() {
                           {/* Room name */}
                           <TableCell>
                             <p className="text-sm text-text font-body">{room.name}</p>
-                            <p className="text-xs text-text-muted font-body">{formatNumber(room.sqm || 25)} m²</p>
+                            {cat && <p className="text-xs text-text-muted font-body">{getCategoryLabel(cat)}</p>}
                           </TableCell>
 
                           {/* Room category — select checkbox + dropdown */}
@@ -1551,7 +1568,7 @@ export default function FloorCountPage() {
                               </select>
                             ) : (
                               <Chip tone="neutral">
-                                {roomCategories[room.id] || "Meeting"}
+                                {getCategoryLabel(roomCategories[room.id]) || "Meeting room"}
                               </Chip>
                             )}
                           </TableCell>
@@ -1714,12 +1731,6 @@ export default function FloorCountPage() {
                 {/* Sidebar */}
                 <div className="w-64 shrink-0 border-r border-[#F1F5F9] flex flex-col overflow-hidden">
                   <div className="px-4 py-4 border-b border-[#F1F5F9] shrink-0">
-                    <button
-                      onClick={() => setCountingPhase("session")}
-                      className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-light transition-colors mb-3"
-                    >
-                      <ArrowLeft size={14} /> Back to rooms
-                    </button>
                     {(() => {
                       const done = rooms.filter((r) => (roomMeta[r.id]?.status === "counted") || sessionCounts[r.id] !== undefined).length;
                       const pct = rooms.length ? Math.round((done / rooms.length) * 100) : 0;
@@ -1758,7 +1769,7 @@ export default function FloorCountPage() {
                               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                             ) : null}
                           </div>
-                          <div className="text-[11px] text-text-muted font-body">{formatNumber(r.sqm || 25)} m² · {roomSeats[r.id] || 0} seats</div>
+                          <div className="text-[11px] text-text-muted font-body">{getCategoryLabel(roomCategories[r.id])} · {roomSeats[r.id] || 0} seats</div>
                         </button>
                       );
                     })}
@@ -1808,7 +1819,8 @@ export default function FloorCountPage() {
                       </div>
                     </div>
 
-                    {/* Observations Section */}
+                    {/* Observations Section — only for meeting rooms and social zones */}
+                    {(roomCategories[selectedRoomId!] === "meeting-room" || roomCategories[selectedRoomId!] === "social-zone") && (
                     <div className="pt-6 mt-6 w-full max-w-2xl mx-auto space-y-3 text-left">
 
                       <div className="border border-[#E2E8F0] rounded-[20px] p-4 sm:p-5 space-y-4 bg-white shadow-sm">
@@ -1862,6 +1874,7 @@ export default function FloorCountPage() {
                         </div>
                       </div>
                     </div>
+                    )}
 
                     <div className="flex justify-center">
                       <Button
@@ -1997,6 +2010,80 @@ export default function FloorCountPage() {
       </AnimatePresence>
 
 
+
+      {/* ── Observations completion modal — shown when all rooms on floor are done ── */}
+      <AnimatePresence>
+        {showObservationsCompletionModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full"
+            >
+              <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-[#6351AC]/10 flex items-center justify-center">
+                    <NotebookPen size={16} className="text-[#6351AC]" />
+                  </div>
+                  <h3 className="font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)" }}>Observations</h3>
+                </div>
+                <button onClick={() => { setShowObservationsCompletionModal(false); setCountingPhase("session"); setShowNextFloorModal(true); }} className="text-text-muted hover:text-text transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-sm text-text-muted font-body">All rooms on this floor are counted. Note any final observations before completing.</p>
+                <div className="border border-[#E2E8F0] rounded-2xl p-4 space-y-4 bg-white">
+                  <div className="flex flex-wrap gap-2">
+                    {OBSERVATION_PROMPTS.map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => setRoomComment((prev) => prev ? `${prev}\n${p}` : p)}
+                        className="px-3 py-1.5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] text-[13px] text-[#64748B] font-body hover:bg-primary/5 hover:border-primary/30 transition-all text-left leading-snug"
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                  <textarea
+                    value={roomComment}
+                    onChange={(e) => setRoomComment(e.target.value)}
+                    placeholder="What did you notice here?"
+                    rows={3}
+                    className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-[14px] text-[#222B27] font-body placeholder:text-[#94A3B8] focus:outline-none focus:border-[#139485] focus:ring-2 focus:ring-[rgba(19,148,133,0.1)] transition-all resize-none"
+                  />
+                </div>
+                <div className="flex gap-3 pt-1">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="flex-1"
+                    onClick={() => { setRoomComment(""); setShowObservationsCompletionModal(false); setCountingPhase("session"); setShowNextFloorModal(true); }}
+                  >
+                    Skip
+                  </Button>
+                  <Button
+                    size="md"
+                    className="flex-1"
+                    onClick={() => {
+                      if (roomComment.trim()) {
+                        setRoomComments((prev) => ({ ...prev, ["floor-observation"]: roomComment.trim() }));
+                        setRoomComment("");
+                      }
+                      setShowObservationsCompletionModal(false);
+                      setCountingPhase("session");
+                      setShowNextFloorModal(true);
+                    }}
+                  >
+                    Save & finish floor
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ── Stop confirmation modal ────────────────────────────────────────────── */}
       <AnimatePresence>
