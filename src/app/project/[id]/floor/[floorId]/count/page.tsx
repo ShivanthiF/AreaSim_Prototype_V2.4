@@ -425,7 +425,7 @@ export default function FloorCountPage() {
 
   const [showStopModal, setShowStopModal] = useState(false);
   const [_isSessionSaved, setIsSessionSaved] = useState(false);
-  const [pendingNav, setPendingNav] = useState<string | null>(null);
+  const [_pendingNav, setPendingNav] = useState<string | null>(null);
 
   // Comment state
   const [roomComment, setRoomComment] = useState("");
@@ -627,7 +627,7 @@ export default function FloorCountPage() {
     setTimer(0);
     setIsSessionSaved(true);
     setShowStopModal(false);
-    if (pendingNav) router.push(pendingNav);
+    router.push("/dashboard");
   };
 
   const updateSeats = (roomId: string, val: number) => {
@@ -723,6 +723,7 @@ export default function FloorCountPage() {
 
   // ── Setup screen confirm ──────────────────────────────────────────────────────
   const handleSetupConfirm = () => {
+    setShowQuestionsModal(false);
     setCountingPhase("session");
     if (editRoomSettings) {
       // Returning from "Edit room setup" — go straight back, no prepare-session modal
@@ -886,7 +887,7 @@ export default function FloorCountPage() {
                       </button>
                     </div>
                     {/* Category icon cards */}
-                    <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
+                    <div className="flex flex-wrap gap-2 mb-3">
                       {[
                         ...FLOOR_CATEGORIES,
                         ...customCategories.map((cc) => ({
@@ -901,7 +902,7 @@ export default function FloorCountPage() {
                           <button
                             key={fc.id}
                             onClick={() => setBulkCategory(fc.id)}
-                            className={`relative flex flex-col gap-2 p-3 rounded-xl border transition-all min-w-[100px] text-left shrink-0 ${isSelected ? "border-primary bg-primary/5 shadow-sm" : "border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC]"}`}
+                            className={`relative flex flex-col gap-2 p-3 rounded-xl border transition-all min-w-[90px] text-left ${isSelected ? "border-primary bg-primary/5 shadow-sm" : "border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC]"}`}
                           >
                             {/* Top row: icon + checkmark when selected */}
                             <div className="flex items-start justify-between w-full">
@@ -916,9 +917,9 @@ export default function FloorCountPage() {
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <Info size={11} className="text-text-muted cursor-pointer hover:text-text transition-colors" />
-                                <div className="absolute bottom-full right-0 mb-1.5 hidden group-hover/tooltip:block z-20 w-40 rounded-xl bg-[#1F2A24] px-3 py-2 text-[10px] text-white font-body leading-relaxed shadow-xl pointer-events-none">
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover/tooltip:block z-[200] w-40 rounded-xl bg-[#1F2A24] px-3 py-2 text-[10px] text-white font-body leading-relaxed shadow-xl pointer-events-none">
                                   {fc.desc}
-                                  <div className="absolute top-full right-2 border-4 border-transparent border-t-[#1F2A24]" />
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1F2A24]" />
                                 </div>
                               </span>
                             </div>
@@ -928,7 +929,7 @@ export default function FloorCountPage() {
                       {/* Add new category */}
                       <button
                         onClick={() => { setAddCategoryRoomId(null); setNewCategoryInput(""); setShowAddCategoryModal(true); }}
-                        className="flex flex-col items-start gap-2 p-3 rounded-xl border border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC] transition-all min-w-[90px] shrink-0"
+                        className="flex flex-col items-start gap-2 p-3 rounded-xl border border-[#E2E8F0] bg-white hover:border-primary/40 hover:bg-[#FAFBFC] transition-all min-w-[90px]"
                       >
                         <Plus size={20} className="text-text-muted" />
                         <p className="text-xs font-bold text-text leading-none">Add new</p>
@@ -1332,6 +1333,86 @@ export default function FloorCountPage() {
                     </Button>
                     <Button size="sm" className="flex-1" disabled={!newCategoryInput.trim()} onClick={handleAddCategory}>
                       Add category
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Got questions modal (setup phase) ────────────────────────────────── */}
+        <AnimatePresence>
+          {showQuestionsModal && (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full"
+              >
+                <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <MessageSquare size={18} className="text-primary" />
+                    </div>
+                    <h3 className="font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)" }}>
+                      Got questions?
+                    </h3>
+                  </div>
+                  <button onClick={() => setShowQuestionsModal(false)} className="text-text-muted hover:text-text transition-colors">
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="p-6 space-y-6">
+                  <div className="space-y-3">
+                    <p className="text-[11px] font-bold text-text-muted tracking-wider">Common Questions</p>
+                    <div className="divide-y divide-[#E2E8F0] rounded-2xl border border-[#E2E8F0] overflow-hidden">
+                      {faqItems.map((item, i) => (
+                        <div key={i} className="bg-[#F8FAFC]">
+                          <button
+                            onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                            className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-white transition-colors group"
+                          >
+                            <span className="text-sm font-medium text-text leading-snug">{item.q}</span>
+                            <motion.div animate={{ rotate: expandedFaq === i ? 180 : 0 }} transition={{ duration: 0.2 }} className="shrink-0">
+                              <ChevronDown size={15} className={cn("transition-colors", expandedFaq === i ? "text-primary" : "text-text-muted")} />
+                            </motion.div>
+                          </button>
+                          <AnimatePresence initial={false}>
+                            {expandedFaq === i && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2, ease: "easeInOut" }}
+                                className="overflow-hidden"
+                              >
+                                <div className="px-4 pb-4 pt-0">
+                                  <p className="text-sm text-text-muted leading-relaxed border-t border-[#E2E8F0] pt-3">{item.a}</p>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <p className="text-[11px] font-bold text-text-muted tracking-wider">Something else?</p>
+                    <textarea
+                      value={customQuestion}
+                      onChange={(e) => setCustomQuestion(e.target.value)}
+                      placeholder="Type your question here..."
+                      className="w-full h-24 rounded-xl border border-[#969696] bg-white text-[#222B27] font-body placeholder:text-[#98A1B2] px-5 py-3 text-sm transition-all duration-200 hover:border-[#999999] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)] focus:outline-none focus:border-[#139485] focus:ring-4 focus:ring-[rgba(19,148,133,0.18)] focus:shadow-none resize-none"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button variant="secondary" size="md" className="flex-1" onClick={() => setShowQuestionsModal(false)}>
+                      Cancel
+                    </Button>
+                    <Button size="md" className="flex-1" onClick={() => { alert("Your questions have been sent to our consultants."); setShowQuestionsModal(false); setExpandedFaq(null); setCustomQuestion(""); }}>
+                      Send to consultants
                     </Button>
                   </div>
                 </div>
