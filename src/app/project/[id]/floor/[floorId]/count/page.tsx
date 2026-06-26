@@ -561,8 +561,9 @@ export default function FloorCountPage() {
         setSessionCounts((prev) => ({ ...prev, [nextRoomId]: 0 }));
       }
     } else {
-      // All rooms done — show observations completion modal before transitioning
-      setShowObservationsCompletionModal(true);
+      // All rooms done — go straight to "Continue to next floor?" modal
+      setCountingPhase("session");
+      setShowNextFloorModal(true);
     }
   };
 
@@ -1426,6 +1427,10 @@ export default function FloorCountPage() {
     );
   }
 
+  // Totals for the observations modal summary
+  const countedRoomsTotal = Object.values(roomMeta).filter((m) => m.status === "counted").length;
+  const countedFloorsTotal = floors.filter((f) => f.rooms?.some((r) => roomMeta[r.id]?.status === "counted")).length;
+
   return (
     <div className="h-screen bg-bg flex flex-col font-body overflow-hidden">
 
@@ -2093,7 +2098,7 @@ export default function FloorCountPage() {
 
 
 
-      {/* ── Observations completion modal — shown when all rooms on floor are done ── */}
+      {/* ── Observations completion modal — shown when user stops counting ── */}
       <AnimatePresence>
         {showObservationsCompletionModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
@@ -2110,12 +2115,14 @@ export default function FloorCountPage() {
                   </div>
                   <h3 className="font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)" }}>Observations</h3>
                 </div>
-                <button onClick={() => { setShowObservationsCompletionModal(false); setCountingPhase("session"); setShowNextFloorModal(true); }} className="text-text-muted hover:text-text transition-colors">
+                <button onClick={() => { setShowObservationsCompletionModal(false); setIsRecording(false); router.push("/dashboard"); }} className="text-text-muted hover:text-text transition-colors">
                   <X size={20} />
                 </button>
               </div>
               <div className="p-6 space-y-4">
-                <p className="text-sm text-text-muted font-body">All rooms on this floor are counted. Note any final observations before completing.</p>
+                <p className="text-sm text-text-muted font-body">
+                  {countedFloorsTotal} floor{countedFloorsTotal !== 1 ? "s" : ""} and {countedRoomsTotal} room{countedRoomsTotal !== 1 ? "s" : ""} are counted during this round. Note any final observations before completing.
+                </p>
                 <div className="border border-[#E2E8F0] rounded-2xl p-4 space-y-4 bg-white">
                   <div className="flex flex-wrap gap-2">
                     {OBSERVATION_PROMPTS.map((p) => (
@@ -2141,7 +2148,7 @@ export default function FloorCountPage() {
                     variant="secondary"
                     size="md"
                     className="flex-1"
-                    onClick={() => { setRoomComment(""); setShowObservationsCompletionModal(false); setCountingPhase("session"); setShowNextFloorModal(true); }}
+                    onClick={() => { setRoomComment(""); setShowObservationsCompletionModal(false); setIsRecording(false); router.push("/dashboard"); }}
                   >
                     Skip
                   </Button>
@@ -2154,11 +2161,11 @@ export default function FloorCountPage() {
                         setRoomComment("");
                       }
                       setShowObservationsCompletionModal(false);
-                      setCountingPhase("session");
-                      setShowNextFloorModal(true);
+                      setIsRecording(false);
+                      router.push("/dashboard");
                     }}
                   >
-                    Save & finish floor
+                    Done
                   </Button>
                 </div>
               </div>
@@ -2401,8 +2408,7 @@ export default function FloorCountPage() {
                     className="flex-1"
                     onClick={() => {
                       setShowNextFloorModal(false);
-                      setIsRecording(false);
-                      setCountingPhase("session");
+                      setShowObservationsCompletionModal(true);
                     }}
                   >
                     Stop counting
