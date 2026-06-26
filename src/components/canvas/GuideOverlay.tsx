@@ -134,33 +134,44 @@ function GroupButtonIllustration() {
   );
 }
 
-function CountingIllustration() {
+function RoomSetupIllustration() {
   return (
     <svg viewBox="0 0 280 108" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="30" y="8" width="220" height="34" rx="5" fill="#FFFBF8" stroke="#E5EAF0" strokeWidth="1.2" />
-      <text x="44" y="22" fontSize="8" fontWeight="700" fill="#0D1B2A">Rooms</text>
-      <motion.g animate={{ scale: [1, 1.04, 1] }} transition={{ duration: 1.3, repeat: Infinity, repeatDelay: 0.4 }}
-        style={{ transformOrigin: "196px 27px" }}>
-        <rect x="148" y="18" width="96" height="18" rx="9" fill="#8E84CC" />
-        <text x="196" y="30" textAnchor="middle" fontSize="7" fill="white" fontWeight="700">Start room counting</text>
+      {/* Table card */}
+      <rect x="18" y="10" width="244" height="88" rx="6" fill="white" stroke="#E5EAF0" strokeWidth="1.2" />
+      {/* Header row */}
+      <rect x="18" y="10" width="244" height="22" rx="5" fill="#F8FAFC" />
+      <rect x="18" y="26" width="244" height="6" fill="#F8FAFC" />
+      <text x="30" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Room name</text>
+      <text x="120" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Category</text>
+      <text x="195" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Seats</text>
+      <text x="240" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Verify</text>
+      {/* Room row */}
+      <text x="30" y="58" fontSize="8" fontWeight="700" fill="#0D1B2A">Conference Room A</text>
+      {/* Category pill animates in */}
+      <motion.g
+        initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, delay: 0.3, repeat: Infinity, repeatDelay: 2.8 }}
+      >
+        <rect x="110" y="49" width="76" height="15" rx="7.5" fill="#139485" fillOpacity="0.12" />
+        <text x="148" y="60" textAnchor="middle" fontSize="6.5" fill="#139485" fontWeight="700">Meeting room</text>
       </motion.g>
-      <rect x="30" y="52" width="220" height="52" rx="5" fill="white" stroke="#E5EAF0" strokeWidth="1.2" />
-      <text x="44" y="66" fontSize="7.5" fontWeight="700" fill="#374151">Conference Room A</text>
-      {[0, 1, 2].map((i) => (
-        <motion.g key={i}
-          initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.4 + i * 0.35, duration: 0.3, type: "spring", repeat: Infinity, repeatDelay: 2.2 }}
-          style={{ transformOrigin: `${70 + i * 22}px 84px` }}>
-          <circle cx={70 + i * 22} cy={79} r={7} fill="rgba(209,164,95,0.15)" stroke="#D1A45F" strokeWidth="1.2" />
-          <circle cx={70 + i * 22} cy={76} r={2.5} fill="#D1A45F" />
-          <path d={`M${63 + i * 22} 85 Q${70 + i * 22} 80 ${77 + i * 22} 85`} stroke="#D1A45F" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-        </motion.g>
-      ))}
-      <motion.g animate={{ scale: [1, 1.1, 1] }} transition={{ delay: 1.5, duration: 0.8, repeat: Infinity, repeatDelay: 1.5 }}
-        style={{ transformOrigin: "210px 84px" }}>
-        <circle cx="210" cy="84" r="14" fill="#8E84CC" />
-        <text x="210" y="89" textAnchor="middle" fontSize="13" fill="white" fontWeight="800">3</text>
+      {/* Seat counter */}
+      <text x="205" y="60" textAnchor="middle" fontSize="10" fontWeight="800" fill="#0D1B2A">8</text>
+      {/* Verify button pulses */}
+      <motion.g
+        animate={{ scale: [1, 1.1, 1] }}
+        transition={{ duration: 0.7, delay: 1.2, repeat: Infinity, repeatDelay: 2.0 }}
+        style={{ transformOrigin: "248px 56px" }}
+      >
+        <rect x="228" y="49" width="36" height="15" rx="7.5" fill="#139485" />
+        <text x="246" y="60" textAnchor="middle" fontSize="6.5" fill="white" fontWeight="700">Verify</text>
       </motion.g>
+      {/* Divider */}
+      <line x1="18" y1="78" x2="262" y2="78" stroke="#E5EAF0" strokeWidth="1" />
+      {/* Second row faded */}
+      <text x="30" y="94" fontSize="8" fontWeight="700" fill="#374151" opacity="0.35">Conference Room B</text>
+      <rect x="110" y="85" width="76" height="15" rx="7.5" fill="#E5EAF0" opacity="0.5" />
     </svg>
   );
 }
@@ -252,11 +263,11 @@ const STEPS: StepDef[] = [
     Illustration: GroupButtonIllustration,
   },
   {
-    title: "Start room counting",
-    description: "You can get the capacity of each room at different times of day using the Start room counting button in the counting stepper.",
+    title: "Start room setup",
+    description: "In Room setup, assign a category and seat count to each room, then verify it to unlock counting.",
     position: "below-header",
     arrowRightPx: 60,
-    Illustration: CountingIllustration,
+    Illustration: RoomSetupIllustration,
   },
   // {
   //   title: "Track Your Progress",
@@ -485,11 +496,11 @@ export function GuideOverlay({ step, onNext, onBack, onClose }: GuideOverlayProp
     );
   }
 
-  // Step 5 — right side of counting stepper, up arrow pointing to Start room counting button
+  // Step 5 — right side of counting stepper, up arrow pointing to Room setup button
   if (isBelowHeader) {
     return (
       <>
-        <div className="fixed z-50 pointer-events-auto" style={{ top: "155px", right: "12px" }}>
+        <div className="fixed z-50 pointer-events-auto" style={{ top: "185px", right: "12px" }}>
           <AnimatePresence mode="wait">{card}</AnimatePresence>
         </div>
       </>
