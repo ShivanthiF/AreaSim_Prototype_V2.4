@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal, Play, HelpCircle, MessageSquare, X, ChevronDown, Bell, Clock, Lightbulb, Compass, Map, BarChart2, FileText } from "lucide-react";
+import { SlidersHorizontal, Play, HelpCircle, MessageSquare, X, ChevronDown, Bell, Clock, Lightbulb, Map, BarChart2, FileText } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -289,24 +289,22 @@ export default function FloorPage() {
               <div className="p-6 space-y-6">
                 {/* Quick actions */}
                 <div className="grid grid-cols-2 gap-3">
-                  <button
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
                     onClick={() => { setShowQuestionsModal(false); handleOpenGuide(); }}
-                    className="flex items-center gap-3 p-3 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-primary/40 hover:bg-primary/5 transition-all text-left"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <Compass size={16} className="text-primary" />
-                    </div>
-                    <span className="text-xs font-bold text-text font-body leading-tight">Start canvas guide</span>
-                  </button>
-                  <button
+                    Start canvas guide
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
                     onClick={() => { setShowQuestionsModal(false); setShowWhyModal(true); }}
-                    className="flex items-center gap-3 p-3 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-primary/40 hover:bg-primary/5 transition-all text-left"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <Lightbulb size={16} className="text-primary" />
-                    </div>
-                    <span className="text-xs font-bold text-text font-body leading-tight">Why am I doing this?</span>
-                  </button>
+                    Why am I doing this?
+                  </Button>
                 </div>
                 <div className="space-y-3">
                   <p className="text-[11px] font-bold text-text-muted tracking-wider">Common Questions</p>

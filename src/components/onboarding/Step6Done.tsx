@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, ArrowRight, X, Layers, MousePointerClick, BarChart2 } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 
 const checklist = [
@@ -15,21 +14,9 @@ const checklist = [
 ];
 
 const whyItems = [
-  {
-    icon: Layers,
-    title: "Create a precise digital map",
-    body: "Marking rooms and zones gives AreaSim an accurate picture of your floor plan — which areas exist, what they're for, and how they relate to each other.",
-  },
-  {
-    icon: MousePointerClick,
-    title: "Unlock counting and surveys",
-    body: "Only rooms you've marked can be counted or surveyed. Defining your spaces here is what enables all the data collection steps that follow.",
-  },
-  {
-    icon: BarChart2,
-    title: "Build the foundation for your business case",
-    body: "Your marked rooms and zones feed directly into the Room Programme — the evidence-based report used for lease decisions, redesigns, and investment proposals.",
-  },
+  { icon: Layers, title: "Create a digital map", body: "So AreaSim knows exactly what spaces you have." },
+  { icon: MousePointerClick, title: "Unlock counting & surveys", body: "Only marked rooms can be counted or surveyed." },
+  { icon: BarChart2, title: "Feed your Room Programme", body: "Your markings become the data behind your reports and business case." },
 ];
 
 export function Step6Done() {
@@ -147,23 +134,24 @@ export function Step6Done() {
               className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full max-h-[90vh] overflow-y-auto"
             >
               {/* Floor plan image — full-width at top */}
-              <div className="relative w-full h-48 bg-[#F0EDE8] overflow-hidden rounded-t-3xl">
-                <Image
-                  src="/About_Canvas.png"
-                  alt="Floor plan with marked rooms and zones"
-                  fill
-                  className="object-cover object-top"
-                />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/About_Canvas.png"
+                alt="Floor plan with marked rooms and zones"
+                className="w-full h-44 object-cover object-top"
+              />
 
               {/* Header */}
-              <div className="px-6 pt-5 pb-3 flex items-start justify-between gap-4">
-                <h3
-                  className="text-xl text-text leading-snug"
-                  style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}
-                >
-                  Why do I need to mark rooms and zones?
-                </h3>
+              <div className="px-6 pt-5 pb-2 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs text-text-muted font-body mb-1">Your next step is to mark rooms and zones on the floor plan.</p>
+                  <h3
+                    className="text-lg text-text leading-snug"
+                    style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}
+                  >
+                    Why do I need to mark rooms and zones?
+                  </h3>
+                </div>
                 <button
                   onClick={() => setShowWhyModal(false)}
                   className="text-text-muted hover:text-text transition-colors shrink-0 mt-1"
@@ -175,28 +163,22 @@ export function Step6Done() {
               {/* Body */}
               <div className="px-6 pb-6 space-y-4">
                 <p className="text-sm text-text-muted font-body leading-relaxed">
-                  You&apos;ve already uploaded your floor plan — now it&apos;s time to bring it to life. Marking rooms
-                  and zones tells AreaSim exactly what your space looks like, so every step that follows
-                  (counting, surveys, and your Room Programme) is built on accurate data.
+                  Without this step, AreaSim can&apos;t count or survey your space.
                 </p>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {whyItems.map(({ icon: Icon, title, body }) => (
-                    <div key={title} className="flex gap-3 p-3 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <Icon size={16} className="text-primary" />
+                    <div key={title} className="flex gap-3 items-center p-3 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                      <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Icon size={15} className="text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-text font-body">{title}</p>
-                        <p className="text-xs text-text-muted font-body mt-0.5 leading-relaxed">{body}</p>
+                        <p className="text-xs font-bold text-text font-body">{title}</p>
+                        <p className="text-xs text-text-muted font-body leading-snug">{body}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-
-                <p className="text-xs text-text-muted font-body leading-relaxed bg-[#F2E7DB] rounded-xl px-4 py-3">
-                  <span className="font-bold text-text">Next up:</span> You&apos;ll be taken to the floor plan editor where you can draw room boundaries and assign zones — it only takes a few minutes per floor.
-                </p>
 
                 <Button
                   size="lg"
