@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal, Play, HelpCircle, MessageSquare, X, ChevronDown, Bell, Lightbulb, Map, BarChart2, FileText } from "lucide-react";
+import { SlidersHorizontal, Play, HelpCircle, MessageSquare, X, ChevronDown, Bell, Layers, MousePointerClick } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -406,7 +406,7 @@ export default function FloorPage() {
                 </p>
                 <button
                   onClick={() => setShowNotifModal(false)}
-                  className="btn-primary w-full h-11 rounded-full text-sm font-semibold font-body"
+                  className="btn-secondary w-full h-11 rounded-full text-sm font-semibold font-body"
                 >
                   Got it
                 </button>
@@ -416,7 +416,7 @@ export default function FloorPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Why am I doing this? modal ── */}
+      {/* ── Why am I doing this? modal — same layout as "Prepare for Room Counting" ── */}
       <AnimatePresence>
         {showWhyModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
@@ -424,49 +424,47 @@ export default function FloorPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-md w-full"
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-xl w-full"
             >
-              <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Lightbulb size={18} className="text-primary" />
-                  </div>
-                  <h3 className="font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)" }}>
-                    Why am I doing this?
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/About_Canvas.png"
+                alt="Floor plan with marked rooms and zones"
+                className="w-full h-80 object-cover object-top"
+              />
+              <div className="px-6 pt-5 pb-6 space-y-4">
+                <div className="space-y-1.5">
+                  <h3 className="text-lg text-text leading-snug" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
+                    Prepare for Room Counting
                   </h3>
+                  <p className="text-sm text-text-muted font-body leading-relaxed">
+                    Mark rooms and zones on the floor plan to identify all available spaces before you begin room counting.
+                  </p>
                 </div>
-                <button onClick={() => setShowWhyModal(false)} className="text-text-muted hover:text-text transition-colors">
-                  <X size={20} />
-                </button>
-              </div>
-              <div className="p-6 space-y-4">
-                <p className="text-sm text-text-muted font-body leading-relaxed">
-                  AreaSim helps you make high-stakes workplace decisions based on evidence — not assumptions.
-                  Here&apos;s why what you&apos;re doing matters:
-                </p>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {[
-                    { icon: Map, title: "Give your space a digital identity", body: "By marking rooms and zones, you create a precise map of your floor plan that AreaSim can analyse and compare over time." },
-                    { icon: BarChart2, title: "Unlock counting and surveys", body: "Marked rooms unlock the counting and survey features. You can only collect data for spaces that have been defined here." },
-                    { icon: FileText, title: "Feed your Room Programme", body: "The rooms and zones you define become the foundation of your Room Programme and Business Case — the tools that defend your lease or investment decisions." },
+                    { icon: Layers, title: "Create a digital map", body: "So AreaSim knows exactly what spaces you have." },
+                    { icon: MousePointerClick, title: "Unlock counting & surveys", body: "Only marked rooms can be counted or surveyed." },
                   ].map(({ icon: Icon, title, body }) => (
-                    <div key={title} className="flex gap-3 p-3 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                      <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <div key={title} className="flex gap-3 items-center p-3 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                      <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                         <Icon size={15} className="text-primary" />
                       </div>
                       <div>
                         <p className="text-xs font-bold text-text font-body">{title}</p>
-                        <p className="text-xs text-text-muted font-body mt-0.5 leading-relaxed">{body}</p>
+                        <p className="text-xs text-text-muted font-body leading-snug">{body}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <button
-                  onClick={() => setShowWhyModal(false)}
-                  className="btn-primary w-full h-10 rounded-xl text-sm font-semibold font-body"
-                >
-                  Got it
-                </button>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setShowWhyModal(false)}
+                    className="btn-primary h-11 px-12 rounded-full text-sm font-semibold font-body"
+                  >
+                    Got it
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>

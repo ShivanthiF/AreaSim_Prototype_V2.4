@@ -127,7 +127,7 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFl
                 </p>
                 <button
                   onClick={() => setShowNotifModal(false)}
-                  className="btn-primary w-full h-11 rounded-full text-sm font-semibold font-body"
+                  className="btn-secondary w-full h-11 rounded-full text-sm font-semibold font-body"
                 >
                   Got it
                 </button>

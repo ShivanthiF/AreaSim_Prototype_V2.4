@@ -130,14 +130,14 @@ export function Step6Done() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-2xl w-full"
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-xl w-full"
             >
               {/* Floor plan image — full-width at top */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/About_Canvas.png"
                 alt="Floor plan with marked rooms and zones"
-                className="w-full h-72 object-cover object-top"
+                className="w-full h-80 object-cover object-top"
               />
 
               {/* Header + body */}
@@ -168,15 +168,15 @@ export function Step6Done() {
                   ))}
                 </div>
 
-                <Button
-                  size="lg"
-                  className="w-full"
-                  icon={<ArrowRight size={16} />}
-                  iconPosition="right"
-                  onClick={goToCanvas}
-                >
-                  Got it, let&apos;s start
-                </Button>
+                <div className="flex justify-center">
+                  <Button
+                    size="lg"
+                    className="px-12"
+                    onClick={goToCanvas}
+                  >
+                    Got it, let&apos;s start
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </div>

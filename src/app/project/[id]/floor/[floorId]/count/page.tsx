@@ -976,9 +976,9 @@ export default function FloorCountPage() {
                     <span className="text-[11px] font-semibold text-text-muted font-body whitespace-nowrap">
                       {pendingFloors} of {totalFloors} floors are pending for verification
                     </span>
-                    <div className="flex-1 h-1.5 bg-[#FECACA] rounded-full overflow-hidden">
+                    <div className="flex-1 h-1.5 bg-primary/20 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-[#bfa483] rounded-full transition-all duration-300"
+                        className="h-full bg-primary rounded-full transition-all duration-300"
                         style={{ width: `${totalFloors ? (verifiedFloors / totalFloors) * 100 : 0}%` }}
                       />
                     </div>
@@ -2095,7 +2095,7 @@ export default function FloorCountPage() {
               </div>
               <div className="p-6 space-y-4">
                 <p className="text-sm text-text-muted font-body">
-                  {countedFloorsTotal} floor{countedFloorsTotal !== 1 ? "s" : ""} and {countedRoomsTotal} room{countedRoomsTotal !== 1 ? "s" : ""} are counted during this round. Note any final observations before completing.
+                  You&apos;ve completed counting {countedFloorsTotal} floor{countedFloorsTotal !== 1 ? "s" : ""} and {countedRoomsTotal} room{countedRoomsTotal !== 1 ? "s" : ""}. Before you wrap up, note down anything you&apos;ve observed during this session.
                 </p>
                 <div className="space-y-4">
                   <div className="flex flex-wrap gap-2">
