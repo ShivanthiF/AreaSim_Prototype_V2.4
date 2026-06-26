@@ -978,7 +978,7 @@ export default function FloorCountPage() {
                         <span className="text-[11px] font-semibold text-text-muted font-body whitespace-nowrap">
                           {pendingFloors} of {totalFloors} floors are pending for verification
                         </span>
-                        <div className="flex-1 h-1.5 bg-primary/20 rounded-full overflow-hidden">
+                        <div className="flex-1 h-1.5 bg-emerald-50 border border-emerald-200 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-primary rounded-full transition-all duration-300"
                             style={{ width: `${totalFloors ? (verifiedFloors / totalFloors) * 100 : 0}%` }}
