@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal, Play, HelpCircle, MessageSquare, X, ChevronDown, Bell, Clock, Lightbulb, Map, BarChart2, FileText } from "lucide-react";
+import { SlidersHorizontal, Play, HelpCircle, MessageSquare, X, ChevronDown, Bell, Lightbulb, Map, BarChart2, FileText } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,20 @@ const FloorCanvas = dynamic(
   { ssr: false, loading: () => <div className="flex-1 flex items-center justify-center text-text-muted font-body text-sm">Loading canvas…</div> }
 );
 
+const ROUND_SCHEDULE = [
+  { num: 1, endH: 10, nextStart: "10:00 AM" },
+  { num: 2, endH: 12, nextStart: "12:00 PM" },
+  { num: 3, endH: 14, nextStart: "02:00 PM" },
+  { num: 4, endH: 16, nextStart: "04:00 PM" },
+];
+const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th"];
+
+function getNotifRoundInfo() {
+  const h = new Date().getHours();
+  const done = ROUND_SCHEDULE.filter((r) => h >= r.endH).pop() ?? ROUND_SCHEDULE[0];
+  return { label: ORDINALS[done.num - 1], nextTime: done.nextStart };
+}
+
 export default function FloorPage() {
   const params = useParams();
   const router = useRouter();
@@ -42,6 +56,7 @@ export default function FloorPage() {
   const [showQuestionsModal, setShowQuestionsModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState(false);
   const [showWhyModal, setShowWhyModal] = useState(false);
+  const { label: roundLabel, nextTime: nextRoundTime } = getNotifRoundInfo();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [customQuestion, setCustomQuestion] = useState("");
 
@@ -385,17 +400,13 @@ export default function FloorPage() {
                   <X size={20} />
                 </button>
               </div>
-              <div className="p-6 space-y-4">
-                <div className="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-2xl px-4 py-4">
-                  <Clock size={18} className="text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-bold text-text font-body">15 mins more for your next counting round.</p>
-                    <p className="text-sm text-text-muted font-body mt-1">Next round is 8:00 AM – 6:00 PM · 5 rounds of 2 hours each.</p>
-                  </div>
-                </div>
+              <div className="p-6 space-y-5">
+                <p className="text-sm text-text-muted font-body leading-relaxed">
+                  You&apos;ve completed your {roundLabel} round for today. Your next round starts in 15 minutes at {nextRoundTime}. Please be ready to continue counting.
+                </p>
                 <button
                   onClick={() => setShowNotifModal(false)}
-                  className="btn-primary w-full h-10 rounded-xl text-sm font-semibold font-body"
+                  className="btn-primary w-full h-11 rounded-full text-sm font-semibold font-body"
                 >
                   Got it
                 </button>

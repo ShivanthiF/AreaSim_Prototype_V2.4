@@ -372,7 +372,7 @@ export default function FloorCountPage() {
   const [editRoomSettings, setEditRoomSettings] = useState(false);
   // Shown when the user tries to verify a room (or continue) before setting a category
   const [showCategoryRequiredModal, setShowCategoryRequiredModal] = useState(false);
-  // Prepare-session content now shown as a modal on the "Pick rooms to count" step
+  // Prepare-session content now shown as a modal on the "Rooms overview" step
   const [showPrepareModal, setShowPrepareModal] = useState(false);
   // Per-room category selected during setup
   const [roomCategories, setRoomCategories] = useState<Record<string, string>>(MOCK_ROOM_CATEGORIES);
@@ -467,7 +467,7 @@ export default function FloorCountPage() {
   const activeRound = getActiveRound();
   const roundLabel = activeRound ? `${activeRound.label} of 5 today` : "No active round";
 
-  // Navigate to the Pick rooms to count phase when arriving via the legacy hash
+  // Navigate to the Rooms overview phase when arriving via the legacy hash
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash === "#session-details") {
       setCountingPhase("session");
@@ -731,7 +731,7 @@ export default function FloorCountPage() {
       setEditRoomSettings(false);
       return;
     }
-    // Moving from Room setup → Pick rooms to count: show the prepare-session modal
+    // Moving from Room setup → Rooms overview: show the prepare-session modal
     setShowPrepareModal(true);
   };
 
@@ -1446,7 +1446,7 @@ export default function FloorCountPage() {
 
       <main className="flex-1 overflow-hidden flex relative p-6 gap-6 max-w-[1600px] mx-auto w-full">
 
-        {/* ── Prepare session / Pick rooms to count — left panel ── */}
+        {/* ── Prepare session / Rooms overview — left panel ── */}
         {countingPhase !== "counting" && (
           <motion.div
             layout
@@ -1460,10 +1460,10 @@ export default function FloorCountPage() {
                   <div className="flex items-center gap-1.5 text-xs font-body">
                     <span className="text-text-muted">Room counting tool</span>
                     <span className="text-text-muted">/</span>
-                    <span className="font-semibold text-text">Pick rooms to count</span>
+                    <span className="font-semibold text-text">Rooms overview</span>
                   </div>
                   <h3 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
-                    Pick rooms to count
+                    Rooms overview
                   </h3>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
@@ -1933,32 +1933,6 @@ export default function FloorCountPage() {
                           rows={3}
                           className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-[14px] text-[#222B27] font-body placeholder:text-[#94A3B8] focus:outline-none focus:border-[#139485] focus:ring-2 focus:ring-[rgba(19,148,133,0.1)] transition-all resize-none"
                         />
-                        <div className="flex justify-end gap-3 pt-2">
-                          <Button
-                            variant="secondary"
-                            size="md"
-                            className="rounded-full px-6 font-bold shadow-none border-[#CBD5E1] text-[#334155] hover:bg-[#F1F5F9]"
-                            onClick={() => setRoomComment("")}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            size="md"
-                            className="rounded-full px-8 font-bold shadow-none bg-[#96D1C4] hover:bg-[#7ABCAE] text-white border-none"
-                            disabled={!roomComment.trim()}
-                            onClick={() => {
-                              if (roomComment.trim()) {
-                                setRoomComments((prev) => ({
-                                  ...prev,
-                                  [selectedRoomId ?? "floor"]: roomComment.trim(),
-                                }));
-                                setRoomComment("");
-                              }
-                            }}
-                          >
-                            Save
-                          </Button>
-                        </div>
                       </div>
                     </div>
                     )}
@@ -1998,7 +1972,7 @@ export default function FloorCountPage() {
         <div className="text-[10px] text-text-muted font-body">Areasim workspace intelligence</div>
       </footer>
 
-      {/* ── Prepare session modal (shown on arriving at "Pick rooms to count") ── */}
+      {/* ── Prepare session modal (shown on arriving at "Rooms overview") ── */}
       <AnimatePresence>
         {showPrepareModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
@@ -2106,7 +2080,7 @@ export default function FloorCountPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full"
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-2xl w-full"
             >
               <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -2123,7 +2097,7 @@ export default function FloorCountPage() {
                 <p className="text-sm text-text-muted font-body">
                   {countedFloorsTotal} floor{countedFloorsTotal !== 1 ? "s" : ""} and {countedRoomsTotal} room{countedRoomsTotal !== 1 ? "s" : ""} are counted during this round. Note any final observations before completing.
                 </p>
-                <div className="border border-[#E2E8F0] rounded-2xl p-4 space-y-4 bg-white">
+                <div className="space-y-4">
                   <div className="flex flex-wrap gap-2">
                     {OBSERVATION_PROMPTS.map((p) => (
                       <button
@@ -2139,7 +2113,7 @@ export default function FloorCountPage() {
                     value={roomComment}
                     onChange={(e) => setRoomComment(e.target.value)}
                     placeholder="What did you notice here?"
-                    rows={3}
+                    rows={6}
                     className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-[14px] text-[#222B27] font-body placeholder:text-[#94A3B8] focus:outline-none focus:border-[#139485] focus:ring-2 focus:ring-[rgba(19,148,133,0.1)] transition-all resize-none"
                   />
                 </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, ArrowRight, Layers, MousePointerClick, BarChart2 } from "lucide-react";
+import { CheckCircle2, ArrowRight, Layers, MousePointerClick } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 const checklist = [
@@ -16,7 +16,6 @@ const checklist = [
 const whyItems = [
   { icon: Layers, title: "Create a digital map", body: "So AreaSim knows exactly what spaces you have." },
   { icon: MousePointerClick, title: "Unlock counting & surveys", body: "Only marked rooms can be counted or surveyed." },
-  { icon: BarChart2, title: "Feed your Room Programme", body: "Your markings become the data behind your reports and business case." },
 ];
 
 export function Step6Done() {
@@ -131,14 +130,14 @@ export function Step6Done() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full"
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-2xl w-full"
             >
               {/* Floor plan image — full-width at top */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/About_Canvas.png"
                 alt="Floor plan with marked rooms and zones"
-                className="w-full h-60 object-cover object-top"
+                className="w-full h-72 object-cover object-top"
               />
 
               {/* Header + body */}
@@ -148,10 +147,10 @@ export function Step6Done() {
                     className="text-lg text-text leading-snug"
                     style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}
                   >
-                    Next step?
+                    Prepare for Room Counting
                   </h3>
                   <p className="text-sm text-text-muted font-body leading-relaxed">
-                    Your next step is to mark rooms and zones on the floor plan. This step is required to identify all available rooms and zones before you start room counting. It also enables AreaSim to generate an accurate room program.
+                    Mark rooms and zones on the floor plan to identify all available spaces before you begin room counting.
                   </p>
                 </div>
 
