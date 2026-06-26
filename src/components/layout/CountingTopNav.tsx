@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Bell, X, Clock } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
@@ -19,58 +21,110 @@ interface CountingTopNavProps {
 /** Top navbar shared across all counting-stepper steps — mirrors the canvas page navbar. */
 export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFloorSelector = false, onGotQuestions }: CountingTopNavProps) {
   const router = useRouter();
+  const [showNotifModal, setShowNotifModal] = useState(false);
 
   return (
-    <header className="flex items-center gap-3 px-3 py-2 bg-surface shrink-0">
-      {/* Logo — navigates to dashboard */}
-      <button onClick={() => router.push("/dashboard")} className="shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
-        <Logo size="md" showText={false} />
-      </button>
+    <>
+      <header className="flex items-center gap-3 px-3 py-2 bg-surface shrink-0">
+        {/* Logo — navigates to dashboard */}
+        <button onClick={() => router.push("/dashboard")} className="shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+          <Logo size="md" showText={false} />
+        </button>
 
-      <div className="w-px h-5 bg-border" />
+        <div className="w-px h-5 bg-border" />
 
-      {/* Project name */}
-      <span className="hidden sm:block text-sm font-semibold text-text font-body truncate max-w-[200px]">
-        {mockProject.name}
-      </span>
+        {/* Project name */}
+        <span className="hidden sm:block text-sm font-semibold text-text font-body truncate max-w-[200px]">
+          {mockProject.name}
+        </span>
 
-      {!hideFloorSelector && (
-        <>
-          <span className="hidden sm:block w-1 h-1 rounded-full bg-border" />
+        {!hideFloorSelector && (
+          <>
+            <span className="hidden sm:block w-1 h-1 rounded-full bg-border" />
 
-          {/* Floor selector */}
-          <div className="relative min-w-[148px]">
-            <select
-              value={floorValue}
-              onChange={(e) => onFloorChange?.(e.target.value)}
-              className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
-            >
-              {floorOptions?.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-        </>
-      )}
-
-      <div className="ml-auto flex items-center gap-2">
-        {onGotQuestions && (
-          <Button
-            variant="secondary"
-            size="sm"
-            className="h-8 px-4 shrink-0"
-            icon={<HelpCircle size={14} />}
-            onClick={onGotQuestions}
-          >
-            Got questions?
-          </Button>
+            {/* Floor selector */}
+            <div className="relative min-w-[148px]">
+              <select
+                value={floorValue}
+                onChange={(e) => onFloorChange?.(e.target.value)}
+                className="appearance-none block w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] pl-4 pr-9 py-1.5 text-xs font-bold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+              >
+                {floorOptions?.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </>
         )}
-        <LanguageSelector />
-        <UserAvatar onClick={() => router.push("/settings")} />
-      </div>
-    </header>
+
+        <div className="ml-auto flex items-center gap-2">
+          {onGotQuestions && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 px-4 shrink-0"
+              icon={<HelpCircle size={14} />}
+              onClick={onGotQuestions}
+            >
+              Got questions?
+            </Button>
+          )}
+          <LanguageSelector />
+          <button
+            onClick={() => setShowNotifModal(true)}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 transition-colors"
+          >
+            <Bell size={16} />
+          </button>
+          <UserAvatar onClick={() => router.push("/settings")} />
+        </div>
+      </header>
+
+      {/* Notification modal */}
+      <AnimatePresence>
+        {showNotifModal && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-md w-full"
+            >
+              <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Bell size={18} className="text-primary" />
+                  </div>
+                  <h3 className="font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)" }}>
+                    Next counting round
+                  </h3>
+                </div>
+                <button onClick={() => setShowNotifModal(false)} className="text-text-muted hover:text-text transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-2xl px-4 py-4">
+                  <Clock size={18} className="text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-bold text-text font-body">15 mins more for your next counting round.</p>
+                    <p className="text-sm text-text-muted font-body mt-1">Next round is 8:00 AM – 6:00 PM · 5 rounds of 2 hours each.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowNotifModal(false)}
+                  className="btn-primary w-full h-10 rounded-xl text-sm font-semibold font-body"
+                >
+                  Got it
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

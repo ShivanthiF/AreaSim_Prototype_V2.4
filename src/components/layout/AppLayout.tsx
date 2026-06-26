@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, FolderOpen, ClipboardList, Users,
-  Bell, Settings, CreditCard, HelpCircle, LogOut,
+  Bell, Settings, CreditCard, HelpCircle, LogOut, X, Clock,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { Logo } from "@/components/ui/Logo";
@@ -22,11 +22,6 @@ const NAV_ITEMS = [
   { icon: Users,           label: "Members",      href: "/team" },
 ];
 
-const MOCK_NOTIFICATIONS = [
-  { id: 1, text: "Space Satisfaction Survey completed", time: "2h ago", unread: true },
-  { id: 2, text: "John K. counted Conference Room A",   time: "4h ago", unread: true },
-  { id: 3, text: "New floor added: 2nd Floor",          time: "Yesterday", unread: false },
-];
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -39,8 +34,6 @@ export function AppLayout({ children, showJourneyBar = false }: AppLayoutProps) 
   const router = useRouter();
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-
-  const unreadCount = MOCK_NOTIFICATIONS.filter((n) => n.unread).length;
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
@@ -81,42 +74,53 @@ export function AppLayout({ children, showJourneyBar = false }: AppLayoutProps) 
           <LanguageSelector />
 
           {/* Notifications */}
-          <div className="relative">
-            <button
-              onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
-              className="relative w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 transition-colors"
-            >
-              <Bell size={16} />
-            </button>
-            <AnimatePresence>
-              {notifOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-border bg-surface shadow-xl z-50 overflow-hidden"
-                  >
-                    <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-                      <p className="text-sm font-semibold text-text">Notifications</p>
-                      <span className="text-xs text-text-muted">{unreadCount} unread</span>
-                    </div>
-                    {MOCK_NOTIFICATIONS.map((n) => (
-                      <div key={n.id}
-                        className={cn("flex gap-3 px-4 py-3 border-b border-border last:border-0 hover:bg-surface-2 transition-colors cursor-pointer", n.unread && "bg-primary/[0.03]")}>
-                        <div className={cn("w-2 h-2 rounded-full mt-1.5 shrink-0", n.unread ? "bg-accent" : "bg-border")} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-text font-body leading-snug">{n.text}</p>
-                          <p className="text-xs text-text-muted mt-0.5">{n.time}</p>
-                        </div>
+          <button
+            onClick={() => { setNotifOpen(true); setProfileOpen(false); }}
+            className="relative w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 transition-colors"
+          >
+            <Bell size={16} />
+          </button>
+          <AnimatePresence>
+            {notifOpen && (
+              <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-md w-full"
+                >
+                  <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Bell size={18} className="text-primary" />
                       </div>
-                    ))}
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
-          </div>
+                      <h3 className="font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)" }}>
+                        Next counting round
+                      </h3>
+                    </div>
+                    <button onClick={() => setNotifOpen(false)} className="text-text-muted hover:text-text transition-colors">
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <div className="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-2xl px-4 py-4">
+                      <Clock size={18} className="text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-bold text-text font-body">15 mins more for your next counting round.</p>
+                        <p className="text-sm text-text-muted font-body mt-1">Next round is 8:00 AM – 6:00 PM · 5 rounds of 2 hours each.</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setNotifOpen(false)}
+                      className="btn-primary w-full h-10 rounded-xl text-sm font-semibold font-body"
+                    >
+                      Got it
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
 
           {/* Profile dropdown */}
           <div className="relative">

@@ -825,7 +825,7 @@ export default function FloorCountPage() {
                   {[
                     { color: "#139485", Icon: BarChart3, title: "Utilisation %", body: "Count ÷ seats" },
                     { color: "#6351AC", Icon: Search, title: "Analysis", body: "Over/under use" },
-                    { color: "#E05D8B", Icon: ClipboardList, title: "Report", body: "Room programme" },
+                    { color: "#E05D8B", Icon: ClipboardList, title: "Report", body: "Workspace utilization report" },
                   ].map(({ color, Icon, title, body }) => (
                     <div
                       key={title}
@@ -858,6 +858,7 @@ export default function FloorCountPage() {
                 <InfoAccordion title="Not sure about room category?">
                   Pick the closest match. You can edit it at any time. Consistency across counters matters more than
                   perfection. Once you set the room category and capacity, verify rooms.
+                  {" "}If none of the available categories fit, create a custom category (e.g., &ldquo;Research Lab&rdquo;). Custom categories will be grouped under External Zones in the report.
                 </InfoAccordion>
               </div>
 
@@ -974,7 +975,7 @@ export default function FloorCountPage() {
                     <span className="text-[11px] font-semibold text-text-muted font-body whitespace-nowrap">
                       {pendingFloors} of {totalFloors} floors are pending for verification
                     </span>
-                    <div className="flex-1 h-1.5 bg-surface-2 rounded-full overflow-hidden">
+                    <div className="flex-1 h-1.5 bg-[#FECACA] rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#bfa483] rounded-full transition-all duration-300"
                         style={{ width: `${totalFloors ? (verifiedFloors / totalFloors) * 100 : 0}%` }}
