@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { SlidersHorizontal, Gem, Play, HelpCircle, MessageSquare, X, ChevronDown, Bell, Clock } from "lucide-react";
+import { SlidersHorizontal, Play, HelpCircle, MessageSquare, X, ChevronDown, Bell, Clock, Lightbulb, Compass, Map, BarChart2, FileText } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -35,13 +35,13 @@ export default function FloorPage() {
   const {
     floors, setActiveFloor,
     setDetailPanel, detailPanelOpen,
-    setCompletionModal,
   } = useCanvasStore();
 
   const [_floorDropdownOpen, _setFloorDropdownOpen] = useState(false);
 
   const [showQuestionsModal, setShowQuestionsModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState(false);
+  const [showWhyModal, setShowWhyModal] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [customQuestion, setCustomQuestion] = useState("");
 
@@ -126,8 +126,6 @@ export default function FloorPage() {
   const handleOpenGuide = () => { setGuideStep(0); setShowGuide(true); };
 
   const activeFloor = floors.find((f) => f.id === floorId) ?? floors[0];
-  const activeFloorRooms = activeFloor?.rooms ?? [];
-  const allCounted = activeFloorRooms.length > 0 && activeFloorRooms.every((r) => r.status === "counted");
 
   // Highlight first room when on panel steps 0 or 3 (Identify rooms, Create zones)
   const guideHighlightFirstRoom = showGuide && (guideStep === 0 || guideStep === 3);
@@ -170,19 +168,6 @@ export default function FloorPage() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          {allCounted && (
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<Gem size={14} />}
-              onClick={() => setCompletionModal(true)}
-              className="h-9 py-2 px-4"
-              style={{ background: "linear-gradient(135deg, #FCD34D 0%, #F59E0B 50%, #D97706 100%)", boxShadow: "0 4px 14px rgba(180,83,9,0.35)" }}
-            >
-              <span className="hidden sm:inline">Room Program</span>
-            </Button>
-          )}
-
           <Button
             variant="secondary"
             size="sm"
@@ -302,6 +287,27 @@ export default function FloorPage() {
                 </button>
               </div>
               <div className="p-6 space-y-6">
+                {/* Quick actions */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => { setShowQuestionsModal(false); handleOpenGuide(); }}
+                    className="flex items-center gap-3 p-3 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-primary/40 hover:bg-primary/5 transition-all text-left"
+                  >
+                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Compass size={16} className="text-primary" />
+                    </div>
+                    <span className="text-xs font-bold text-text font-body leading-tight">Start canvas guide</span>
+                  </button>
+                  <button
+                    onClick={() => { setShowQuestionsModal(false); setShowWhyModal(true); }}
+                    className="flex items-center gap-3 p-3 rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-primary/40 hover:bg-primary/5 transition-all text-left"
+                  >
+                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Lightbulb size={16} className="text-primary" />
+                    </div>
+                    <span className="text-xs font-bold text-text font-body leading-tight">Why am I doing this?</span>
+                  </button>
+                </div>
                 <div className="space-y-3">
                   <p className="text-[11px] font-bold text-text-muted tracking-wider">Common Questions</p>
                   <div className="divide-y divide-[#E2E8F0] rounded-2xl border border-[#E2E8F0] overflow-hidden">
@@ -391,6 +397,63 @@ export default function FloorPage() {
                 </div>
                 <button
                   onClick={() => setShowNotifModal(false)}
+                  className="btn-primary w-full h-10 rounded-xl text-sm font-semibold font-body"
+                >
+                  Got it
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Why am I doing this? modal ── */}
+      <AnimatePresence>
+        {showWhyModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-[#0A1929]/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-md w-full"
+            >
+              <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Lightbulb size={18} className="text-primary" />
+                  </div>
+                  <h3 className="font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)" }}>
+                    Why am I doing this?
+                  </h3>
+                </div>
+                <button onClick={() => setShowWhyModal(false)} className="text-text-muted hover:text-text transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-sm text-text-muted font-body leading-relaxed">
+                  AreaSim helps you make high-stakes workplace decisions based on evidence — not assumptions.
+                  Here&apos;s why what you&apos;re doing matters:
+                </p>
+                <div className="space-y-3">
+                  {[
+                    { icon: Map, title: "Give your space a digital identity", body: "By marking rooms and zones, you create a precise map of your floor plan that AreaSim can analyse and compare over time." },
+                    { icon: BarChart2, title: "Unlock counting and surveys", body: "Marked rooms unlock the counting and survey features. You can only collect data for spaces that have been defined here." },
+                    { icon: FileText, title: "Feed your Room Programme", body: "The rooms and zones you define become the foundation of your Room Programme and Business Case — the tools that defend your lease or investment decisions." },
+                  ].map(({ icon: Icon, title, body }) => (
+                    <div key={title} className="flex gap-3 p-3 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                      <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <Icon size={15} className="text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-text font-body">{title}</p>
+                        <p className="text-xs text-text-muted font-body mt-0.5 leading-relaxed">{body}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setShowWhyModal(false)}
                   className="btn-primary w-full h-10 rounded-xl text-sm font-semibold font-body"
                 >
                   Got it
