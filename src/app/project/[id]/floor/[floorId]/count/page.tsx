@@ -771,11 +771,11 @@ export default function FloorCountPage() {
         <WorkplaceJourneyBar activeStep="1-2" />
         <CountingStepper activeStep="room-setup" onStepClick={handleStepClick} />
 
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-[1600px] mx-auto w-full">
-            <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6 sm:p-8 space-y-6">
-              {/* Title */}
-              <div className="border-b border-[#F1F5F9] pt-6 sm:pt-8 pb-5 -mt-6 sm:-mt-8 -mx-6 sm:-mx-8 px-6 sm:px-8 flex items-end justify-between gap-3">
+        <main className="flex-1 overflow-hidden p-6 flex flex-col min-h-0">
+          <div className="max-w-[1600px] mx-auto w-full flex flex-col flex-1 min-h-0">
+            <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden">
+              {/* Title — sticky, does not scroll */}
+              <div className="border-b border-[#F1F5F9] py-5 px-6 sm:px-8 flex items-end justify-between gap-3 shrink-0">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-1.5 text-xs font-body">
                     <span className="text-text-muted">Room counting tool</span>
@@ -802,6 +802,8 @@ export default function FloorCountPage() {
                 </Button>
               </div>
 
+              {/* Scrollable content */}
+              <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
               {/* Floor selector */}
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-text font-body">Select floor</span>
@@ -1156,6 +1158,7 @@ export default function FloorCountPage() {
                   </TableBody>
                 </Table>
               </div>
+              </div>{/* end scrollable content */}
 
             </div>
           </div>

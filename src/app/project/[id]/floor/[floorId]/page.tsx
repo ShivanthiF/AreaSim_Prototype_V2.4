@@ -460,7 +460,7 @@ export default function FloorPage() {
                 <div className="flex justify-center">
                   <button
                     onClick={() => setShowWhyModal(false)}
-                    className="btn-primary h-11 px-12 rounded-full text-sm font-semibold font-body"
+                    className="btn-primary h-11 px-12 rounded-full text-sm font-semibold font-body text-white"
                   >
                     Got it
                   </button>
