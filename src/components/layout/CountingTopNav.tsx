@@ -125,12 +125,9 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFl
                 <p className="text-sm text-text-muted font-body leading-relaxed">
                   You&apos;ve completed your {roundLabel} round for today. Your next round starts in 15 minutes at {nextRoundTime}. Please be ready to continue counting.
                 </p>
-                <button
-                  onClick={() => setShowNotifModal(false)}
-                  className="btn-secondary w-full h-11 rounded-full text-sm font-semibold font-body"
-                >
+                <Button className="w-full" size="lg" onClick={() => setShowNotifModal(false)}>
                   Got it
-                </button>
+                </Button>
               </div>
             </motion.div>
           </div>
