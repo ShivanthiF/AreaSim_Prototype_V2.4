@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, ArrowRight, X, Layers, MousePointerClick, BarChart2 } from "lucide-react";
+import { CheckCircle2, ArrowRight, Layers, MousePointerClick, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 const checklist = [
@@ -131,23 +131,15 @@ export function Step6Done() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full"
             >
-              {/* Floor plan image — full-width at top, close button overlaid */}
-              <div className="relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/About_Canvas.png"
-                  alt="Floor plan with marked rooms and zones"
-                  className="w-full h-60 object-cover object-top"
-                />
-                <button
-                  onClick={() => setShowWhyModal(false)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-text-muted hover:text-text hover:bg-white transition-colors shadow-sm"
-                >
-                  <X size={16} />
-                </button>
-              </div>
+              {/* Floor plan image — full-width at top */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/About_Canvas.png"
+                alt="Floor plan with marked rooms and zones"
+                className="w-full h-60 object-cover object-top"
+              />
 
               {/* Header + body */}
               <div className="px-6 pt-5 pb-6 space-y-4">
