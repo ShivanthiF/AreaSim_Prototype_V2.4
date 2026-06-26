@@ -966,27 +966,25 @@ export default function FloorCountPage() {
                   <h3 className="text-base font-extrabold text-text" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>Room list</h3>
 
                   {currentFloorVerified && (
-                    <>
-                      <div className="flex items-center gap-2.5 w-full bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
-                        <Check size={14} className="text-emerald-600 shrink-0" strokeWidth={3} />
-                        <p className="text-xs font-semibold text-emerald-700 font-body">
-                          {activeFloorName} is verified · {verifiedRoomsCount} of {rooms.length} rooms in {activeFloorName.toLowerCase()} are verified
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <span className="text-[11px] font-semibold text-text-muted font-body whitespace-nowrap">
-                          {pendingFloors} of {totalFloors} floors are pending for verification
-                        </span>
-                        <div className="flex-1 h-1.5 bg-emerald-50 border border-emerald-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary rounded-full transition-all duration-300"
-                            style={{ width: `${totalFloors ? (verifiedFloors / totalFloors) * 100 : 0}%` }}
-                          />
-                        </div>
-                      </div>
-                    </>
+                    <div className="flex items-center gap-2.5 w-full bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                      <Check size={14} className="text-emerald-600 shrink-0" strokeWidth={3} />
+                      <p className="text-xs font-semibold text-emerald-700 font-body">
+                        {activeFloorName} is verified · {verifiedRoomsCount} of {rooms.length} rooms in {activeFloorName.toLowerCase()} are verified
+                      </p>
+                    </div>
                   )}
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] font-semibold text-text-muted font-body whitespace-nowrap">
+                      {pendingFloors} of {totalFloors} floors are pending for verification
+                    </span>
+                    <div className="flex-1 h-1.5 bg-emerald-50 border border-primary rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all duration-300"
+                        style={{ width: `${totalFloors ? (verifiedFloors / totalFloors) * 100 : 0}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <Table className="table-fixed">
