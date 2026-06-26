@@ -781,11 +781,11 @@ export default function FloorCountPage() {
                     <span className="text-text-muted">Room counting tool</span>
                     <span className="text-text-muted">/</span>
                     <span className="font-semibold text-text">
-                      {editRoomSettings ? "Edit room setup" : "Room setup"}
+                      {editRoomSettings ? "Edit rooms setup" : "Rooms setup"}
                     </span>
                   </div>
                   <h2 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}>
-                    {editRoomSettings ? "Edit room setup" : "Room setup"}
+                    {editRoomSettings ? "Edit rooms setup" : "Rooms setup"}
                   </h2>
                 </div>
                 <Button
@@ -1827,7 +1827,7 @@ export default function FloorCountPage() {
                       return (
                         <div className="rounded-xl bg-surface-2 border border-border p-3">
                           <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[11px] font-semibold text-text-muted font-body">Round {done}/{rooms.length}</span>
+                            <span className="text-[11px] font-semibold text-text-muted font-body">Room {done}/{rooms.length}</span>
                             <span className="text-xs font-bold text-primary font-body">{pct}%</span>
                           </div>
                           <div className="h-1.5 bg-white rounded-full overflow-hidden border border-border">
