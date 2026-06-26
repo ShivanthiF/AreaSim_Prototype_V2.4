@@ -133,38 +133,35 @@ export function Step6Done() {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl overflow-hidden max-w-lg w-full max-h-[90vh] overflow-y-auto"
             >
-              {/* Floor plan image — full-width at top */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/About_Canvas.png"
-                alt="Floor plan with marked rooms and zones"
-                className="w-full h-44 object-cover object-top"
-              />
+              {/* Floor plan image — full-width at top, close button overlaid */}
+              <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/About_Canvas.png"
+                  alt="Floor plan with marked rooms and zones"
+                  className="w-full h-60 object-cover object-top"
+                />
+                <button
+                  onClick={() => setShowWhyModal(false)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-text-muted hover:text-text hover:bg-white transition-colors shadow-sm"
+                >
+                  <X size={16} />
+                </button>
+              </div>
 
-              {/* Header */}
-              <div className="px-6 pt-5 pb-2 flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs text-text-muted font-body mb-1">Your next step is to mark rooms and zones on the floor plan.</p>
+              {/* Header + body */}
+              <div className="px-6 pt-5 pb-6 space-y-4">
+                <div className="space-y-1.5">
                   <h3
                     className="text-lg text-text leading-snug"
                     style={{ fontFamily: "var(--font-manrope)", fontWeight: 800 }}
                   >
-                    Why do I need to mark rooms and zones?
+                    Next step?
                   </h3>
+                  <p className="text-sm text-text-muted font-body leading-relaxed">
+                    Your next step is to mark rooms and zones on the floor plan. This step is required to identify all available rooms and zones before you start room counting. It also enables AreaSim to generate an accurate room program.
+                  </p>
                 </div>
-                <button
-                  onClick={() => setShowWhyModal(false)}
-                  className="text-text-muted hover:text-text transition-colors shrink-0 mt-1"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Body */}
-              <div className="px-6 pb-6 space-y-4">
-                <p className="text-sm text-text-muted font-body leading-relaxed">
-                  Without this step, AreaSim can&apos;t count or survey your space.
-                </p>
 
                 <div className="space-y-2">
                   {whyItems.map(({ icon: Icon, title, body }) => (
