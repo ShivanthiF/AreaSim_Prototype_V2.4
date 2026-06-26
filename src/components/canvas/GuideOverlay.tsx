@@ -144,8 +144,8 @@ function RoomSetupIllustration() {
       <rect x="18" y="26" width="244" height="6" fill="#F8FAFC" />
       <text x="30" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Room name</text>
       <text x="120" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Category</text>
-      <text x="195" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Seats</text>
-      <text x="240" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Verify</text>
+      <text x="193" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Seats</text>
+      <text x="222" y="24" fontSize="6.5" fontWeight="700" fill="#374151">Verify</text>
       {/* Room row */}
       <text x="30" y="58" fontSize="8" fontWeight="700" fill="#0D1B2A">Conference Room A</text>
       {/* Category pill animates in */}
@@ -157,15 +157,15 @@ function RoomSetupIllustration() {
         <text x="148" y="60" textAnchor="middle" fontSize="6.5" fill="#139485" fontWeight="700">Meeting room</text>
       </motion.g>
       {/* Seat counter */}
-      <text x="205" y="60" textAnchor="middle" fontSize="10" fontWeight="800" fill="#0D1B2A">8</text>
+      <text x="200" y="60" textAnchor="middle" fontSize="10" fontWeight="800" fill="#0D1B2A">8</text>
       {/* Verify button pulses */}
       <motion.g
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 0.7, delay: 1.2, repeat: Infinity, repeatDelay: 2.0 }}
-        style={{ transformOrigin: "248px 56px" }}
+        style={{ transformOrigin: "231px 56px" }}
       >
-        <rect x="228" y="49" width="36" height="15" rx="7.5" fill="#139485" />
-        <text x="246" y="60" textAnchor="middle" fontSize="6.5" fill="white" fontWeight="700">Verify</text>
+        <rect x="213" y="49" width="36" height="15" rx="7.5" fill="#8E84CC" />
+        <text x="231" y="60" textAnchor="middle" fontSize="6.5" fill="white" fontWeight="700">Verify</text>
       </motion.g>
       {/* Divider */}
       <line x1="18" y1="78" x2="262" y2="78" stroke="#E5EAF0" strokeWidth="1" />
@@ -500,7 +500,7 @@ export function GuideOverlay({ step, onNext, onBack, onClose }: GuideOverlayProp
   if (isBelowHeader) {
     return (
       <>
-        <div className="fixed z-50 pointer-events-auto" style={{ top: "185px", right: "12px" }}>
+        <div className="fixed z-50 pointer-events-auto" style={{ top: "210px", right: "12px" }}>
           <AnimatePresence mode="wait">{card}</AnimatePresence>
         </div>
       </>
