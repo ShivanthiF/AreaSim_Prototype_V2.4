@@ -180,7 +180,7 @@ export function WorkplaceJourneyBar({ activeStep = "1-2" }: WorkplaceJourneyBarP
   const activeIdx = STEPS.findIndex((s) => s.id === activeStep);
 
   return (
-    <div className="w-full px-4 py-2 border-b border-border flex items-stretch shrink-0 bg-white min-h-[72px]">
+    <div className="w-full px-4 py-2 border-b border-border flex items-stretch shrink-0 bg-white min-h-[72px] overflow-x-auto">
       {/* ── GO badge — flat left, pointy right ── */}
       <div
         className="flex flex-col items-center justify-center pl-3 pr-6 py-1.5 text-white shrink-0"
@@ -219,8 +219,14 @@ export function WorkplaceJourneyBar({ activeStep = "1-2" }: WorkplaceJourneyBarP
             // Outer wrapper — carries the drop-shadow filter for step 1 border
             <div
               key={step.id}
-              className={cn("flex-1 transition-all duration-300", !isActive && !isPast && "opacity-90")}
-              style={{ zIndex: STEPS.length - i, filter: outerFilter }}
+              className={cn(
+                "transition-all duration-300 outline-none focus-visible:relative focus-visible:z-50 focus-visible:ring-2 focus-visible:ring-offset-2",
+                isActive
+                  ? "flex-1 min-w-[140px] shrink grow"
+                  : "flex-1 max-md:flex-none opacity-80 hover:opacity-100",
+                !isActive && !isPast && "opacity-90"
+              )}
+              style={{ zIndex: isActive ? 100 : STEPS.length - i, filter: outerFilter }}
             >
               {/* Inner — clip-path shape + background */}
               <div
@@ -241,7 +247,7 @@ export function WorkplaceJourneyBar({ activeStep = "1-2" }: WorkplaceJourneyBarP
                 </div>
 
                 {/* Text */}
-                <div className="min-w-0 flex-1">
+                <div className={cn("min-w-0 flex-1", !isActive && "max-md:hidden")}>
                   <p
                     className="text-[8px] font-extrabold tracking-[0.05em] leading-none truncate"
                     style={{ color: step.textColor, opacity: isActive ? 1 : 0.75 }}

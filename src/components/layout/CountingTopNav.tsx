@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { HelpCircle, Bell, X } from "lucide-react";
+import { HelpCircle, Bell, X, Settings, CreditCard, LogOut, Globe, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { LanguageSelector } from "@/components/ui/LanguageSelector";
 import { UserAvatar } from "@/components/ui/UserAvatar";
-import { mockProject } from "@/lib/mockData";
+import { mockProject, mockUser } from "@/lib/mockData";
+import { cn } from "@/lib/utils";
 
 interface CountingTopNavProps {
   floorValue?: string;
@@ -32,15 +33,24 @@ function getNotifRoundInfo() {
   return { label: ORDINALS[done.num - 1], nextTime: done.nextStart };
 }
 
+const LANGUAGES = [
+  { code: "en", name: "English" },
+  { code: "no", name: "Norsk" },
+  { code: "sv", name: "Svenska" },
+  { code: "da", name: "Dansk" },
+];
+
 /** Top navbar shared across all counting-stepper steps — mirrors the canvas page navbar. */
 export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFloorSelector = false, onGotQuestions }: CountingTopNavProps) {
   const router = useRouter();
   const [showNotifModal, setShowNotifModal] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [activeLang, setActiveLang] = useState("en");
   const { label: roundLabel, nextTime: nextRoundTime } = getNotifRoundInfo();
 
   return (
     <>
-      <header className="flex items-center gap-3 px-3 py-2 bg-surface shrink-0">
+      <header className="relative z-[200] flex items-center gap-1.5 sm:gap-3 px-2 sm:px-3 py-2 bg-surface shrink-0">
         {/* Logo — navigates to dashboard */}
         <button onClick={() => router.push("/dashboard")} className="shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
           <Logo size="md" showText={false} />
@@ -48,8 +58,8 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFl
 
         <div className="w-px h-5 bg-border" />
 
-        {/* Project name */}
-        <span className="hidden sm:block text-sm font-semibold text-text font-body truncate max-w-[200px]">
+        {/* Project name — always visible */}
+        <span className="text-xs sm:text-sm font-semibold text-text font-body truncate max-w-[80px] min-[400px]:max-w-[150px] sm:max-w-[200px]">
           {mockProject.name}
         </span>
 
@@ -75,26 +85,110 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFl
           </>
         )}
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2">
           {onGotQuestions && (
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-8 px-4 shrink-0"
-              icon={<HelpCircle size={14} />}
-              onClick={onGotQuestions}
-            >
-              Got questions?
-            </Button>
+            <>
+              {/* Desktop version: secondary button with text */}
+              <Button
+                variant="secondary"
+                size="sm"
+                className="hidden sm:inline-flex h-8 px-4 shrink-0"
+                icon={<HelpCircle size={14} />}
+                onClick={onGotQuestions}
+              >
+                Got questions?
+              </Button>
+              {/* Mobile version: simple borderless icon button */}
+              <button
+                onClick={onGotQuestions}
+                className="sm:hidden w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 transition-colors shrink-0"
+              >
+                <HelpCircle size={16} />
+              </button>
+            </>
           )}
-          <LanguageSelector />
+          {/* Desktop Language Selector */}
+          <div className="hidden sm:block">
+            <LanguageSelector />
+          </div>
           <button
             onClick={() => setShowNotifModal(true)}
             className="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 transition-colors"
           >
             <Bell size={16} />
           </button>
-          <UserAvatar onClick={() => router.push("/settings")} />
+          
+          {/* Profile dropdown container */}
+          <div className="relative flex items-center">
+            <UserAvatar onClick={() => setProfileOpen(!profileOpen)} />
+            <AnimatePresence>
+              {profileOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border bg-surface shadow-xl z-50 overflow-hidden py-1"
+                  >
+                    {/* User info */}
+                    <div className="px-4 py-3 border-b border-border">
+                      <p className="text-sm font-semibold text-text truncate">{mockUser.name}</p>
+                      <p className="text-xs text-text-muted truncate">{mockUser.email}</p>
+                    </div>
+                    {/* Menu items */}
+                    {[
+                      { icon: Settings,    label: "Settings",     href: "/settings" },
+                      { icon: CreditCard,  label: "Subscription", href: "/subscription" },
+                      { icon: HelpCircle,  label: "Help",         href: "/help" },
+                    ].map(({ icon: Icon, label, href }) => (
+                      <button key={href}
+                        onClick={() => { router.push(href); setProfileOpen(false); }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:bg-surface-2 hover:text-text transition-colors font-body text-left">
+                        <Icon size={15} />
+                        {label}
+                      </button>
+                    ))}
+
+                    {/* Language selector for mobile */}
+                    <div className="sm:hidden border-t border-border mt-1 pt-1.5 pb-1">
+                      <p className="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
+                        <Globe size={11} /> Language
+                      </p>
+                      {LANGUAGES.map((lang) => {
+                        const isSelected = activeLang === lang.code;
+                        return (
+                          <button
+                            key={lang.code}
+                            onClick={() => {
+                              setActiveLang(lang.code);
+                              setProfileOpen(false);
+                            }}
+                            className={cn(
+                              "w-full flex items-center justify-between px-4 py-2 text-xs font-body transition-colors text-left",
+                              isSelected ? "text-primary bg-primary/[0.04] font-semibold" : "text-text-muted hover:bg-surface-2"
+                            )}
+                          >
+                            <span>{lang.name}</span>
+                            {isSelected && <Check size={12} className="text-primary" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="border-t border-border mt-1">
+                      <button
+                        onClick={() => setProfileOpen(false)}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors font-body text-left">
+                        <LogOut size={15} />
+                        Sign out
+                      </button>
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </header>
 

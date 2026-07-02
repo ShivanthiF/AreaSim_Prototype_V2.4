@@ -8,7 +8,14 @@ import { WorkplaceJourneyBar } from "@/components/ui/WorkplaceJourneyBar";
 import { CountingStepper } from "@/components/ui/CountingStepper";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/Table";
 import { mockProject } from "@/lib/mockData";
 import { cn, formatNumber } from "@/lib/utils";
 
@@ -25,10 +32,15 @@ function hash(s: string) {
 }
 
 /** Deterministic mock session state for a room (so the screen is stable). */
-function roomSession(id: string): { status: RoomStatus; count: number; by: string } {
+function roomSession(id: string): {
+  status: RoomStatus;
+  count: number;
+  by: string;
+} {
   const h = hash(id);
   const m = h % 5;
-  const status: RoomStatus = m < 3 ? "counted" : m === 3 ? "ongoing" : "pending";
+  const status: RoomStatus =
+    m < 3 ? "counted" : m === 3 ? "ongoing" : "pending";
   return {
     status,
     count: status === "counted" ? (h % 12) + 1 : 0,
@@ -38,11 +50,20 @@ function roomSession(id: string): { status: RoomStatus; count: number; by: strin
 
 function StatusChip({ status }: { status: RoomStatus }) {
   if (status === "counted") {
-    return <Chip tone="success" icon={<Check size={9} strokeWidth={3} />}>Counted</Chip>;
+    return (
+      <Chip tone="success" icon={<Check size={9} strokeWidth={3} />}>
+        Counted
+      </Chip>
+    );
   }
   if (status === "ongoing") {
     return (
-      <Chip tone="warning" icon={<span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />}>
+      <Chip
+        tone="warning"
+        icon={
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+        }
+      >
         Ongoing
       </Chip>
     );
@@ -62,18 +83,35 @@ export default function SessionOverviewPage() {
       mockProject.floors.map((floor) => {
         const baseRooms =
           floor.rooms.length > 0
-            ? floor.rooms.map((r) => ({ id: r.id, name: r.name, sqm: r.sqm, category: r.category }))
-            : (floor.detectedRooms ?? []).map((d) => ({ id: d.id, name: d.name, sqm: d.sqm, category: undefined as string | undefined }));
+            ? floor.rooms.map((r) => ({
+                id: r.id,
+                name: r.name,
+                sqm: r.sqm,
+                category: r.category,
+              }))
+            : (floor.detectedRooms ?? []).map((d) => ({
+                id: d.id,
+                name: d.name,
+                sqm: d.sqm,
+                category: undefined as string | undefined,
+              }));
         const rooms = baseRooms.map((r) => ({ ...r, ...roomSession(r.id) }));
         const counted = rooms.filter((r) => r.status === "counted").length;
-        return { id: floor.id, name: floor.name, rooms, counted, total: rooms.length };
+        return {
+          id: floor.id,
+          name: floor.name,
+          rooms,
+          counted,
+          total: rooms.length,
+        };
       }),
-    []
+    [],
   );
 
   const totalRooms = floors.reduce((s, f) => s + f.total, 0);
   const totalCounted = floors.reduce((s, f) => s + f.counted, 0);
-  const overallPct = totalRooms > 0 ? Math.round((totalCounted / totalRooms) * 100) : 0;
+  const overallPct =
+    totalRooms > 0 ? Math.round((totalCounted / totalRooms) * 100) : 0;
   const allDone = totalCounted === totalRooms && totalRooms > 0;
 
   const firstFloorId = mockProject.floors[0]?.id;
@@ -85,7 +123,9 @@ export default function SessionOverviewPage() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => router.push(`/project/${projectId}/floor/${firstFloorId}`)}
+              onClick={() =>
+                router.push(`/project/${projectId}/floor/${firstFloorId}`)
+              }
               className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-light transition-colors"
             >
               <ArrowLeft size={14} /> Back to canvas
@@ -98,7 +138,11 @@ export default function SessionOverviewPage() {
           <Button
             variant="secondary"
             size="md"
-            onClick={() => router.push(`/project/${projectId}/floor/${firstFloorId}/count#session-details`)}
+            onClick={() =>
+              router.push(
+                `/project/${projectId}/floor/${firstFloorId}/count#session-details`,
+              )
+            }
           >
             Back to counting
           </Button>
@@ -111,25 +155,34 @@ export default function SessionOverviewPage() {
 
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-[1600px] mx-auto w-full space-y-6">
-
           {/* ── Session summary ── */}
           <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6 sm:p-8 space-y-6">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-1.5 text-xs font-body">
                 <span className="text-text-muted">Room counting tool</span>
                 <span className="text-text-muted">/</span>
-                <span className="font-semibold text-text">Session overview</span>
+                <span className="font-semibold text-text">
+                  Session overview
+                </span>
               </div>
               <div className="flex flex-wrap items-end justify-between gap-3">
-                <h1 className="text-xl font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)" }}>
+                <h1
+                  className="text-xl font-extrabold text-text leading-none"
+                  style={{ fontFamily: "var(--font-manrope)" }}
+                >
                   Session overview
                 </h1>
-                <p className="text-sm font-bold text-primary" style={{ fontFamily: "var(--font-manrope)" }}>
+                <p
+                  className="text-sm font-bold text-primary"
+                  style={{ fontFamily: "var(--font-manrope)" }}
+                >
                   {SESSION_LABEL}
                 </p>
               </div>
               <p className="text-sm text-text-muted font-body">
-                Track every room across all floors in this counting session. A session is complete only when all rooms on all floors have been counted.
+                Track every room across all floors in this counting session. A
+                session is complete only when all rooms on all floors have been
+                counted.
               </p>
             </div>
 
@@ -137,7 +190,9 @@ export default function SessionOverviewPage() {
             <div className="rounded-2xl bg-surface-2 border border-border p-5">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <span className="text-sm font-bold text-text font-body">
-                  {allDone ? "All rooms counted this session" : "Rooms counted this session"}
+                  {allDone
+                    ? "All rooms counted this session"
+                    : "Rooms counted this session"}
                 </span>
                 <span className="text-sm font-bold text-text font-body tabular-nums">
                   {totalCounted} / {totalRooms} · {overallPct}%
@@ -162,7 +217,10 @@ export default function SessionOverviewPage() {
 
           {/* ── Per-floor breakdown ── */}
           {floors.map((floor, fi) => {
-            const pct = floor.total > 0 ? Math.round((floor.counted / floor.total) * 100) : 0;
+            const pct =
+              floor.total > 0
+                ? Math.round((floor.counted / floor.total) * 100)
+                : 0;
             const floorDone = floor.counted === floor.total && floor.total > 0;
             return (
               <motion.section
@@ -178,7 +236,10 @@ export default function SessionOverviewPage() {
                     <Layers size={20} className="text-[#7A6BAF]" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-base font-extrabold text-text leading-none" style={{ fontFamily: "var(--font-manrope)" }}>
+                    <h2
+                      className="text-base font-extrabold text-text leading-none"
+                      style={{ fontFamily: "var(--font-manrope)" }}
+                    >
                       {floor.name}
                     </h2>
                     {floorDone && (
@@ -226,9 +287,15 @@ export default function SessionOverviewPage() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: ri * 0.03 }}
                         >
-                          <TableCell className="text-text">{room.name}</TableCell>
-                          <TableCell>{formatNumber(room.sqm || 25)} m²</TableCell>
-                          <TableCell><StatusChip status={room.status} /></TableCell>
+                          <TableCell className="text-text">
+                            {room.name}
+                          </TableCell>
+                          <TableCell>
+                            {formatNumber(room.sqm || 25)} m²
+                          </TableCell>
+                          <TableCell>
+                            <StatusChip status={room.status} />
+                          </TableCell>
                           <TableCell>
                             {room.status === "pending" ? (
                               "—"
@@ -259,7 +326,7 @@ export default function SessionOverviewPage() {
               "rounded-2xl border p-5 text-sm font-body",
               allDone
                 ? "bg-emerald-50 border-emerald-100 text-emerald-700"
-                : "bg-[#FBF6EE] border-[#F6DFA0] text-[#8A5E1A]"
+                : "bg-[#FBF6EE] border-[#F6DFA0] text-[#8A5E1A]",
             )}
           >
             {allDone

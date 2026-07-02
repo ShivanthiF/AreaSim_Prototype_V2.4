@@ -38,7 +38,7 @@ export function AppLayout({ children, showJourneyBar = false }: AppLayoutProps) 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
       {/* ── Top Navigation Bar ── */}
-      <header className="sticky top-0 z-40 flex items-center gap-2 px-4 py-0 border-b border-border bg-white shrink-0 h-14">
+      <header className="sticky top-0 z-[200] flex items-center gap-2 px-4 py-0 border-b border-border bg-white shrink-0 h-14">
         {/* Logo */}
         <Link href="/dashboard" className="shrink-0 mr-2">
           <Logo size="md" showText />
