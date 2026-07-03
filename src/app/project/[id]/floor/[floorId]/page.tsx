@@ -227,7 +227,7 @@ export default function FloorPage() {
         <div className="w-px h-5 bg-border" />
 
         {/* Project name — always visible */}
-        <span className="text-xs sm:text-sm font-semibold text-text font-body truncate max-w-[80px] min-[400px]:max-w-[150px] sm:max-w-[200px]">
+        <span className="text-xs sm:text-sm font-semibold text-text font-body whitespace-nowrap">
           {mockProject.name}
         </span>
 

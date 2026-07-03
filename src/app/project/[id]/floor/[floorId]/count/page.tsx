@@ -2872,8 +2872,8 @@ export default function FloorCountPage() {
       </main>
 
       {/* ── Footer ───────────────────────────────────────────────────────────── */}
-      <footer className="bg-white border-t border-[#E2E8F0] px-6 py-3 shrink-0 flex items-center justify-between">
-        <div className="flex items-center gap-6">
+      <footer className="bg-white border-t border-[#E2E8F0] px-4 sm:px-6 py-3 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
+        <div className="flex items-center gap-4 sm:gap-6">
           <div className="flex items-center gap-2">
             <div
               className={cn(
@@ -2889,7 +2889,7 @@ export default function FloorCountPage() {
             {roundLabel} · Day 1 of 14
           </div>
         </div>
-        <div className="text-[10px] text-text-muted font-body">
+        <div className="text-[10px] text-text-muted font-body text-center sm:text-right">
           Areasim workspace intelligence
         </div>
       </footer>

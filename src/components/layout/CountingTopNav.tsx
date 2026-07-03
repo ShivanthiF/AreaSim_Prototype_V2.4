@@ -59,7 +59,7 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFl
         <div className="w-px h-5 bg-border" />
 
         {/* Project name — always visible */}
-        <span className="text-xs sm:text-sm font-semibold text-text font-body truncate max-w-[80px] min-[400px]:max-w-[150px] sm:max-w-[200px]">
+        <span className="text-xs sm:text-sm font-semibold text-text font-body whitespace-nowrap">
           {mockProject.name}
         </span>
 
@@ -87,25 +87,15 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFl
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
           {onGotQuestions && (
-            <>
-              {/* Desktop version: secondary button with text */}
-              <Button
-                variant="secondary"
-                size="sm"
-                className="hidden sm:inline-flex h-8 px-4 shrink-0"
-                icon={<HelpCircle size={14} />}
-                onClick={onGotQuestions}
-              >
-                Got questions?
-              </Button>
-              {/* Mobile version: simple borderless icon button */}
-              <button
-                onClick={onGotQuestions}
-                className="sm:hidden w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 transition-colors shrink-0"
-              >
-                <HelpCircle size={16} />
-              </button>
-            </>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="hidden sm:inline-flex h-8 px-4 shrink-0"
+              icon={<HelpCircle size={14} />}
+              onClick={onGotQuestions}
+            >
+              Got questions?
+            </Button>
           )}
           {/* Desktop Language Selector */}
           <div className="hidden sm:block">
@@ -132,9 +122,23 @@ export function CountingTopNav({ floorValue, floorOptions, onFloorChange, hideFl
                     className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border bg-surface shadow-xl z-50 overflow-hidden py-1"
                   >
                     {/* User info */}
-                    <div className="px-4 py-3 border-b border-border">
-                      <p className="text-sm font-semibold text-text truncate">{mockUser.name}</p>
-                      <p className="text-xs text-text-muted truncate">{mockUser.email}</p>
+                    <div className="px-4 py-3 border-b border-border flex items-center justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-text truncate">{mockUser.name}</p>
+                        <p className="text-xs text-text-muted truncate">{mockUser.email}</p>
+                      </div>
+                      {onGotQuestions && (
+                        <button
+                          onClick={() => {
+                            onGotQuestions();
+                            setProfileOpen(false);
+                          }}
+                          className="sm:hidden w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 transition-colors shrink-0"
+                          title="Got questions?"
+                        >
+                          <HelpCircle size={18} />
+                        </button>
+                      )}
                     </div>
                     {/* Menu items */}
                     {[
