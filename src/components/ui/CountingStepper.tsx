@@ -81,7 +81,7 @@ export function CountingStepper({ activeStep, onStepClick, disabled = false, act
 
       {/* Step pills + actions */}
       <div className="flex items-center gap-3">
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 flex-1 min-w-0">
+      <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-hidden sm:overflow-x-auto pb-0.5 flex-1 min-w-0">
         {COUNT_COLLECT_STEPS.map((step, i) => {
           const isActive = !disabled && step.id === activeStep;
           const isDone = !disabled && i < activeIdx;
@@ -89,7 +89,6 @@ export function CountingStepper({ activeStep, onStepClick, disabled = false, act
           // Upcoming steps are disabled; only completed/current steps are clickable
           const interactive = Boolean(onStepClick) && !disabled && i <= activeIdx;
           const pillStyle = {
-            padding: "6px 10px",
             background: isActive ? "#F0EEFF" : "#fff",
             border: `1px solid ${isActive ? "#9887DB" : isDone ? "#CCC5BB" : "#E4DED4"}`,
             color: isActive
@@ -116,16 +115,34 @@ export function CountingStepper({ activeStep, onStepClick, disabled = false, act
               >
                 {isDone && !isActive ? <Check size={10} strokeWidth={3} /> : i + 1}
               </span>
-              {step.label}
+              <span
+                className={
+                  isActive
+                    ? "inline"
+                    : i === 0 || i === 1
+                    ? "hidden lg:inline"
+                    : i === 2
+                    ? "hidden md:inline"
+                    : "hidden sm:inline"
+                }
+              >
+                {step.label}
+              </span>
             </>
           );
-          const pillClass =
-            "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full font-body";
+          const paddingClass = isActive
+            ? "px-2.5 py-1.5"
+            : i === 0 || i === 1
+            ? "px-1.5 py-1.5 lg:px-2.5"
+            : i === 2
+            ? "px-1.5 py-1.5 md:px-2.5"
+            : "px-1.5 py-1.5 sm:px-2.5";
+          const pillClass = `inline-flex items-center gap-1 sm:gap-1.5 whitespace-nowrap rounded-full font-body transition-all duration-200 ${paddingClass}`;
           return (
             <div key={step.id} className={`flex shrink-0 items-center ${isFuture ? "opacity-50" : ""}`}>
               {i > 0 && (
                 <div
-                  className="mr-1.5 h-px w-3.5"
+                  className="mr-1 sm:mr-1.5 h-px w-3.5"
                   style={{ background: isDone || isActive ? "#9887DB" : "#E4DED4" }}
                 />
               )}
