@@ -1054,42 +1054,47 @@ export default function FloorCountPage() {
           <div className="max-w-[1600px] mx-auto w-full flex flex-col flex-1">
             <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col flex-1">
               {/* Title — sticky, does not scroll */}
-              <div className="border-b border-[#F1F5F9] py-4 px-4 sm:px-8 sm:py-5 flex items-center justify-between gap-3 shrink-0">
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-1.5 text-xs font-body">
-                    <span className="text-text-muted">Room counting tool</span>
-                    <span className="text-text-muted">/</span>
-                    <span className="font-semibold text-text">
+              <div className="border-b border-[#F1F5F9] py-4 px-4 sm:px-8 sm:py-5 flex flex-col gap-3 shrink-0">
+                {/* Breadcrumbs at the very top of the header */}
+                <div className="flex items-center gap-1.5 text-xs font-body whitespace-nowrap">
+                  <span className="text-text-muted">Room counting tool</span>
+                  <span className="text-text-muted">/</span>
+                  <span className="font-semibold text-text">
+                    {editRoomSettings ? "Edit rooms setup" : "Rooms setup"}
+                  </span>
+                </div>
+                {/* Title + CTA row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                  <div className="flex flex-col">
+                    <h2
+                      className="text-lg sm:text-xl font-extrabold text-text leading-none"
+                      style={{
+                        fontFamily: "var(--font-manrope)",
+                        fontWeight: 800,
+                      }}
+                    >
                       {editRoomSettings ? "Edit rooms setup" : "Rooms setup"}
-                    </span>
+                    </h2>
                   </div>
-                  <h2
-                    className="text-lg sm:text-xl font-extrabold text-text leading-none"
-                    style={{
-                      fontFamily: "var(--font-manrope)",
-                      fontWeight: 800,
+                  <Button
+                    size="sm"
+                    className="h-8 sm:h-9 px-4 sm:px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0 text-xs sm:text-sm w-full sm:w-auto justify-center"
+                    icon={<CheckCircle2 size={14} />}
+                    onClick={() => {
+                      if (allVerified) handleSetupConfirm();
+                      else if (rooms.some((r) => !roomCategories[r.id]))
+                        setShowCategoryRequiredModal(true);
+                      else setShowVerifyConfirmModal(true);
                     }}
                   >
-                    {editRoomSettings ? "Edit rooms setup" : "Rooms setup"}
-                  </h2>
+                    Start counting
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  className="h-8 sm:h-9 px-4 sm:px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0 text-xs sm:text-sm"
-                  icon={<CheckCircle2 size={14} />}
-                  onClick={() => {
-                    if (allVerified) handleSetupConfirm();
-                    else if (rooms.some((r) => !roomCategories[r.id]))
-                      setShowCategoryRequiredModal(true);
-                    else setShowVerifyConfirmModal(true);
-                  }}
-                >
-                  Start counting
-                </Button>
               </div>
 
               {/* Content */}
               <div className="flex-1 p-4 sm:p-8 space-y-6">
+
                 {/* Floor selector */}
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-text font-body">
@@ -2061,58 +2066,63 @@ export default function FloorCountPage() {
           >
             <>
               {/* Panel header — matches the Room setup title section */}
-              <div className="border-b border-[#F1F5F9] py-4 px-4 sm:px-8 sm:py-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-1.5 text-xs font-body">
-                    <span className="text-text-muted">Room counting tool</span>
-                    <span className="text-text-muted">/</span>
-                    <span className="font-semibold text-text">
-                      Rooms overview
-                    </span>
-                  </div>
-                  <h3
-                    className="text-lg sm:text-xl font-extrabold text-text leading-none"
-                    style={{
-                      fontFamily: "var(--font-manrope)",
-                      fontWeight: 800,
-                    }}
-                  >
+              <div className="border-b border-[#F1F5F9] py-4 px-4 sm:px-8 sm:py-5 flex flex-col gap-3 shrink-0">
+                {/* Breadcrumbs at the very top of the header */}
+                <div className="flex items-center gap-1.5 text-xs font-body whitespace-nowrap">
+                  <span className="text-text-muted">Room counting tool</span>
+                  <span className="text-text-muted">/</span>
+                  <span className="font-semibold text-text">
                     Rooms overview
-                  </h3>
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full md:w-auto justify-end md:justify-start">
-                  {isRecording && (
-                    <div className="flex items-center gap-2 sm:gap-3 bg-white border border-primary rounded-full px-3 sm:px-4 h-8 sm:h-9 shadow-sm shrink-0 text-xs sm:text-sm">
-                      <span
-                        className="text-sm sm:text-lg font-bold text-primary tabular-nums"
-                        style={{ fontFamily: "var(--font-manrope)" }}
-                      >
-                        {formatTime(timer)}
-                      </span>
-                      <button
-                        onClick={() => setShowStopModal(true)}
-                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
-                      >
-                        <div className="w-2 h-2 rounded-sm bg-white" />
-                      </button>
-                    </div>
-                  )}
-                  <Button
-                    size="sm"
-                    className="h-8 sm:h-9 px-4 sm:px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0 text-xs sm:text-sm flex-1 md:flex-initial justify-center"
-                    icon={<Play size={14} />}
-                    onClick={() => {
-                      if (!selectedRoomId && rooms[0])
-                        setSelectedRoomId(rooms[0].id);
-                      setCountingPhase("counting");
-                    }}
-                  >
-                    Start room counting
-                  </Button>
+                {/* Title + CTA row */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 w-full">
+                  <div className="flex flex-col">
+                    <h3
+                      className="text-lg sm:text-xl font-extrabold text-text leading-none"
+                      style={{
+                        fontFamily: "var(--font-manrope)",
+                        fontWeight: 800,
+                      }}
+                    >
+                      Rooms overview
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full md:w-auto justify-end md:justify-start">
+                    {isRecording && (
+                      <div className="flex items-center gap-2 sm:gap-3 bg-white border border-primary rounded-full px-3 sm:px-4 h-8 sm:h-9 shadow-sm shrink-0 text-xs sm:text-sm">
+                        <span
+                          className="text-sm sm:text-lg font-bold text-primary tabular-nums"
+                          style={{ fontFamily: "var(--font-manrope)" }}
+                        >
+                          {formatTime(timer)}
+                        </span>
+                        <button
+                          onClick={() => setShowStopModal(true)}
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
+                        >
+                          <div className="w-2 h-2 rounded-sm bg-white" />
+                        </button>
+                      </div>
+                    )}
+                    <Button
+                      size="sm"
+                      className="h-8 sm:h-9 px-4 sm:px-6 rounded-full shadow-md shadow-primary/20 font-bold shrink-0 text-xs sm:text-sm flex-1 md:flex-initial justify-center"
+                      icon={<Play size={14} />}
+                      onClick={() => {
+                        if (!selectedRoomId && rooms[0])
+                          setSelectedRoomId(rooms[0].id);
+                        setCountingPhase("counting");
+                      }}
+                    >
+                      Start room counting
+                    </Button>
+                  </div>
                 </div>
               </div>
 
               <div className="flex-1 p-4 sm:p-6 space-y-4">
+
                 {/* Floor + dates row */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-3 w-full md:w-auto">
@@ -2545,41 +2555,45 @@ export default function FloorCountPage() {
               className="flex-1 flex flex-col h-fit bg-white rounded-2xl border border-[#E2E8F0] shadow-sm"
             >
               {/* Header — Enter headcount */}
-              <div className="px-4 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-5 border-b border-[#F1F5F9] flex items-center justify-between gap-3 shrink-0">
-                <div className="flex flex-col gap-2.5">
-                  <div className="flex items-center gap-1.5 text-xs font-body">
-                    <span className="text-text-muted">Room counting tool</span>
-                    <span className="text-text-muted">/</span>
-                    <span className="font-semibold text-text">
-                      Enter headcount
-                    </span>
-                  </div>
-                  <h3
-                    className="text-lg sm:text-xl font-extrabold text-text leading-none"
-                    style={{
-                      fontFamily: "var(--font-manrope)",
-                      fontWeight: 800,
-                    }}
-                  >
+              <div className="px-4 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-5 border-b border-[#F1F5F9] flex flex-col gap-3 shrink-0">
+                {/* Breadcrumbs at the very top of the header */}
+                <div className="flex items-center gap-1.5 text-xs font-body whitespace-nowrap">
+                  <span className="text-text-muted">Room counting tool</span>
+                  <span className="text-text-muted">/</span>
+                  <span className="font-semibold text-text">
                     Enter headcount
-                  </h3>
+                  </span>
                 </div>
-                {isRecording && (
-                  <div className="flex items-center gap-2 sm:gap-3 bg-white border border-primary rounded-full px-3 sm:px-4 h-8 sm:h-9 shadow-sm shrink-0">
-                    <span
-                      className="text-sm sm:text-lg font-bold text-primary tabular-nums"
-                      style={{ fontFamily: "var(--font-manrope)" }}
+                {/* Title + recording timer row */}
+                <div className="flex items-center justify-between gap-3 w-full">
+                  <div className="flex flex-col">
+                    <h3
+                      className="text-lg sm:text-xl font-extrabold text-text leading-none"
+                      style={{
+                        fontFamily: "var(--font-manrope)",
+                        fontWeight: 800,
+                      }}
                     >
-                      {formatTime(timer)}
-                    </span>
-                    <button
-                      onClick={() => setShowStopModal(true)}
-                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
-                    >
-                      <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-white" />
-                    </button>
+                      Enter headcount
+                    </h3>
                   </div>
-                )}
+                  {isRecording && (
+                    <div className="flex items-center gap-2 sm:gap-3 bg-white border border-primary rounded-full px-3 sm:px-4 h-8 sm:h-9 shadow-sm shrink-0">
+                      <span
+                        className="text-sm sm:text-lg font-bold text-primary tabular-nums"
+                        style={{ fontFamily: "var(--font-manrope)" }}
+                      >
+                        {formatTime(timer)}
+                      </span>
+                      <button
+                        onClick={() => setShowStopModal(true)}
+                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
+                      >
+                        <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-white" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Floor selector — below header */}
