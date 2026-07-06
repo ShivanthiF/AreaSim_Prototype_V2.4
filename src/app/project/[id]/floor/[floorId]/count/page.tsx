@@ -42,7 +42,6 @@ import {
   Settings2,
   MessageCircle,
   UtensilsCrossed,
-  Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -727,9 +726,6 @@ export default function FloorCountPage() {
   }, [isRecording]);
 
   const selectedRoom = rooms.find((r) => r.id === selectedRoomId);
-  const selectedZone = (floor?.zones || []).find(
-    (z) => z.id === selectedRoom?.zoneId,
-  );
 
   // ── Session start — simulate 2 rooms being counted by other users ───────────
   const handleStartSession = () => {
@@ -1510,7 +1506,7 @@ export default function FloorCountPage() {
                                     }}
                                     className="appearance-none w-full rounded-lg border border-[#E2E8F0] bg-white pl-2 sm:pl-3 pr-6 sm:pr-8 py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
                                   >
-                                    <option value="" disabled>
+                                    <option value="" disabled hidden>
                                       Select...
                                     </option>
                                     {FLOOR_CATEGORIES.map((fc) => (
@@ -2571,7 +2567,7 @@ export default function FloorCountPage() {
                   </span>
                 </div>
                 {/* Title + recording timer row */}
-                <div className="flex items-center justify-between gap-3 w-full">
+                <div className="flex items-start justify-between gap-3 w-full">
                   <div className="flex flex-col">
                     <h3
                       className="text-lg sm:text-xl font-extrabold text-text leading-none"
@@ -2583,22 +2579,32 @@ export default function FloorCountPage() {
                       Enter headcount
                     </h3>
                   </div>
-                  {isRecording && (
-                    <div className="flex items-center gap-2 sm:gap-3 bg-white border border-primary rounded-full px-3 sm:px-4 h-8 sm:h-9 shadow-sm shrink-0">
-                      <span
-                        className="text-sm sm:text-lg font-bold text-primary tabular-nums"
-                        style={{ fontFamily: "var(--font-manrope)" }}
-                      >
-                        {formatTime(timer)}
-                      </span>
-                      <button
-                        onClick={() => setShowStopModal(true)}
-                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
-                      >
-                        <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-white" />
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    {isRecording && (
+                      <div className="flex items-center gap-2 sm:gap-3 bg-white border border-primary rounded-full px-3 sm:px-4 h-8 sm:h-9 shadow-sm">
+                        <span
+                          className="text-sm sm:text-lg font-bold text-primary tabular-nums"
+                          style={{ fontFamily: "var(--font-manrope)" }}
+                        >
+                          {formatTime(timer)}
+                        </span>
+                        <button
+                          onClick={() => setShowStopModal(true)}
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#EF4444] flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-md shadow-red-200"
+                        >
+                          <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-sm bg-white" />
+                        </button>
+                      </div>
+                    )}
+                    <span
+                      className="text-[10px] sm:text-xs font-bold text-primary font-body text-right"
+                      style={{ fontFamily: "var(--font-manrope)" }}
+                    >
+                      {roundLabel} · Day 1 of 14 · Room{" "}
+                      {rooms.findIndex((r) => r.id === selectedRoomId) + 1} of{" "}
+                      {rooms.length}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -2754,31 +2760,14 @@ export default function FloorCountPage() {
                   </div>
 
                   <div className="text-center space-y-3">
-                    {/* Room name + zone — one line, separated by a dash */}
+                    {/* Room name */}
                     <h3
-                      className="text-base sm:text-lg font-extrabold text-text leading-none"
+                      className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-extrabold text-text leading-tight"
                       style={{ fontFamily: "var(--font-manrope)" }}
                     >
                       {selectedRoom?.name}
-                      <span className="font-normal text-text-muted">
-                        {" "}
-                        – {selectedZone
-                          ? selectedZone.name
-                          : "Unzoned room"} – {floor?.name}
-                      </span>
                     </h3>
-                    <p
-                      className="text-xs sm:text-sm font-bold text-primary"
-                      style={{ fontFamily: "var(--font-manrope)" }}
-                    >
-                      {roundLabel} · Day 1 of 14 · Room{" "}
-                      {rooms.findIndex((r) => r.id === selectedRoomId) + 1} of{" "}
-                      {rooms.length}
-                    </p>
                     <div className="space-y-4">
-                      <p className="text-[11px] font-bold text-text-muted tracking-widest">
-                        Current occupancy count
-                      </p>
                       <div className="flex items-center justify-center gap-4 sm:gap-10">
                         <button
                           onClick={() => adjustCount(-1)}
@@ -2837,19 +2826,20 @@ export default function FloorCountPage() {
                               className={cn(
                                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] sm:text-xs font-semibold font-body transition-all duration-200 shrink-0",
                                 showObservationsGuidance
-                                  ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15"
-                                  : "bg-[#F8FAFC] border-[#E2E8F0] text-[#64748B] hover:bg-[#F1F5F9] hover:border-[#CBD5E1]"
+                                  ? "bg-[#F8FAFC] border-[#E2E8F0] text-[#64748B] hover:bg-[#F1F5F9] hover:border-[#CBD5E1]"
+                                  : "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15"
                               )}
                             >
-                              <Lightbulb
-                                className={cn(
-                                  "w-3.5 h-3.5",
-                                  showObservationsGuidance
-                                    ? "fill-primary/20 text-primary animate-pulse"
-                                    : "text-[#64748B]"
-                                )}
-                              />
-                              <span>{showObservationsGuidance ? "Hide Guidance" : "Show Guidance"}</span>
+                              {showObservationsGuidance ? (
+                                <X
+                                  className="w-3.5 h-3.5 text-[#64748B]"
+                                />
+                              ) : (
+                                <Plus
+                                  className="w-3.5 h-3.5 text-primary"
+                                />
+                              )}
+                              <span>{showObservationsGuidance ? "Hide Observation" : "Add Observation"}</span>
                             </button>
                           </div>
 
@@ -2860,7 +2850,7 @@ export default function FloorCountPage() {
                                 animate={{ height: "auto", opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.2, ease: "easeInOut" }}
-                                className="overflow-hidden pb-1"
+                                className="overflow-hidden pb-1 space-y-3 sm:space-y-4"
                               >
                                 <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2">
                                   {OBSERVATION_PROMPTS.map((p) => (
@@ -2874,17 +2864,17 @@ export default function FloorCountPage() {
                                     </button>
                                   ))}
                                 </div>
+
+                                <textarea
+                                  value={roomComment}
+                                  onChange={(e) => setRoomComment(e.target.value)}
+                                  placeholder="What did you notice here?"
+                                  rows={3}
+                                  className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-[14px] text-[#222B27] font-body placeholder:text-[#94A3B8] focus:outline-none focus:border-[#139485] focus:ring-2 focus:ring-[rgba(19,148,133,0.1)] transition-all resize-none"
+                                />
                               </motion.div>
                             )}
                           </AnimatePresence>
-
-                          <textarea
-                            value={roomComment}
-                            onChange={(e) => setRoomComment(e.target.value)}
-                            placeholder="What did you notice here?"
-                            rows={3}
-                            className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-[14px] text-[#222B27] font-body placeholder:text-[#94A3B8] focus:outline-none focus:border-[#139485] focus:ring-2 focus:ring-[rgba(19,148,133,0.1)] transition-all resize-none"
-                          />
                         </div>
                       </div>
                     )}
