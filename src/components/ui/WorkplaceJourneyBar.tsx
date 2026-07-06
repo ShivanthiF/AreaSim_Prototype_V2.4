@@ -180,7 +180,7 @@ export function WorkplaceJourneyBar({ activeStep = "1-2" }: WorkplaceJourneyBarP
   const activeIdx = STEPS.findIndex((s) => s.id === activeStep);
 
   return (
-    <div className="w-full px-4 py-2 border-b border-border flex items-stretch shrink-0 bg-white min-h-[72px] overflow-x-auto">
+    <div className="hidden md:flex w-full px-4 py-2 border-b border-border items-stretch shrink-0 bg-white min-h-[72px] overflow-x-auto">
       {/* ── GO badge — flat left, pointy right ── */}
       <div
         className="flex flex-col items-center justify-center pl-3 pr-6 py-1.5 text-white shrink-0"

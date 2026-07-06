@@ -63,7 +63,7 @@ export function CountingStepper({ activeStep, onStepClick, disabled = false, act
   const activeIdx = disabled ? -1 : COUNT_COLLECT_STEPS.findIndex((s) => s.id === activeStep);
 
   return (
-    <div className={`w-full shrink-0 border-b border-border bg-surface-2 px-5 py-2 ${disabled ? "opacity-60" : ""}`}>
+    <div className={`hidden md:block w-full shrink-0 border-b border-border bg-surface-2 px-5 py-2 ${disabled ? "opacity-60" : ""}`}>
       {/* Section label + progress */}
       <div className="flex flex-wrap items-center gap-2 mb-2">
         <span
@@ -115,28 +115,12 @@ export function CountingStepper({ activeStep, onStepClick, disabled = false, act
               >
                 {isDone && !isActive ? <Check size={10} strokeWidth={3} /> : i + 1}
               </span>
-              <span
-                className={
-                  isActive
-                    ? "inline"
-                    : i === 0 || i === 1
-                    ? "hidden lg:inline"
-                    : i === 2
-                    ? "hidden md:inline"
-                    : "hidden sm:inline"
-                }
-              >
+              <span className="inline">
                 {step.label}
               </span>
             </>
           );
-          const paddingClass = isActive
-            ? "px-2.5 py-1.5"
-            : i === 0 || i === 1
-            ? "px-1.5 py-1.5 lg:px-2.5"
-            : i === 2
-            ? "px-1.5 py-1.5 md:px-2.5"
-            : "px-1.5 py-1.5 sm:px-2.5";
+          const paddingClass = "px-2.5 py-1.5";
           const pillClass = `inline-flex items-center gap-1 sm:gap-1.5 whitespace-nowrap rounded-full font-body transition-all duration-200 ${paddingClass}`;
           return (
             <div key={step.id} className={`flex shrink-0 items-center ${isFuture ? "opacity-50" : ""}`}>
