@@ -42,6 +42,7 @@ import {
   Settings2,
   MessageCircle,
   UtensilsCrossed,
+  Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -638,6 +639,7 @@ export default function FloorCountPage() {
   >(null);
   const [showObservationsCompletionModal, setShowObservationsCompletionModal] =
     useState(false);
+  const [showObservationsGuidance, setShowObservationsGuidance] = useState(false);
 
   const [selectedFloorName, setSelectedFloorName] = useState(
     floor?.name || "Ground Floor",
@@ -769,6 +771,10 @@ export default function FloorCountPage() {
       ...prev,
       [selectedRoomId]: Math.max(0, (prev[selectedRoomId] || 0) + delta),
     }));
+  };
+
+  const handleAddPrompt = (prompt: string) => {
+    setRoomComment((prev) => (prev ? `${prev}\n${prompt}` : prompt));
   };
 
   const proceedAfterRecord = (currentRoomId: string) => {
@@ -2809,36 +2815,69 @@ export default function FloorCountPage() {
                       roomCategories[selectedRoomId!] === "social-zone") && (
                       <div className="pt-4 sm:pt-6 mt-4 sm:mt-6 w-full max-w-2xl mx-auto space-y-3 text-left">
                         <div className="border border-[#E2E8F0] rounded-2xl sm:rounded-[20px] p-3 sm:p-5 space-y-2.5 sm:space-y-4 bg-white shadow-sm">
-                          <div className="mb-1 sm:mb-2">
-                            <h4
-                              className="text-xs sm:text-[17px] font-bold text-[#222B27]"
-                              style={{
-                                fontFamily: "var(--font-manrope)",
-                                fontWeight: 800,
-                              }}
-                            >
-                              Observations
-                            </h4>
-                            <p className="text-[10px] sm:text-[14px] text-[#64748B] font-body mt-0.5">
-                              Note how the space is being used, then submit your
-                              observations.
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                            {OBSERVATION_PROMPTS.map((p) => (
-                              <button
-                                key={p}
-                                onClick={() =>
-                                  setRoomComment((prev) =>
-                                    prev ? `${prev}\n${p}` : p,
-                                  )
-                                }
-                                className="px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] text-[10px] sm:text-[13px] text-[#64748B] font-body hover:bg-primary/5 hover:border-primary/30 transition-all text-left leading-snug"
+                          <div className="flex items-start justify-between mb-1 sm:mb-2 gap-4">
+                            <div>
+                              <h4
+                                className="text-xs sm:text-[17px] font-bold text-[#222B27]"
+                                style={{
+                                  fontFamily: "var(--font-manrope)",
+                                  fontWeight: 800,
+                                }}
                               >
-                                {p}
-                              </button>
-                            ))}
+                                Observations
+                              </h4>
+                              <p className="text-[10px] sm:text-[14px] text-[#64748B] font-body mt-0.5">
+                                Note how the space is being used, then submit your
+                                observations.
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setShowObservationsGuidance((prev) => !prev)}
+                              className={cn(
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] sm:text-xs font-semibold font-body transition-all duration-200 shrink-0",
+                                showObservationsGuidance
+                                  ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15"
+                                  : "bg-[#F8FAFC] border-[#E2E8F0] text-[#64748B] hover:bg-[#F1F5F9] hover:border-[#CBD5E1]"
+                              )}
+                            >
+                              <Lightbulb
+                                className={cn(
+                                  "w-3.5 h-3.5",
+                                  showObservationsGuidance
+                                    ? "fill-primary/20 text-primary animate-pulse"
+                                    : "text-[#64748B]"
+                                )}
+                              />
+                              <span>{showObservationsGuidance ? "Hide Guidance" : "Show Guidance"}</span>
+                            </button>
                           </div>
+
+                          <AnimatePresence initial={false}>
+                            {showObservationsGuidance && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2, ease: "easeInOut" }}
+                                className="overflow-hidden pb-1"
+                              >
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2">
+                                  {OBSERVATION_PROMPTS.map((p) => (
+                                    <button
+                                      key={p}
+                                      type="button"
+                                      onClick={() => handleAddPrompt(p)}
+                                      className="px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] text-[10px] sm:text-[13px] text-[#64748B] font-body hover:bg-primary/5 hover:border-primary/30 transition-all text-left leading-snug"
+                                    >
+                                      {p}
+                                    </button>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
                           <textarea
                             value={roomComment}
                             onChange={(e) => setRoomComment(e.target.value)}
