@@ -638,7 +638,8 @@ export default function FloorCountPage() {
   >(null);
   const [showObservationsCompletionModal, setShowObservationsCompletionModal] =
     useState(false);
-  const [showObservationsGuidance, setShowObservationsGuidance] = useState(false);
+  const [showObservationsGuidance, setShowObservationsGuidance] =
+    useState(false);
 
   const [selectedFloorName, setSelectedFloorName] = useState(
     floor?.name || "Ground Floor",
@@ -1096,7 +1097,6 @@ export default function FloorCountPage() {
 
               {/* Content */}
               <div className="flex-1 p-4 sm:p-8 space-y-6">
-
                 {/* Floor selector */}
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-text font-body">
@@ -1377,7 +1377,9 @@ export default function FloorCountPage() {
                     <Table className="table-fixed min-w-[650px] sm:min-w-0">
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="w-1/4 px-2 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-[13px]">Room name</TableHead>
+                          <TableHead className="w-1/4 px-2 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-[13px]">
+                            Room name
+                          </TableHead>
                           <TableHead className="w-1/4 px-2 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-[13px]">
                             <div className="flex items-center gap-1.5 sm:gap-2.5">
                               <button
@@ -1431,220 +1433,221 @@ export default function FloorCountPage() {
                           </TableHead>
                         </TableRow>
                       </TableHeader>
-                    <TableBody>
-                      {rooms.map((room) => {
-                        const cat = roomCategories[room.id];
-                        const seats = roomSeats[room.id] || 1;
-                        const isVerified = verifiedRooms.has(room.id);
-                        const isChecked = selectedRoomIds.has(room.id);
-                        return (
-                          <TableRow
-                            key={room.id}
-                            className={
-                              isChecked
-                                ? "bg-primary/5 hover:bg-primary/5"
-                                : undefined
-                            }
-                          >
-                            {/* Room name */}
-                            <TableCell className="px-2 sm:px-5 py-3 sm:py-4">
-                              <p className="text-xs sm:text-sm text-text font-body">
-                                {room.name}
-                              </p>
-                              {cat && (
-                                <p className="text-[10px] sm:text-xs text-text-muted font-body">
-                                  {getCategoryLabel(cat)}
+                      <TableBody>
+                        {rooms.map((room) => {
+                          const cat = roomCategories[room.id];
+                          const seats = roomSeats[room.id] || 1;
+                          const isVerified = verifiedRooms.has(room.id);
+                          const isChecked = selectedRoomIds.has(room.id);
+                          return (
+                            <TableRow
+                              key={room.id}
+                              className={
+                                isChecked
+                                  ? "bg-primary/5 hover:bg-primary/5"
+                                  : undefined
+                              }
+                            >
+                              {/* Room name */}
+                              <TableCell className="px-2 sm:px-5 py-3 sm:py-4">
+                                <p className="text-xs sm:text-sm text-text font-body">
+                                  {room.name}
                                 </p>
-                              )}
-                            </TableCell>
+                                {cat && (
+                                  <p className="text-[10px] sm:text-xs text-text-muted font-body">
+                                    {getCategoryLabel(cat)}
+                                  </p>
+                                )}
+                              </TableCell>
 
-                            {/* Room category — select checkbox + dropdown */}
-                            <TableCell className="px-2 sm:px-5 py-3 sm:py-4">
-                              <div className="flex items-center gap-1.5 sm:gap-2.5">
-                                <button
-                                  onClick={() => toggleRoomSelect(room.id)}
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${
-                                    isChecked
-                                      ? "bg-primary border-primary"
-                                      : "border-[#C0D0DC] bg-white hover:border-primary"
-                                  }`}
-                                  title="Select to set category"
-                                >
-                                  {isChecked && (
-                                    <Check
+                              {/* Room category — select checkbox + dropdown */}
+                              <TableCell className="px-2 sm:px-5 py-3 sm:py-4">
+                                <div className="flex items-center gap-1.5 sm:gap-2.5">
+                                  <button
+                                    onClick={() => toggleRoomSelect(room.id)}
+                                    className={`w-4 h-4 sm:w-5 sm:h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${
+                                      isChecked
+                                        ? "bg-primary border-primary"
+                                        : "border-[#C0D0DC] bg-white hover:border-primary"
+                                    }`}
+                                    title="Select to set category"
+                                  >
+                                    {isChecked && (
+                                      <Check
+                                        size={10}
+                                        className="text-white"
+                                        strokeWidth={3}
+                                      />
+                                    )}
+                                  </button>
+                                  <div className="relative w-[110px] sm:w-[160px]">
+                                    <select
+                                      value={cat || ""}
+                                      onChange={(e) => {
+                                        if (e.target.value === "add-new") {
+                                          setAddCategoryRoomId(room.id);
+                                          setNewCategoryInput("");
+                                          setShowAddCategoryModal(true);
+                                        } else {
+                                          setRoomCategories((prev) => ({
+                                            ...prev,
+                                            [room.id]: e.target.value,
+                                          }));
+                                          setVerifiedRooms((prev) => {
+                                            const n = new Set(prev);
+                                            n.delete(room.id);
+                                            return n;
+                                          });
+                                          // Once a category is chosen, clear this row's selection checkmark
+                                          setSelectedRoomIds((prev) => {
+                                            const n = new Set(prev);
+                                            n.delete(room.id);
+                                            return n;
+                                          });
+                                        }
+                                      }}
+                                      className="appearance-none w-full rounded-lg border border-[#E2E8F0] bg-white pl-2 sm:pl-3 pr-6 sm:pr-8 py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
+                                    >
+                                      <option value="" disabled hidden>
+                                        Select...
+                                      </option>
+                                      {FLOOR_CATEGORIES.map((fc) => (
+                                        <option key={fc.id} value={fc.id}>
+                                          {fc.label}
+                                        </option>
+                                      ))}
+                                      {customCategories.map((cc) => (
+                                        <option key={cc} value={cc}>
+                                          {cc}
+                                        </option>
+                                      ))}
+                                      <option value="add-new">
+                                        + Add category
+                                      </option>
+                                    </select>
+                                    <ChevronDown
                                       size={10}
-                                      className="text-white"
-                                      strokeWidth={3}
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
                                     />
-                                  )}
-                                </button>
-                                <div className="relative w-[110px] sm:w-[160px]">
-                                  <select
-                                    value={cat || ""}
-                                    onChange={(e) => {
-                                      if (e.target.value === "add-new") {
-                                        setAddCategoryRoomId(room.id);
-                                        setNewCategoryInput("");
-                                        setShowAddCategoryModal(true);
-                                      } else {
-                                        setRoomCategories((prev) => ({
-                                          ...prev,
-                                          [room.id]: e.target.value,
-                                        }));
+                                  </div>
+                                </div>
+                              </TableCell>
+
+                              {/* Seats — ± buttons + editable number */}
+                              <TableCell className="px-2 sm:px-5 py-3 sm:py-4">
+                                <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+                                  <button
+                                    onClick={() => {
+                                      const n = Math.max(1, seats - 1);
+                                      updateSeats(room.id, n);
+                                      setRoomSeatInputs((prev) => ({
+                                        ...prev,
+                                        [room.id]: String(n),
+                                      }));
+                                    }}
+                                    className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg border border-[#E2E8F0] flex items-center justify-center text-text-muted hover:border-primary hover:text-primary transition-all"
+                                  >
+                                    <Minus size={10} strokeWidth={3} />
+                                  </button>
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={getSeatInputValue(room.id)}
+                                    onChange={(e) =>
+                                      setRoomSeatInputs((prev) => ({
+                                        ...prev,
+                                        [room.id]: e.target.value.replace(
+                                          /\D/g,
+                                          "",
+                                        ),
+                                      }))
+                                    }
+                                    onBlur={(e) =>
+                                      commitSeatInput(room.id, e.target.value)
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter")
+                                        e.currentTarget.blur();
+                                    }}
+                                    className="w-8 sm:w-10 text-center text-xs sm:text-sm font-bold text-text tabular-nums rounded-lg border border-[#E2E8F0] py-0.5 focus:outline-none focus:border-primary transition-colors bg-white"
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      const n = seats + 1;
+                                      updateSeats(room.id, n);
+                                      setRoomSeatInputs((prev) => ({
+                                        ...prev,
+                                        [room.id]: String(n),
+                                      }));
+                                    }}
+                                    className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg border border-primary bg-primary/5 flex items-center justify-center text-primary hover:bg-primary/10 transition-all"
+                                  >
+                                    <Plus size={10} strokeWidth={3} />
+                                  </button>
+                                </div>
+                              </TableCell>
+
+                              {/* Verify / Verified */}
+                              <TableCell className="px-2 sm:px-5 py-3 sm:py-4">
+                                <div className="flex items-center gap-1.5 sm:gap-2.5">
+                                  <button
+                                    onClick={() => toggleRoomVerified(room.id)}
+                                    className={`w-4 h-4 sm:w-5 sm:h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isVerified ? "bg-primary border-primary" : "border-[#C0D0DC] bg-white hover:border-primary"}`}
+                                    title="Mark as verified"
+                                  >
+                                    {isVerified && (
+                                      <Check
+                                        size={10}
+                                        className="text-white"
+                                        strokeWidth={3}
+                                      />
+                                    )}
+                                  </button>
+                                  {isVerified ? (
+                                    <button
+                                      onClick={() =>
                                         setVerifiedRooms((prev) => {
                                           const n = new Set(prev);
                                           n.delete(room.id);
                                           return n;
+                                        })
+                                      }
+                                      className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] sm:text-xs font-semibold hover:bg-primary/15 transition-all"
+                                    >
+                                      <Check size={10} strokeWidth={3} />{" "}
+                                      Verified
+                                    </button>
+                                  ) : (
+                                    <button
+                                      onClick={() => {
+                                        if (!cat) {
+                                          setShowCategoryRequiredModal(true);
+                                          return;
+                                        }
+                                        setVerifiedRooms((prev) => {
+                                          const next = new Set(prev);
+                                          next.add(room.id);
+                                          return next;
                                         });
-                                        // Once a category is chosen, clear this row's selection checkmark
                                         setSelectedRoomIds((prev) => {
                                           const n = new Set(prev);
                                           n.delete(room.id);
                                           return n;
                                         });
-                                      }
-                                    }}
-                                    className="appearance-none w-full rounded-lg border border-[#E2E8F0] bg-white pl-2 sm:pl-3 pr-6 sm:pr-8 py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold text-text focus:outline-none focus:border-primary transition-all cursor-pointer"
-                                  >
-                                    <option value="" disabled hidden>
-                                      Select...
-                                    </option>
-                                    {FLOOR_CATEGORIES.map((fc) => (
-                                      <option key={fc.id} value={fc.id}>
-                                        {fc.label}
-                                      </option>
-                                    ))}
-                                    {customCategories.map((cc) => (
-                                      <option key={cc} value={cc}>
-                                        {cc}
-                                      </option>
-                                    ))}
-                                    <option value="add-new">
-                                      + Add category
-                                    </option>
-                                  </select>
-                                  <ChevronDown
-                                    size={10}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
-                                  />
-                                </div>
-                              </div>
-                            </TableCell>
-
-                            {/* Seats — ± buttons + editable number */}
-                            <TableCell className="px-2 sm:px-5 py-3 sm:py-4">
-                              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                                <button
-                                  onClick={() => {
-                                    const n = Math.max(1, seats - 1);
-                                    updateSeats(room.id, n);
-                                    setRoomSeatInputs((prev) => ({
-                                      ...prev,
-                                      [room.id]: String(n),
-                                    }));
-                                  }}
-                                  className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg border border-[#E2E8F0] flex items-center justify-center text-text-muted hover:border-primary hover:text-primary transition-all"
-                                >
-                                  <Minus size={10} strokeWidth={3} />
-                                </button>
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={getSeatInputValue(room.id)}
-                                  onChange={(e) =>
-                                    setRoomSeatInputs((prev) => ({
-                                      ...prev,
-                                      [room.id]: e.target.value.replace(
-                                        /\D/g,
-                                        "",
-                                      ),
-                                    }))
-                                  }
-                                  onBlur={(e) =>
-                                    commitSeatInput(room.id, e.target.value)
-                                  }
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter")
-                                      e.currentTarget.blur();
-                                  }}
-                                  className="w-8 sm:w-10 text-center text-xs sm:text-sm font-bold text-text tabular-nums rounded-lg border border-[#E2E8F0] py-0.5 focus:outline-none focus:border-primary transition-colors bg-white"
-                                />
-                                <button
-                                  onClick={() => {
-                                    const n = seats + 1;
-                                    updateSeats(room.id, n);
-                                    setRoomSeatInputs((prev) => ({
-                                      ...prev,
-                                      [room.id]: String(n),
-                                    }));
-                                  }}
-                                  className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg border border-primary bg-primary/5 flex items-center justify-center text-primary hover:bg-primary/10 transition-all"
-                                >
-                                  <Plus size={10} strokeWidth={3} />
-                                </button>
-                              </div>
-                            </TableCell>
-
-                            {/* Verify / Verified */}
-                            <TableCell className="px-2 sm:px-5 py-3 sm:py-4">
-                              <div className="flex items-center gap-1.5 sm:gap-2.5">
-                                <button
-                                  onClick={() => toggleRoomVerified(room.id)}
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isVerified ? "bg-primary border-primary" : "border-[#C0D0DC] bg-white hover:border-primary"}`}
-                                  title="Mark as verified"
-                                >
-                                  {isVerified && (
-                                    <Check
-                                      size={10}
-                                      className="text-white"
-                                      strokeWidth={3}
-                                    />
+                                      }}
+                                      className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold border border-primary text-primary hover:bg-primary/5 transition-all"
+                                    >
+                                      Verify
+                                    </button>
                                   )}
-                                </button>
-                                {isVerified ? (
-                                  <button
-                                    onClick={() =>
-                                      setVerifiedRooms((prev) => {
-                                        const n = new Set(prev);
-                                        n.delete(room.id);
-                                        return n;
-                                      })
-                                    }
-                                    className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] sm:text-xs font-semibold hover:bg-primary/15 transition-all"
-                                  >
-                                    <Check size={10} strokeWidth={3} /> Verified
-                                  </button>
-                                ) : (
-                                  <button
-                                    onClick={() => {
-                                      if (!cat) {
-                                        setShowCategoryRequiredModal(true);
-                                        return;
-                                      }
-                                      setVerifiedRooms((prev) => {
-                                        const next = new Set(prev);
-                                        next.add(room.id);
-                                        return next;
-                                      });
-                                      setSelectedRoomIds((prev) => {
-                                        const n = new Set(prev);
-                                        n.delete(room.id);
-                                        return n;
-                                      });
-                                    }}
-                                    className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold border border-primary text-primary hover:bg-primary/5 transition-all"
-                                  >
-                                    Verify
-                                  </button>
-                                )}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </div>
               {/* end scrollable content */}
@@ -2124,7 +2127,6 @@ export default function FloorCountPage() {
               </div>
 
               <div className="flex-1 p-4 sm:p-6 space-y-4">
-
                 {/* Floor + dates row */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-3 w-full md:w-auto">
@@ -2332,13 +2334,27 @@ export default function FloorCountPage() {
                   <Table className="min-w-[800px] sm:min-w-0">
                     <TableHeader>
                       <TableRow className="text-[10px] sm:text-[11px] font-bold text-text">
-                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">Room</TableHead>
-                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">Category</TableHead>
-                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">Square Meters</TableHead>
-                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">No of seats</TableHead>
-                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">Status</TableHead>
-                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">Counted by</TableHead>
-                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">Edit</TableHead>
+                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">
+                          Room
+                        </TableHead>
+                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">
+                          Category
+                        </TableHead>
+                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">
+                          Square Meters
+                        </TableHead>
+                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">
+                          No of seats
+                        </TableHead>
+                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">
+                          Status
+                        </TableHead>
+                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">
+                          Counted by
+                        </TableHead>
+                        <TableHead className="px-2 sm:px-5 py-2.5 sm:py-3">
+                          Edit
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -2409,7 +2425,10 @@ export default function FloorCountPage() {
                                   ))}
                                 </select>
                               ) : (
-                                <Chip tone="neutral" className="text-[10px] sm:text-xs">
+                                <Chip
+                                  tone="neutral"
+                                  className="text-[10px] sm:text-xs"
+                                >
                                   {getCategoryLabel(roomCategories[room.id]) ||
                                     "Meeting room"}
                                 </Chip>
@@ -2485,7 +2504,9 @@ export default function FloorCountPage() {
                                   </span>
                                 </div>
                               ) : (
-                                <span className="text-xs sm:text-sm text-text">—</span>
+                                <span className="text-xs sm:text-sm text-text">
+                                  —
+                                </span>
                               )}
                             </TableCell>
 
@@ -2713,7 +2734,7 @@ export default function FloorCountPage() {
                   </div>
                 </div>
 
-                 {/* Counter */}
+                {/* Counter */}
                 <div className="flex-1 p-3 sm:p-6 space-y-5 sm:space-y-6">
                   {/* Mobile progress & room selector bar */}
                   <div className="md:hidden flex flex-col gap-3 pb-4 border-b border-[#F1F5F9] shrink-0 mb-4">
@@ -2816,30 +2837,32 @@ export default function FloorCountPage() {
                                 Observations
                               </h4>
                               <p className="text-[10px] sm:text-[14px] text-[#64748B] font-body mt-0.5">
-                                Note how the space is being used, then submit your
-                                observations.
+                                Note how the space is being used, then submit
+                                your observations.
                               </p>
                             </div>
                             <button
                               type="button"
-                              onClick={() => setShowObservationsGuidance((prev) => !prev)}
+                              onClick={() =>
+                                setShowObservationsGuidance((prev) => !prev)
+                              }
                               className={cn(
                                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] sm:text-xs font-semibold font-body transition-all duration-200 shrink-0",
                                 showObservationsGuidance
                                   ? "bg-[#F8FAFC] border-[#E2E8F0] text-[#64748B] hover:bg-[#F1F5F9] hover:border-[#CBD5E1]"
-                                  : "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15"
+                                  : "bg-primary/10 border-primary/30 text-primary hover:bg-primary/15",
                               )}
                             >
                               {showObservationsGuidance ? (
-                                <X
-                                  className="w-3.5 h-3.5 text-[#64748B]"
-                                />
+                                <X className="w-3.5 h-3.5 text-[#64748B]" />
                               ) : (
-                                <Plus
-                                  className="w-3.5 h-3.5 text-primary"
-                                />
+                                <Plus className="w-3.5 h-3.5 text-primary" />
                               )}
-                              <span>{showObservationsGuidance ? "Hide Observation" : "Add Observation"}</span>
+                              <span>
+                                {showObservationsGuidance
+                                  ? "Hide Observation"
+                                  : "Add Observation"}
+                              </span>
                             </button>
                           </div>
 
@@ -2849,7 +2872,10 @@ export default function FloorCountPage() {
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: "auto", opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.2, ease: "easeInOut" }}
+                                transition={{
+                                  duration: 0.2,
+                                  ease: "easeInOut",
+                                }}
                                 className="overflow-hidden pb-1 space-y-3 sm:space-y-4"
                               >
                                 <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2">
@@ -2867,7 +2893,9 @@ export default function FloorCountPage() {
 
                                 <textarea
                                   value={roomComment}
-                                  onChange={(e) => setRoomComment(e.target.value)}
+                                  onChange={(e) =>
+                                    setRoomComment(e.target.value)
+                                  }
                                   placeholder="What did you notice here?"
                                   rows={3}
                                   className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-[14px] text-[#222B27] font-body placeholder:text-[#94A3B8] focus:outline-none focus:border-[#139485] focus:ring-2 focus:ring-[rgba(19,148,133,0.1)] transition-all resize-none"
@@ -2954,10 +2982,10 @@ export default function FloorCountPage() {
               <div className="flex-1 overflow-y-auto p-6">
                 <PrepareSessionIntro />
               </div>
-              <div className="border-t border-[#F1F5F9] px-6 py-4 flex gap-3 shrink-0">
+              <div className="border-t border-[#F1F5F9] px-6 py-4 flex flex-col-reverse sm:flex-row gap-3 shrink-0">
                 <Button
                   variant="secondary"
-                  size="md"
+                  size="lg"
                   className="flex-1"
                   onClick={() => {
                     setShowPrepareModal(false);
@@ -2967,7 +2995,7 @@ export default function FloorCountPage() {
                   Cancel
                 </Button>
                 <Button
-                  size="md"
+                  size="lg"
                   className="flex-1"
                   onClick={() => {
                     handleStartSession();
