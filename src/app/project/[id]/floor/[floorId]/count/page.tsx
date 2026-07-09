@@ -215,14 +215,13 @@ const WHY_ITEMS = [
 const PRE_COUNTING_CHECKLIST = [
   { id: "plan", label: "Floor plan open on my device" },
   { id: "route", label: "I will walk rooms in a logical order" },
-  { id: "round", label: "I understand each round is ~2 hours" },
+  { id: "round", label: "I understand that each round involves going to every room across the whole office-space" },
   { id: "seats", label: "I count occupied seats only" },
   { id: "notes", label: "I will note anything unusual" },
 ];
 
 const QUICK_STEPS = [
   { Icon: Footprints, label: "Walk room by room", color: "#139485" },
-  { Icon: Clock, label: "2-hour rounds", color: "#3B82F6" },
   { Icon: Armchair, label: "Occupied seats only", color: "#C47A2C" },
   { Icon: NotebookPen, label: "Add observations", color: "#6351AC" },
 ];
